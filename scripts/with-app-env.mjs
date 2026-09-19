@@ -88,6 +88,30 @@ export function projectRoot() {
 }
 
 /**
+ * The JS entry point of a locally installed package's CLI, or `null`.
+ *
+ * `npm run` finds `vite` through `node_modules/.bin`, which on Windows holds
+ * `vite.cmd` — a shim that `spawn` cannot run without a shell (`spawn vite
+ * ENOENT`). Running the package's own `bin` file with this Node behaves the same
+ * on every OS, needs no shell, and avoids Node's DEP0190 warning for
+ * `shell: true` with an args array.
+ *
+ * Only bare names whose bin is named after the package (`vite`) resolve; paths,
+ * scoped names and anything else return `null` and are spawned as given.
+ */
+export function resolveLocalBin(command, root) {
+  if (!/^[a-z0-9][\w.-]*$/i.test(command)) return null;
+  try {
+    const packageDir = join(root, "node_modules", command);
+    const pkg = JSON.parse(readFileSync(join(packageDir, "package.json"), "utf8"));
+    const bin = typeof pkg.bin === "string" ? pkg.bin : pkg.bin?.[command];
+    return typeof bin === "string" ? join(packageDir, bin) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Whether `moduleUrl` is the script node was asked to run.
  *
  * Both sides are resolved through symlinks: node realpaths `import.meta.url`
@@ -110,8 +134,12 @@ function main(argv) {
     console.error("usage: node scripts/with-app-env.mjs <command> [args…]");
     process.exit(2);
   }
-  const env = mergeAppEnv(readAppEnv(projectRoot()), process.env);
-  const child = spawn(command, args, { stdio: "inherit", env });
+  const root = projectRoot();
+  const env = mergeAppEnv(readAppEnv(root), process.env);
+  const entry = resolveLocalBin(command, root);
+  const child = entry
+    ? spawn(process.execPath, [entry, ...args], { stdio: "inherit", env })
+    : spawn(command, args, { stdio: "inherit", env });
   // The dev server is long-running and is stopped by signalling this wrapper.
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => child.kill(signal));

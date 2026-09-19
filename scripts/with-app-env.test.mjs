@@ -1,6 +1,13 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
-import { mkdirSync, mkdtempSync, symlinkSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  symlinkSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -11,6 +18,7 @@ import {
   parseAppEnv,
   projectRoot,
   readAppEnv,
+  resolveLocalBin,
 } from "./with-app-env.mjs";
 
 const execFileAsync = promisify(execFile);
@@ -73,6 +81,70 @@ test("vite loadEnv resolves the wrapped value", () => {
   assert.equal(merged.VITE_AUTH_ENABLED, "false");
 });
 
+/** A workspace whose node_modules holds one package with the given package.json. */
+function makeWorkspaceWithPackage(name, packageJson, files = {}) {
+  const root = makeWorkspace();
+  const dir = join(root, "node_modules", name);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "package.json"), JSON.stringify(packageJson));
+  for (const [file, body] of Object.entries(files)) writeFileSync(join(dir, file), body);
+  return { root, dir };
+}
+
+test("resolveLocalBin reads a string bin", () => {
+  const { root, dir } = makeWorkspaceWithPackage("tool", { bin: "cli.js" });
+  assert.equal(resolveLocalBin("tool", root), join(dir, "cli.js"));
+});
+
+test("resolveLocalBin reads the bin named after the package", () => {
+  const { root, dir } = makeWorkspaceWithPackage("tool", {
+    bin: { other: "other.js", tool: "bin/tool.js" },
+  });
+  assert.equal(resolveLocalBin("tool", root), join(dir, "bin/tool.js"));
+});
+
+test("resolveLocalBin returns null when there is nothing to run", () => {
+  const { root } = makeWorkspaceWithPackage("tool", { bin: { other: "other.js" } });
+  assert.equal(resolveLocalBin("tool", root), null, "no bin named after the package");
+  assert.equal(resolveLocalBin("missing", root), null, "package not installed");
+  const { root: noBin } = makeWorkspaceWithPackage("tool", {});
+  assert.equal(resolveLocalBin("tool", noBin), null, "package without bin");
+});
+
+test("resolveLocalBin only resolves bare package names", () => {
+  const { root } = makeWorkspaceWithPackage("tool", { bin: "cli.js" });
+  for (const command of [process.execPath, "../tool", "a/tool", "@scope/tool", "", "-e"]) {
+    assert.equal(resolveLocalBin(command, root), null, JSON.stringify(command));
+  }
+});
+
+test("vite resolves to a real JS file in this workspace", () => {
+  const entry = resolveLocalBin("vite", projectRoot());
+  assert.ok(entry?.endsWith(".js"), `unexpected entry: ${entry}`);
+  assert.ok(existsSync(entry), `missing file: ${entry}`);
+});
+
+test("the wrapper launches a local package's bin without a shell", async () => {
+  // The Windows failure was `spawn vite ENOENT`: npm's `.bin/vite` there is a
+  // `.cmd` shim. A copy of the wrapper in a temp workspace has that workspace
+  // as its project root, so this runs the bare-name path end to end.
+  const { root } = makeWorkspaceWithPackage(
+    "fakebin",
+    { bin: { fakebin: "cli.js" } },
+    { "cli.js": "process.stdout.write(JSON.stringify(process.argv.slice(2)));" },
+  );
+  mkdirSync(join(root, "scripts"));
+  copyFileSync(WRAPPER, join(root, "scripts", "with-app-env.mjs"));
+  const { stdout } = await execFileAsync(process.execPath, [
+    join(root, "scripts", "with-app-env.mjs"),
+    "fakebin",
+    "dev",
+    "--port",
+    "8080",
+  ]);
+  assert.deepEqual(JSON.parse(stdout), ["dev", "--port", "8080"]);
+});
+
 test("the wrapped command runs with the app env applied", async () => {
   const { stdout } = await execFileAsync(process.execPath, [
     WRAPPER,
@@ -117,7 +189,9 @@ test("the CLI still runs when invoked through a symlinked path", async () => {
   // node realpaths import.meta.url but not process.argv[1], so a raw comparison
   // turns the wrapper into a no-op that exits 0 without starting anything.
   const link = join(mkdtempSync(join(tmpdir(), "app-env-link-")), "scripts");
-  symlinkSync(join(projectRoot(), "scripts"), link);
+  // "junction" avoids the EPERM a plain directory symlink hits on Windows without
+  // Developer Mode; Node ignores the argument on macOS and Linux.
+  symlinkSync(join(projectRoot(), "scripts"), link, "junction");
   const { stdout } = await execFileAsync(process.execPath, [
     join(link, "with-app-env.mjs"),
     process.execPath,
