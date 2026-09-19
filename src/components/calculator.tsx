@@ -1,13 +1,13 @@
 import { useMemo, useState } from "react";
-import { Scale, Info } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { MoneyField, NumberField } from "@/components/field";
 import { LoanTimeline } from "@/components/loan-timeline";
+import { CeilingComparison, Headline, HowComputed } from "@/components/result";
 import {
   analyzeLoan,
   FREQUENCY_LABEL,
@@ -15,15 +15,11 @@ import {
   PRESETS,
   type Frequency,
   type LenderKind,
-  type LoanAnalysis,
   type LoanInput,
   type PresetId,
 } from "@/lib/loan-math";
-import { CANNOT_COMPUTE_TEXT, OLD_LOAN_NOTICE } from "@/lib/copy";
-import type { Verdict as VerdictState } from "@/lib/rules";
-import { cn, formatPct, formatPeso } from "@/lib/utils";
-
-type Computed = Exclude<LoanAnalysis, { status: "cannot_compute" }>;
+import { CANNOT_COMPUTE_TEXT } from "@/lib/copy";
+import { cn, formatPeso } from "@/lib/utils";
 
 function parseMoney(s: string): number {
   const n = Number(String(s).replace(/,/g, "").trim());
@@ -281,8 +277,9 @@ export function Calculator() {
           </Card>
         ) : (
           <>
-            <Verdict analysis={analysis} />
-            <StatGrid analysis={analysis} />
+            <Headline analysis={analysis} />
+            <CeilingComparison analysis={analysis} />
+            <HowComputed analysis={analysis} />
             <Card>
               <CardHeader>
                 <CardTitle>Kalendaryo ng loan</CardTitle>
@@ -351,145 +348,6 @@ function ToggleRow({
         {label}
       </Label>
       <Switch id={id} checked={checked} onCheckedChange={onCheckedChange} />
-    </div>
-  );
-}
-
-const GRAY_EIR_TEXT =
-  "Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular.";
-
-function Verdict({ analysis }: { analysis: Computed }) {
-  if (analysis.status === "before_effective_date") {
-    return (
-      <Card>
-        <CardContent className="p-5">
-          <p className="font-display text-xl leading-snug text-balance">{OLD_LOAN_NOTICE}</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const { coverage, overall, checks } = analysis;
-  const covered = coverage.state !== "NOT_COVERED";
-  const tone = overall === "OVER" ? "danger" : overall === "GRAY" ? "warn" : "ok";
-  return (
-    <Card
-      className={cn(
-        overall === "OVER" ? "border-danger/40" : covered ? "border-primary/30" : "",
-      )}
-    >
-      <CardContent className="flex flex-col gap-4 p-5 sm:flex-row sm:items-start">
-        <div
-          className={cn(
-            "flex size-12 shrink-0 items-center justify-center rounded-lg",
-            tone === "danger" && "bg-danger-soft text-danger",
-            tone === "warn" && "bg-warn-soft text-warn",
-            tone === "ok" && "bg-ok-soft text-ok",
-          )}
-        >
-          <Scale className="size-6" strokeWidth={1.75} />
-        </div>
-        <div className="grid min-w-0 flex-1 gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {!covered ? (
-              <Badge variant="warn">Walang percentage ceiling sa box na ito</Badge>
-            ) : overall === "OVER" ? (
-              <Badge variant="danger">Lampas sa naka-publish na ceiling</Badge>
-            ) : overall === "GRAY" ? (
-              <Badge variant="warn">Malapit sa ceiling</Badge>
-            ) : (
-              <Badge variant="ok">Nasa loob ng naka-publish na ceiling</Badge>
-            )}
-            {coverage.state === "COVERED" ? <Badge>Sakop</Badge> : null}
-            {coverage.state === "MAYBE" ? <Badge variant="warn">Maaaring sakop</Badge> : null}
-          </div>
-          <p className="font-display text-xl leading-snug text-balance">
-            {!covered
-              ? "Walang naka-publish na porsyentong ceiling para sa loan na ito."
-              : overall === "OVER"
-                ? "Ang EIR o gastos na kinuwenta sa iyong numero ay lampas sa ceiling para sa sakop na small loan."
-                : overall === "GRAY"
-                  ? checks.eir.raw === "GRAY"
-                    ? GRAY_EIR_TEXT
-                    : "Maaaring lumampas sa ceiling ang numero mo, pero hindi tiyak kung sakop ang loan na ito."
-                  : "Sa mga numerong inilagay mo, hindi lumampas ang sakop na ceiling."}
-          </p>
-          {coverage.reasons.length > 0 ? (
-            <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-              {coverage.reasons.map((r) => (
-                <li key={r}>{r}</li>
-              ))}
-            </ul>
-          ) : null}
-          <p className="text-xs text-muted-foreground text-pretty">
-            Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure
-            statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender.
-          </p>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-function markFor(state: VerdictState | null | undefined): Mark {
-  if (state === "OVER") return "over";
-  if (state === "GRAY") return "gray";
-  if (state === "WITHIN") return "ok";
-  return "off";
-}
-
-function StatGrid({ analysis }: { analysis: Computed }) {
-  const n = analysis.numbers;
-  const checks = analysis.status === "ok" ? analysis.checks : null;
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      <Stat label="Natanggap (net proceeds)" value={formatPeso(n.netProceeds)} />
-      <Stat label="Kabuuang babayaran" value={formatPeso(n.totalPayments)} />
-      <Stat label="Finance charge (cash out − cash in)" value={formatPeso(n.totalCost)} />
-      <Stat
-        label="Gastos vs. principal"
-        value={`${formatPeso(n.totalCost)} · ${formatPct(n.totalCostRatio)}`}
-        mark={markFor(checks?.totalCost.state)}
-      />
-      <Stat
-        label="Nominal / buwan"
-        value={formatPct(n.nominalPerMonth)}
-        hint="Interest sa face amount ÷ tenor sa 30-araw na buwan. Cap kung sakop: 6%/buwan."
-        mark={markFor(checks?.nominal.state)}
-      />
-      <Stat
-        label="EIR / buwan"
-        value={formatPct(n.eirPerMonthCompounded)}
-        hint={`Compounded. Simple (×30): ${formatPct(n.eirPerMonthSimple)}. Daily EIR: ${formatPct(n.eirPerDay, 3)}.`}
-        mark={markFor(checks?.eir.state)}
-      />
-    </div>
-  );
-}
-
-type Mark = "ok" | "gray" | "over" | "off";
-
-function Stat({
-  label,
-  value,
-  hint,
-  mark = "off",
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  mark?: Mark;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-surface p-4">
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</p>
-        {mark === "over" ? <Badge variant="danger">Lampas</Badge> : null}
-        {mark === "gray" ? <Badge variant="warn">Malapit</Badge> : null}
-        {mark === "ok" ? <Badge variant="ok">OK</Badge> : null}
-      </div>
-      <p className="mt-2 font-display text-2xl tabular-nums tracking-tight">{value}</p>
-      {hint ? <p className="mt-2 text-xs leading-relaxed text-muted-foreground text-pretty">{hint}</p> : null}
     </div>
   );
 }
