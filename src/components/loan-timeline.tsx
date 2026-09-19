@@ -1,23 +1,23 @@
 import { cn } from "@/lib/utils";
-import type { LoanInput, LoanResult } from "@/lib/loan-math";
+import type { LoanInput, LoanNumbers } from "@/lib/loan-math";
 
 export function LoanTimeline({
   input,
-  result,
+  numbers,
 }: {
   input: LoanInput;
-  result: LoanResult;
+  numbers: LoanNumbers;
 }) {
-  const days = Math.max(result.tenorDays, input.followUpDay ?? 0, 1);
+  const days = Math.max(numbers.tenorDays, input.followUpDay ?? 0, 1);
   const showDays = days <= 16;
   if (!showDays) {
     return (
       <ol className="grid gap-2 text-sm">
         <li className="flex justify-between gap-4 border-b border-border py-2">
           <span className="text-muted-foreground">Araw 0</span>
-          <span>Natanggap · {peso(result.netProceeds)}</span>
+          <span>Natanggap · {peso(numbers.netProceeds)}</span>
         </li>
-        {result.schedule.map((p) => (
+        {numbers.schedule.map((p) => (
           <li
             key={p.n}
             className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
@@ -40,7 +40,7 @@ export function LoanTimeline({
 
   const cells = Array.from({ length: days + 1 }, (_, day) => {
     const isStart = day === 0;
-    const due = result.schedule.filter((p) => p.day === day);
+    const due = numbers.schedule.filter((p) => p.day === day);
     const follow = input.followUpDay === day && day > 0;
     return { day, isStart, due, follow };
   });

@@ -1,4 +1,13 @@
-/** Discounted-cash-flow EIR in the spirit of BSP M-2011-040 / Circular 730. */
+/**
+ * Loan math. Every legal number (ceilings, the coverage box, the effective date,
+ * days per month) comes from ./rules.ts; none is written here.
+ *
+ * The EIR is the discounted-cash-flow rate, found per day, that makes the net
+ * proceeds equal the payments. A daily rate becomes a monthly one by x30 or by
+ * compounding, and rules.ts records that the circular does not say which, so the
+ * effective-rate verdict is three-state (see eirVerdict).
+ */
+import { CEILINGS, COVERAGE, DAYS_PER_MONTH, eirVerdict, type Verdict } from "./rules.ts";
 
 export type Frequency = "daily" | "weekly" | "biweekly" | "monthly";
 
@@ -6,26 +15,21 @@ export const INTERVAL_DAYS: Record<Frequency, number> = {
   daily: 1,
   weekly: 7,
   biweekly: 14,
-  monthly: 30,
+  monthly: DAYS_PER_MONTH,
 };
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {
   daily: "Araw-araw",
   weekly: "Bawat 7 araw",
   biweekly: "Bawat 14 araw",
-  monthly: "Buwanan (~30 araw)",
+  monthly: `Buwanan (~${DAYS_PER_MONTH} araw)`,
 };
 
-/** Covered-loan box (BSP Circ. 1133 / SEC MC 3 / SEC MC 14). */
-export const COVERED_PRINCIPAL_MAX = 10_000;
-export const COVERED_TENOR_DAYS_MAX = 120; // 4 months × 30-day month convention
-export const NOMINAL_CAP_PER_MONTH = 0.06;
-export const EIR_CAP_PER_MONTH_MC14 = 0.12; // loans from 1 Apr 2026
-export const EIR_CAP_PER_MONTH_MC3 = 0.15; // covered loans booked before 1 Apr 2026
-export const PENALTY_CAP_PER_MONTH = 0.05;
-export const TOTAL_COST_CAP_RATIO = 1;
-export const MC14_EFFECTIVE = new Date("2026-04-01T00:00:00+08:00");
-export const DAYS_PER_MONTH = 30;
+/**
+ * Slack for floating-point noise when comparing to a cap, so a loan sitting exactly
+ * on a cap is not pushed over it by the last bits of a computation. Not a legal number.
+ */
+const NUMERIC_TOLERANCE = 1e-9;
 
 export type LenderKind = "lending_or_financing" | "bank";
 
@@ -40,44 +44,66 @@ export type LoanInput = {
   unsecured: boolean;
   generalPurpose: boolean;
   lenderKind: LenderKind;
-  /** Calendar date the loan was entered / renewed (local). */
+  /** Date the loan was entered into or renewed, as YYYY-MM-DD. */
   bookedOn: string;
   followUpDay: number | null;
 };
 
 export type Cashflow = { day: number; amount: number; label: string };
 
-export type CeilingHit = {
-  id: "nominal" | "eir" | "penalty" | "totalCost";
-  label: string;
-  cap: number;
+export type Coverage = "COVERED" | "MAYBE" | "NOT_COVERED";
+
+export type CheckId = "nominal" | "eir" | "totalCost";
+
+/**
+ * One ceiling comparison. `raw` is the verdict on the numbers alone; `state` is what
+ * to show once coverage is applied (null when the ceilings do not apply to this loan,
+ * and OVER softened to GRAY when coverage is uncertain).
+ */
+export type Check = {
+  id: CheckId;
   actual: number;
-  over: boolean;
-  unit: "pct-month" | "ratio";
-  cite: string;
+  cap: number;
+  raw: Verdict;
+  state: Verdict | null;
 };
 
-export type LoanResult = {
+export type CannotComputeReason =
+  | "invalid_input"
+  | "invalid_date"
+  | "fee_not_less_than_principal"
+  | "payments_below_principal"
+  | "no_solution";
+
+export type LoanNumbers = {
   netProceeds: number;
   tenorDays: number;
   totalPayments: number;
-  financeCharge: number;
-  totalCostVsPrincipal: number;
+  /** Interest + fees + penalties: total paid minus what was received. Never negative. */
+  totalCost: number;
+  /** totalCost as a share of the amount borrowed. */
   totalCostRatio: number;
   nominalPerMonth: number;
-  eirPerMonth: number;
   eirPerDay: number;
-  periodRate: number;
-  cashflows: Cashflow[];
+  /** Daily rate x DAYS_PER_MONTH. */
+  eirPerMonthSimple: number;
+  /** (1 + daily rate) ^ DAYS_PER_MONTH - 1. */
+  eirPerMonthCompounded: number;
   schedule: { n: number; day: number; amount: number }[];
-  covered: boolean;
-  coverageReasons: string[];
-  eirCap: number;
-  eirCapLabel: string;
-  hits: CeilingHit[];
-  anyOver: boolean;
-  irrOk: boolean;
 };
+
+export type LoanAnalysis =
+  | { status: "cannot_compute"; reason: CannotComputeReason }
+  /** Dated before the circular takes effect: numbers only, no ceiling comparison. */
+  | { status: "before_effective_date"; numbers: LoanNumbers }
+  | {
+      status: "ok";
+      numbers: LoanNumbers;
+      coverage: { state: Coverage; reasons: string[] };
+      checks: Record<CheckId, Check>;
+      /** The most serious state among the checks; null when the ceilings do not apply. */
+      overall: Verdict | null;
+    };
 
 function npv(ratePerDay: number, flows: Cashflow[]): number {
   let s = 0;
@@ -134,142 +160,161 @@ export function buildSchedule(input: LoanInput): {
   return { schedule, tenorDays };
 }
 
-export function analyzeLoan(input: LoanInput): LoanResult | null {
-  if (!(input.principal > 0) || !(input.payment >= 0) || !(input.paymentCount >= 1)) {
-    return null;
+/** True for a real calendar date written YYYY-MM-DD. */
+function isIsoDate(s: string): boolean {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  if (!m) return false;
+  const [year, month, day] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return d.getUTCFullYear() === year && d.getUTCMonth() === month - 1 && d.getUTCDate() === day;
+}
+
+const peso = (n: number) => `₱${n.toLocaleString("en-PH")}`;
+
+function assessCoverage(
+  input: LoanInput,
+  tenorDays: number,
+): { state: Coverage; reasons: string[] } {
+  const reasons: string[] = [];
+  if (input.lenderKind !== "lending_or_financing") {
+    reasons.push("Ang ceiling ay para sa lending at financing companies — hindi sa bangko.");
   }
-  const upfront = Math.max(0, input.upfrontFee);
-  const netProceeds = input.principal - upfront;
-  if (netProceeds <= 0) return null;
+  if (COVERAGE.unsecured && !input.unsecured) {
+    reasons.push("Ang ceiling ay para sa unsecured loans.");
+  }
+  if (COVERAGE.generalPurpose && !input.generalPurpose) {
+    reasons.push("Ang ceiling ay para sa general-purpose loans.");
+  }
+  if (input.principal > COVERAGE.principalMax) {
+    reasons.push(
+      `Ang principal na ${peso(input.principal)} ay lampas sa ${peso(COVERAGE.principalMax)} na saklaw.`,
+    );
+  }
+  if (tenorDays > COVERAGE.tenorDaysMaybeCovered) {
+    reasons.push(
+      `Ang tenor na ${tenorDays} araw ay lampas sa ${COVERAGE.tenorMonthsMax} na buwan.`,
+    );
+  }
+  if (reasons.length > 0) return { state: "NOT_COVERED", reasons };
+
+  if (tenorDays > COVERAGE.tenorDaysSurelyCovered) {
+    return {
+      state: "MAYBE",
+      reasons: [
+        `Ang tenor na ${tenorDays} araw ay maaaring pasok pa sa ${COVERAGE.tenorMonthsMax} na buwan, depende sa kalendaryo. Maaaring sakop.`,
+      ],
+    };
+  }
+  return { state: "COVERED", reasons: [] };
+}
+
+/** Ceilings only apply to covered loans; when coverage is uncertain, OVER is shown as GRAY. */
+function applyCoverage(raw: Verdict, coverage: Coverage): Verdict | null {
+  if (coverage === "NOT_COVERED") return null;
+  if (coverage === "MAYBE" && raw === "OVER") return "GRAY";
+  return raw;
+}
+
+const SEVERITY: Record<Verdict, number> = { WITHIN: 0, GRAY: 1, OVER: 2 };
+
+export function analyzeLoan(input: LoanInput): LoanAnalysis {
+  const numeric = [input.principal, input.upfrontFee, input.payment, input.penalty];
+  if (
+    !numeric.every(Number.isFinite) ||
+    !Number.isFinite(input.paymentCount) ||
+    input.principal <= 0 ||
+    input.upfrontFee < 0 ||
+    input.payment < 0 ||
+    input.penalty < 0 ||
+    input.paymentCount < 1
+  ) {
+    return { status: "cannot_compute", reason: "invalid_input" };
+  }
+  if (!isIsoDate(input.bookedOn)) return { status: "cannot_compute", reason: "invalid_date" };
+
+  const netProceeds = input.principal - input.upfrontFee;
+  if (netProceeds <= 0) return { status: "cannot_compute", reason: "fee_not_less_than_principal" };
 
   const { schedule, tenorDays } = buildSchedule(input);
-  const penalty = Math.max(0, input.penalty);
-  const totalPayments = schedule.reduce((s, p) => s + p.amount, 0) + penalty;
-  const financeCharge = totalPayments - netProceeds;
-  const totalCostVsPrincipal = totalPayments - input.principal + (upfront > 0 ? upfront : 0);
-  // Statutory total cost = interest + fees + penalties. If the fee was deducted,
-  // it is still a cost. Cash out minus cash in, measured against face principal:
-  const statutoryCost = totalPayments + (netProceeds < input.principal ? input.principal - netProceeds : 0) - input.principal;
-  const totalCostRatio = statutoryCost / input.principal;
+  const scheduled = schedule.reduce((sum, p) => sum + p.amount, 0);
+  // Scheduled payments below what was received would be a negative rate and a
+  // negative cost; that is a typing error, not a loan.
+  if (scheduled < netProceeds - NUMERIC_TOLERANCE) {
+    return { status: "cannot_compute", reason: "payments_below_principal" };
+  }
 
-  const cashflows: Cashflow[] = [
+  // EIR excludes late penalties; they count only toward total cost.
+  const rDay = irrDaily([
     { day: 0, amount: netProceeds, label: "Natanggap" },
-    ...schedule.map((p) => ({
-      day: p.day,
-      amount: -p.amount,
-      label: `Hulog ${p.n}`,
-    })),
-  ];
-  if (penalty > 0) {
-    cashflows.push({
-      day: tenorDays,
-      amount: -penalty,
-      label: "Penalty",
-    });
+    ...schedule.map((p) => ({ day: p.day, amount: -p.amount, label: `Hulog ${p.n}` })),
+  ]);
+  if (rDay === null || !Number.isFinite(rDay)) {
+    return { status: "cannot_compute", reason: "no_solution" };
   }
+  // A zero-cost loan solves to 0 plus noise; keep it exactly 0.
+  const eirPerDay = Math.abs(rDay) < NUMERIC_TOLERANCE ? 0 : rDay;
 
-  // EIR excludes late penalties (BSP Circ. 1133 / SEC MC 14).
-  const eirFlows: Cashflow[] = [
-    { day: 0, amount: netProceeds, label: "Natanggap" },
-    ...schedule.map((p) => ({
-      day: p.day,
-      amount: -p.amount,
-      label: `Hulog ${p.n}`,
-    })),
-  ];
+  const totalPayments = scheduled + input.penalty;
+  const totalCost = Math.max(0, totalPayments - netProceeds);
+  const interestOnFace = Math.max(0, scheduled - input.principal);
 
-  const rDay = irrDaily(eirFlows);
-  const irrOk = rDay !== null && Number.isFinite(rDay);
-  const eirPerDay = irrOk ? (rDay as number) : NaN;
-  const eirPerMonth = irrOk ? Math.pow(1 + eirPerDay, DAYS_PER_MONTH) - 1 : NaN;
-  const periodRate = irrOk ? Math.pow(1 + eirPerDay, tenorDays) - 1 : NaN;
-
-  const interestOnFace = Math.max(0, schedule.reduce((s, p) => s + p.amount, 0) - input.principal);
-  const months = tenorDays / DAYS_PER_MONTH;
-  const nominalPerMonth = months > 0 ? interestOnFace / input.principal / months : NaN;
-
-  const coverageReasons: string[] = [];
-  if (input.lenderKind !== "lending_or_financing") {
-    coverageReasons.push("Ang ceiling ay para sa lending/financing companies at online lending platforms — hindi sa bangko.");
-  }
-  if (!input.unsecured) coverageReasons.push("Ang ceiling ay para sa unsecured loans.");
-  if (!input.generalPurpose) coverageReasons.push("Ang ceiling ay para sa general-purpose loans.");
-  if (input.principal > COVERED_PRINCIPAL_MAX) {
-    coverageReasons.push(`Principal na ₱${input.principal.toLocaleString("en-PH")} ay lampas sa ₱10,000 na sakop.`);
-  }
-  if (tenorDays > COVERED_TENOR_DAYS_MAX) {
-    coverageReasons.push(`Tenor na ${tenorDays} araw ay lampas sa 4 na buwan (≤120 araw sa 30-araw na buwan).`);
-  }
-  const covered = coverageReasons.length === 0;
-
-  const booked = input.bookedOn ? new Date(input.bookedOn + "T12:00:00") : new Date();
-  const useMc14 = !Number.isNaN(booked.getTime()) && booked >= MC14_EFFECTIVE;
-  const eirCap = useMc14 ? EIR_CAP_PER_MONTH_MC14 : EIR_CAP_PER_MONTH_MC3;
-  const eirCapLabel = useMc14
-    ? "12% / buwan (SEC MC 14, s. 2025; simula 1 Abril 2026)"
-    : "15% / buwan (BSP Circ. 1133 / SEC MC 3; covered loan bago 1 Abril 2026)";
-
-  const EPS = 1e-6;
-  const hits: CeilingHit[] = [
-    {
-      id: "nominal",
-      label: "Nominal interest",
-      cap: NOMINAL_CAP_PER_MONTH,
-      actual: nominalPerMonth,
-      over: covered && Number.isFinite(nominalPerMonth) && nominalPerMonth > NOMINAL_CAP_PER_MONTH + EPS,
-      unit: "pct-month",
-      cite: "6% / buwan — BSP Circ. 1133, s. 2021; SEC MC 3, s. 2022; SEC MC 14, s. 2025",
-    },
-    {
-      id: "eir",
-      label: "Effective interest (EIR)",
-      cap: eirCap,
-      actual: eirPerMonth,
-      over: covered && Number.isFinite(eirPerMonth) && eirPerMonth > eirCap + EPS,
-      unit: "pct-month",
-      cite: eirCapLabel,
-    },
-    {
-      id: "penalty",
-      label: "Late penalty (sa hulog na overdue)",
-      cap: PENALTY_CAP_PER_MONTH,
-      actual: NaN,
-      over: false,
-      unit: "pct-month",
-      cite: "5% / buwan sa outstanding scheduled amount due — Circ. 1133 / MC 3 / MC 14",
-    },
-    {
-      id: "totalCost",
-      label: "Kabuuang gastos vs. inutang",
-      cap: TOTAL_COST_CAP_RATIO,
-      actual: totalCostRatio,
-      over: covered && Number.isFinite(totalCostRatio) && totalCostRatio > TOTAL_COST_CAP_RATIO + EPS,
-      unit: "ratio",
-      cite: "100% ng amount borrowed (interest + fees + penalties) — Circ. 1133 / MC 3 / MC 14",
-    },
-  ];
-
-  return {
+  const numbers: LoanNumbers = {
     netProceeds,
     tenorDays,
     totalPayments,
-    financeCharge,
-    totalCostVsPrincipal: statutoryCost,
-    totalCostRatio,
-    nominalPerMonth,
-    eirPerMonth,
+    totalCost,
+    totalCostRatio: totalCost / input.principal,
+    nominalPerMonth: interestOnFace / input.principal / (tenorDays / DAYS_PER_MONTH),
     eirPerDay,
-    periodRate,
-    cashflows,
+    eirPerMonthSimple: eirPerDay * DAYS_PER_MONTH,
+    eirPerMonthCompounded: Math.pow(1 + eirPerDay, DAYS_PER_MONTH) - 1,
     schedule,
-    covered,
-    coverageReasons,
-    eirCap,
-    eirCapLabel,
-    hits,
-    anyOver: hits.some((h) => h.over),
-    irrOk,
   };
+
+  // ISO dates compare correctly as strings, and this has no time-zone dependence.
+  if (input.bookedOn < COVERAGE.appliesToLoansFrom) {
+    return { status: "before_effective_date", numbers };
+  }
+
+  const coverage = assessCoverage(input, tenorDays);
+  const rawNominal: Verdict =
+    numbers.nominalPerMonth > CEILINGS.nominalPerMonth + NUMERIC_TOLERANCE ? "OVER" : "WITHIN";
+  const rawEir = eirVerdict(eirPerDay, CEILINGS.effectivePerMonth + NUMERIC_TOLERANCE);
+  const rawTotalCost: Verdict =
+    numbers.totalCostRatio > CEILINGS.totalCostRatio + NUMERIC_TOLERANCE ? "OVER" : "WITHIN";
+
+  const checks: Record<CheckId, Check> = {
+    nominal: {
+      id: "nominal",
+      actual: numbers.nominalPerMonth,
+      cap: CEILINGS.nominalPerMonth,
+      raw: rawNominal,
+      state: applyCoverage(rawNominal, coverage.state),
+    },
+    eir: {
+      id: "eir",
+      actual: numbers.eirPerMonthSimple,
+      cap: CEILINGS.effectivePerMonth,
+      raw: rawEir,
+      state: applyCoverage(rawEir, coverage.state),
+    },
+    totalCost: {
+      id: "totalCost",
+      actual: numbers.totalCostRatio,
+      cap: CEILINGS.totalCostRatio,
+      raw: rawTotalCost,
+      state: applyCoverage(rawTotalCost, coverage.state),
+    },
+  };
+
+  const states = Object.values(checks)
+    .map((c) => c.state)
+    .filter((s): s is Verdict => s !== null);
+  const overall = states.length
+    ? states.reduce((worst, s) => (SEVERITY[s] > SEVERITY[worst] ? s : worst))
+    : null;
+
+  return { status: "ok", numbers, coverage, checks, overall };
 }
 
 export type PresetId = "7d" | "14d" | "30d" | "4w";
