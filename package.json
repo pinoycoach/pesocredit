@@ -11,7 +11,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test src/lib/loan-math.test.ts src/lib/copy.test.ts src/lib/rules-only.test.ts src/lib/banned-phrases.test.ts src/lib/segments.test.ts src/lib/source-links.test.ts src/lib/network-privacy.test.ts src/lib/subscribe.test.ts src/lib/public-config.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/loan-math.test.ts src/lib/copy.test.ts src/lib/rules-only.test.ts src/lib/banned-phrases.test.ts src/lib/segments.test.ts src/lib/source-links.test.ts src/lib/network-privacy.test.ts src/lib/subscribe.test.ts src/lib/public-config.test.ts src/lib/privacy.test.ts",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

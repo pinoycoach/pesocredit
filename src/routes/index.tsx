@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Calculator } from "@/components/calculator";
 import { EYEBROW } from "@/lib/copy";
+import { PRIVACY_LINK_LABEL } from "@/lib/privacy-copy";
 
 export const Route = createFileRoute("/")({ component: Home });
 
@@ -22,6 +23,17 @@ function Home() {
         </p>
       </header>
       <Calculator />
+      <footer className="mx-auto mt-10 max-w-6xl text-xs text-muted-foreground">
+        {/* A new tab, so what the borrower typed is still here when they come back. */}
+        <a
+          href="/privacy"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2"
+        >
+          {PRIVACY_LINK_LABEL}
+        </a>
+      </footer>
     </main>
   );
 }
