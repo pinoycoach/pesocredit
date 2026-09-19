@@ -33,9 +33,11 @@ Installments (G6): weekly rate `=RATE(4,-2560,10000)`, then daily `=(1+weekly)^(
 
 Monthly: simple `=daily*30`, compounded `=(1+daily)^30-1`
 
-## Boundary cases still to add as tests
-- Principal ₱10,000 (covered) vs ₱10,001 (not covered)
-- Tenor 120 days (covered) · 121–123 days (GRAY coverage) · 124 days (not covered)
-- Contract dated 31 Mar 2026 vs 1 Apr 2026
-- Fee ≥ principal (must return "cannot compute", not crash)
-- Payments totaling less than principal
+## Boundary cases (all tested in `src/lib/loan-math.test.ts`)
+- Principal ₱10,000 (covered) vs ₱10,001 (not covered: no ceiling comparison) — `boundary: principal`
+- Tenor 120 days (covered) · 121–123 days (GRAY coverage, "maaaring sakop": an OVER result is shown as GRAY) · 124 days (not covered) — `boundary: tenor`
+- Contract dated 31 Mar 2026 (numbers shown, no ceiling comparison, notice "Ang tool na ito ay para sa loans simula 1 Abril 2026.") vs 1 Apr 2026 (compared); no time-zone dependence — `boundary: contract date`
+- Fee ≥ principal returns "cannot compute", does not crash — `boundary: cannot compute`
+- Payments totaling less than principal returns "cannot compute" — `boundary: cannot compute`. Interpretation: scheduled payments below the net proceeds received (a penalty does not rescue them); with a deducted fee, payments below principal but at or above the net proceeds are a valid loan. Your original line named no expected result, so change this if you meant something else.
+
+Also tested: a loan exactly on the effective-rate cap is WITHIN, not GRAY (floating-point tolerance); exactly on the nominal and total-cost caps is WITHIN; property checks (a bigger deducted fee always raises the EIR; total cost is never negative; a higher payment never lowers the verdict).
