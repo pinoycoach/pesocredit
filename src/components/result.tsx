@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import {
   CEILING_CAP_TEXT,
   CEILING_LABEL,
-  COMPARISON_SOURCE,
   COMPARISON_TITLE,
   COVERAGE_TEXT,
   DISCLAIMER,
@@ -19,7 +18,9 @@ import {
   UNSURE_COVERAGE_BADGE,
   UNSURE_COVERAGE_TEXT,
 } from "@/lib/copy";
+import { BasisLine, CapSegments } from "@/components/source-link";
 import type { CheckId, LoanAnalysis } from "@/lib/loan-math";
+import { plainText } from "@/lib/segments";
 import { formatPct } from "@/lib/utils";
 
 /** Any analysis that has numbers to show. */
@@ -57,7 +58,9 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
     <Card>
       <CardHeader>
         <CardTitle>{COMPARISON_TITLE}</CardTitle>
-        <CardDescription>{COMPARISON_SOURCE}</CardDescription>
+        <CardDescription>
+          <BasisLine />
+        </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="grid gap-2">
@@ -69,7 +72,9 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
           {coverage.reasons.length > 0 ? (
             <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
               {coverage.reasons.map((reason) => (
-                <li key={reason}>{reason}</li>
+                <li key={plainText(reason)}>
+                  <CapSegments segments={reason} />
+                </li>
               ))}
             </ul>
           ) : null}
@@ -106,7 +111,7 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
                     <span className="font-display text-base tabular-nums text-foreground">
                       {formatPct(check.actual)}
                     </span>{" "}
-                    · Ceiling: {CEILING_CAP_TEXT[id]}
+                    · Ceiling: <CapSegments segments={CEILING_CAP_TEXT[id]} />
                   </p>
                   {note ? <p className="text-sm text-pretty">{note}</p> : null}
                 </li>

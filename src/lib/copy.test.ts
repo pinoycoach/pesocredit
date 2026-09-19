@@ -1,19 +1,22 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  BASIS_TEXT,
   CANNOT_COMPUTE_TEXT,
   CEILING_CAP_TEXT,
-  COMPARISON_SOURCE,
   FEE_HINT,
   formatDateFil,
   GRAY_EIR_TEXT,
   headline,
   howComputedRows,
+  LEGAL_FOOT,
   OLD_LOAN_NOTICE,
+  PENALTY_HINT,
   STATE_TEXT,
 } from "./copy.ts";
 import { analyzeLoan, type CannotComputeReason, type LoanInput } from "./loan-math.ts";
-import { OTHER_FEES_EXAMPLES, SOURCE } from "./rules.ts";
+import { OTHER_FEES_EXAMPLES, RULES_AS_OF, SOURCE } from "./rules.ts";
+import { plainText, type Segments } from "./segments.ts";
 
 const base = (over: Partial<LoanInput> = {}): LoanInput => ({
   principal: 5_000,
@@ -108,6 +111,47 @@ describe("Paano kinuwenta rows", () => {
   });
 });
 
+describe("every cap and limit on screen is a cap segment (so it links to the source)", () => {
+  const capsIn = (segments: Segments) =>
+    segments.filter((s) => typeof s !== "string").map((s) => plainText([s]));
+
+  it("the Batayan text marks all four ceilings and both coverage limits", () => {
+    const caps = LEGAL_FOOT.flatMap((paragraph) => capsIn(paragraph.segments));
+    assert.deepEqual(caps, [
+      "₱10,000",
+      "4 na buwan",
+      "6% kada buwan",
+      "12% kada buwan",
+      "100% ng inutang",
+      "5% kada buwan",
+    ]);
+  });
+
+  it("the circular itself is the link in the first Batayan paragraph", () => {
+    assert.equal(LEGAL_FOOT[0].term, SOURCE.id);
+    assert.equal(LEGAL_FOOT[0].termIsSource, true);
+    assert.ok(LEGAL_FOOT.slice(1).every((p) => !p.termIsSource));
+  });
+
+  it("the penalty hint marks its 100% cap", () => {
+    assert.deepEqual(capsIn(PENALTY_HINT), ["100%"]);
+  });
+
+  it("coverage reasons mark the peso and tenor limits they mention", () => {
+    const big = analyzeLoan(base({ principal: 10_001, payment: 10_500 }));
+    assert.equal(big.status, "ok");
+    if (big.status !== "ok") return;
+    assert.deepEqual(capsIn(big.coverage.reasons[0]), ["₱10,000"]);
+    assert.equal(plainText(big.coverage.reasons[0]), "Ang principal na ₱10,001 ay lampas sa ₱10,000 na saklaw.");
+
+    const long = analyzeLoan(base({ frequency: "daily", firstDueDays: 124, payment: 12_000 }));
+    assert.equal(long.status, "ok");
+    if (long.status !== "ok") return;
+    assert.equal(plainText(long.coverage.reasons[0]), "Ang tenor na 124 araw ay lampas sa 4 na buwan.");
+    assert.deepEqual(capsIn(long.coverage.reasons[0]), ["4 na buwan"]);
+  });
+});
+
 describe("fee field", () => {
   it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
     assert.ok(OTHER_FEES_EXAMPLES.length > 0);
@@ -117,15 +161,19 @@ describe("fee field", () => {
 
 describe("ceiling wording", () => {
   it("builds the cap text from rules.ts", () => {
-    assert.deepEqual(CEILING_CAP_TEXT, {
-      eir: "12% kada buwan",
-      nominal: "6% kada buwan",
-      totalCost: "100% ng inutang",
-    });
+    assert.deepEqual(
+      {
+        eir: plainText(CEILING_CAP_TEXT.eir),
+        nominal: plainText(CEILING_CAP_TEXT.nominal),
+        totalCost: plainText(CEILING_CAP_TEXT.totalCost),
+      },
+      { eir: "12% kada buwan", nominal: "6% kada buwan", totalCost: "100% ng inutang" },
+    );
   });
 
-  it("names the published source", () => {
-    assert.equal(COMPARISON_SOURCE, `Ayon sa ${SOURCE.id}`);
+  it("shows the basis line exactly as specified", () => {
+    assert.equal(BASIS_TEXT, `Batay sa ${SOURCE.id} · as of ${RULES_AS_OF}`);
+    assert.equal(BASIS_TEXT, "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19");
   });
 
   it("uses the exact GRAY sentence for the effective rate", () => {

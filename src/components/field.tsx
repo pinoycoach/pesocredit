@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -12,7 +13,7 @@ export function MoneyField({
 }: {
   id: string;
   label: string;
-  hint?: string;
+  hint?: ReactNode;
   value: string;
   onChange: (v: string) => void;
   prefix?: string;

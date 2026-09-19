@@ -2,15 +2,26 @@
  * On-screen wording that depends on rules.ts or on a calculation state. Anything a
  * legal number goes into is built here from rules.ts, never typed out.
  */
+import {
+  capPercent,
+  EIR_CAP_TEXT,
+  NOMINAL_CAP_TEXT,
+  PENALTY_CAP_TEXT,
+  PRINCIPAL_LIMIT_TEXT,
+  TENOR_LIMIT_TEXT,
+  TOTAL_COST_CAP_TEXT,
+} from "./limits.ts";
 import type { CannotComputeReason, CheckId, Coverage, LoanNumbers } from "./loan-math.ts";
 import {
-  CEILINGS,
   COVERAGE,
+  CEILINGS,
   DAYS_PER_MONTH,
   OTHER_FEES_EXAMPLES,
+  RULES_AS_OF,
   SOURCE,
   type Verdict,
 } from "./rules.ts";
+import { cap, type Segments } from "./segments.ts";
 import { formatPct, formatPeso } from "./utils.ts";
 
 const MONTHS_FIL = [
@@ -33,9 +44,6 @@ export function formatDateFil(iso: string): string {
   const [year, month, day] = iso.split("-").map(Number);
   return `${day} ${MONTHS_FIL[month - 1]} ${year}`;
 }
-
-/** A ceiling as a whole-number percent: 0.06 becomes "6%", 1 becomes "100%". */
-const capPercent = (fraction: number) => `${Number((fraction * 100).toFixed(2))}%`;
 
 export const OLD_LOAN_NOTICE = `Ang tool na ito ay para sa loans simula ${formatDateFil(COVERAGE.appliesToLoansFrom)}.`;
 
@@ -66,7 +74,11 @@ export const UNSURE_COVERAGE_TEXT =
 export const UNSURE_COVERAGE_BADGE = "Hindi tiyak kung sakop";
 
 export const COMPARISON_TITLE = "Kumpara sa naka-publish na ceiling";
-export const COMPARISON_SOURCE = `Ayon sa ${SOURCE.id}`;
+
+/** "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19". <BasisLine> links the circular. */
+export const BASIS_LEAD = "Batay sa";
+export const BASIS_AS_OF = `as of ${RULES_AS_OF}`;
+export const BASIS_TEXT = `${BASIS_LEAD} ${SOURCE.id} · ${BASIS_AS_OF}`;
 
 export const COVERAGE_TEXT: Record<Coverage, string> = {
   COVERED: "Sakop ng ceiling ang loan na ito.",
@@ -86,10 +98,11 @@ export const CEILING_LABEL: Record<CheckId, string> = {
   totalCost: "Kabuuang gastos kumpara sa inutang",
 };
 
-export const CEILING_CAP_TEXT: Record<CheckId, string> = {
-  eir: `${capPercent(CEILINGS.effectivePerMonth)} kada buwan`,
-  nominal: `${capPercent(CEILINGS.nominalPerMonth)} kada buwan`,
-  totalCost: `${capPercent(CEILINGS.totalCostRatio)} ng inutang`,
+/** Each ceiling as a cap segment, so it can only be shown as a link to the source. */
+export const CEILING_CAP_TEXT: Record<CheckId, Segments> = {
+  eir: [cap(EIR_CAP_TEXT)],
+  nominal: [cap(NOMINAL_CAP_TEXT)],
+  totalCost: [cap(TOTAL_COST_CAP_TEXT)],
 };
 
 export const DISCLAIMER =
@@ -121,35 +134,61 @@ export function howComputedRows(n: LoanNumbers): [label: string, value: string][
   ];
 }
 
-const pesoWhole = (n: number) => `₱${n.toLocaleString("en-PH")}`;
-
 export const EYEBROW = `Philippines · ${SOURCE.id}`;
 
-export const PENALTY_HINT = `Hindi kasama sa EIR; kasama sa ${capPercent(CEILINGS.totalCostRatio)} total-cost cap.`;
+export const PENALTY_HINT: Segments = [
+  "Hindi kasama sa EIR; kasama sa ",
+  cap(capPercent(CEILINGS.totalCostRatio)),
+  " total-cost cap.",
+];
 
 export const DATE_HINT = `Para sa loans na pinasok, inayos o na-renew simula ${formatDateFil(COVERAGE.appliesToLoansFrom)}.`;
 
 export const LEGAL_FOOT_TITLE = "Batayan";
 
-/** The "Batayan" paragraphs: a bold term, then its text. Only what rules.ts records. */
-export const LEGAL_FOOT: { term: string; text: string }[] = [
+/**
+ * The "Batayan" paragraphs: a bold term, then its text. Only what rules.ts records. The
+ * term of the first is the circular itself, so it is the link; caps inside the text are
+ * cap segments and link too.
+ */
+export const LEGAL_FOOT: { term: string; termIsSource?: boolean; segments: Segments }[] = [
   {
     term: SOURCE.id,
-    text: `— epektibo simula ${formatDateFil(SOURCE.effective)}. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa ${pesoWhole(COVERAGE.principalMax)} at hindi hihigit sa ${COVERAGE.tenorMonthsMax} na buwan.`,
+    termIsSource: true,
+    segments: [
+      `— epektibo simula ${formatDateFil(SOURCE.effective)}. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa `,
+      cap(PRINCIPAL_LIMIT_TEXT),
+      " at hindi hihigit sa ",
+      cap(TENOR_LIMIT_TEXT),
+      ".",
+    ],
   },
   {
     term: "Mga ceiling",
-    text: `— nominal ${capPercent(CEILINGS.nominalPerMonth)} kada buwan, EIR ${capPercent(CEILINGS.effectivePerMonth)} kada buwan, at kabuuang gastos na hindi lalampas sa ${capPercent(CEILINGS.totalCostRatio)} ng inutang.`,
+    segments: [
+      "— nominal ",
+      cap(NOMINAL_CAP_TEXT),
+      ", EIR ",
+      cap(EIR_CAP_TEXT),
+      ", at kabuuang gastos na hindi lalampas sa ",
+      cap(TOTAL_COST_CAP_TEXT),
+      ".",
+    ],
   },
   {
     term: "Hindi sinusuri ng tool na ito",
-    text: `ang ceiling sa late penalty (${capPercent(CEILINGS.penaltyPerMonth)} kada buwan), dahil kailangan nito ng bilang ng araw na late.`,
+    segments: [
+      "ang ceiling sa late penalty (",
+      cap(PENALTY_CAP_TEXT),
+      "), dahil kailangan nito ng bilang ng araw na late.",
+    ],
   },
   {
     term: "RA No. 3765 (Truth in Lending Act)",
-    text: `— ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×${DAYS_PER_MONTH} o compounded ang buwanang rate, kaya ipinapakita namin ang pareho.`,
+    segments: [
+      `— ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×${DAYS_PER_MONTH} o compounded ang buwanang rate, kaya ipinapakita namin ang pareho.`,
+    ],
   },
 ];
 
-export const HOW_METHOD_TEXT =
-  "Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×30 o compounded — kaya ipinapakita namin ang pareho.";
+export const HOW_METHOD_TEXT = `Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×${DAYS_PER_MONTH} o compounded — kaya ipinapakita namin ang pareho.`;

@@ -8,6 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { MoneyField, NumberField } from "@/components/field";
 import { LoanTimeline } from "@/components/loan-timeline";
 import { CeilingComparison, Headline, HowComputed } from "@/components/result";
+import { BasisLine, CapSegments, SourceLink } from "@/components/source-link";
 import {
   analyzeLoan,
   FREQUENCY_LABEL,
@@ -206,7 +207,7 @@ export function Calculator() {
           <MoneyField
             id="penalty"
             label="Late penalty na siningil (kung meron)"
-            hint={PENALTY_HINT}
+            hint={<CapSegments segments={PENALTY_HINT} />}
             value={penalty}
             onChange={setPenalty}
           />
@@ -367,11 +368,17 @@ function LegalFoot() {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm leading-relaxed text-muted-foreground text-pretty">
-        {LEGAL_FOOT.map(({ term, text }) => (
+        {LEGAL_FOOT.map(({ term, termIsSource, segments }) => (
           <p key={term}>
-            <span className="font-medium text-foreground">{term}</span> {text}
+            <span className="font-medium text-foreground">
+              {termIsSource ? <SourceLink>{term}</SourceLink> : term}
+            </span>{" "}
+            <CapSegments segments={segments} />
           </p>
         ))}
+        <p className="text-xs">
+          <BasisLine />
+        </p>
       </CardContent>
     </Card>
   );

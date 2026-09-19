@@ -7,7 +7,9 @@
  * compounding, and rules.ts records that the circular does not say which, so the
  * effective-rate verdict is three-state (see eirVerdict).
  */
+import { PRINCIPAL_LIMIT_TEXT, pesoWhole, TENOR_LIMIT_TEXT } from "./limits.ts";
 import { CEILINGS, COVERAGE, DAYS_PER_MONTH, eirVerdict, type Verdict } from "./rules.ts";
+import { cap, type Segments } from "./segments.ts";
 
 export type Frequency = "daily" | "weekly" | "biweekly" | "monthly";
 
@@ -99,7 +101,7 @@ export type LoanAnalysis =
   | {
       status: "ok";
       numbers: LoanNumbers;
-      coverage: { state: Coverage; reasons: string[] };
+      coverage: { state: Coverage; reasons: Segments[] };
       checks: Record<CheckId, Check>;
       /** The most serious state among the checks; null when the ceilings do not apply. */
       overall: Verdict | null;
@@ -169,31 +171,29 @@ function isIsoDate(s: string): boolean {
   return d.getUTCFullYear() === year && d.getUTCMonth() === month - 1 && d.getUTCDate() === day;
 }
 
-const peso = (n: number) => `₱${n.toLocaleString("en-PH")}`;
-
 function assessCoverage(
   input: LoanInput,
   tenorDays: number,
-): { state: Coverage; reasons: string[] } {
-  const reasons: string[] = [];
+): { state: Coverage; reasons: Segments[] } {
+  const reasons: Segments[] = [];
   if (input.lenderKind !== "lending_or_financing") {
-    reasons.push("Ang ceiling ay para sa lending at financing companies — hindi sa bangko.");
+    reasons.push(["Ang ceiling ay para sa lending at financing companies — hindi sa bangko."]);
   }
   if (COVERAGE.unsecured && !input.unsecured) {
-    reasons.push("Ang ceiling ay para sa unsecured loans.");
+    reasons.push(["Ang ceiling ay para sa unsecured loans."]);
   }
   if (COVERAGE.generalPurpose && !input.generalPurpose) {
-    reasons.push("Ang ceiling ay para sa general-purpose loans.");
+    reasons.push(["Ang ceiling ay para sa general-purpose loans."]);
   }
   if (input.principal > COVERAGE.principalMax) {
-    reasons.push(
-      `Ang principal na ${peso(input.principal)} ay lampas sa ${peso(COVERAGE.principalMax)} na saklaw.`,
-    );
+    reasons.push([
+      `Ang principal na ${pesoWhole(input.principal)} ay lampas sa `,
+      cap(PRINCIPAL_LIMIT_TEXT),
+      " na saklaw.",
+    ]);
   }
   if (tenorDays > COVERAGE.tenorDaysMaybeCovered) {
-    reasons.push(
-      `Ang tenor na ${tenorDays} araw ay lampas sa ${COVERAGE.tenorMonthsMax} na buwan.`,
-    );
+    reasons.push([`Ang tenor na ${tenorDays} araw ay lampas sa `, cap(TENOR_LIMIT_TEXT), "."]);
   }
   if (reasons.length > 0) return { state: "NOT_COVERED", reasons };
 
@@ -201,7 +201,11 @@ function assessCoverage(
     return {
       state: "MAYBE",
       reasons: [
-        `Ang tenor na ${tenorDays} araw ay maaaring pasok pa sa ${COVERAGE.tenorMonthsMax} na buwan, depende sa kalendaryo. Maaaring sakop.`,
+        [
+          `Ang tenor na ${tenorDays} araw ay maaaring pasok pa sa `,
+          cap(TENOR_LIMIT_TEXT),
+          ", depende sa kalendaryo. Maaaring sakop.",
+        ],
       ],
     };
   }
