@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { MoneyField, NumberField } from "@/components/field";
 import { LoanTimeline } from "@/components/loan-timeline";
+import { OptionalExtras } from "@/components/optional-extras";
 import { CeilingComparison, Headline, HowComputed } from "@/components/result";
 import { BasisLine, CapSegments, SourceLink } from "@/components/source-link";
 import {
@@ -29,6 +30,7 @@ import {
   NO_STORAGE_NOTE,
   PENALTY_HINT,
 } from "@/lib/copy";
+import type { PublicConfig } from "@/lib/public-config";
 import { cn, formatPeso } from "@/lib/utils";
 
 function parseMoney(s: string): number {
@@ -42,7 +44,7 @@ function todayISO() {
   return z.toISOString().slice(0, 10);
 }
 
-export function Calculator() {
+export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
   const [preset, setPreset] = useState<PresetId>("7d");
   const [principal, setPrincipal] = useState("5000");
   const [upfrontFee, setUpfrontFee] = useState("0");
@@ -337,6 +339,8 @@ export function Calculator() {
             <LegalFoot />
           </>
         )}
+        {/* Optional, and always below the result: never before it, never needed for it. */}
+        <OptionalExtras config={publicConfig} />
       </div>
     </div>
   );

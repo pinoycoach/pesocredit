@@ -21,12 +21,12 @@ import {
 /** API name -> the only files allowed to use it, and why. */
 const ALLOWED: Record<string, { files: string[]; why: string }> = {
   fetch: {
-    files: ["lib/subscribe.ts"],
-    why: "server side: forwards the optional email form (email + consent time only) to the capture service",
+    files: ["lib/subscribe.ts", "lib/subscribe-client.ts"],
+    why: "subscribe.ts (server): forwards the optional email form, email + consent time only, to the capture service. subscribe-client.ts (browser): posts only the typed email to this site's own /api/subscribe; it imports nothing, so it cannot reach the loan numbers",
   },
   "process.env": {
-    files: ["routes/api/subscribe.ts"],
-    why: "server side: reads EMAIL_CAPTURE_URL, which never reaches the browser",
+    files: ["routes/api/subscribe.ts", "lib/get-public-config.ts"],
+    why: "server side: reads EMAIL_CAPTURE_URL and GUIDE_URL; the capture address never reaches the browser",
   },
 };
 

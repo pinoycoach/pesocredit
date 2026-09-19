@@ -1,11 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Calculator } from "@/components/calculator";
 import { EYEBROW } from "@/lib/copy";
+import { getPublicConfig } from "@/lib/get-public-config";
 import { PRIVACY_LINK_LABEL } from "@/lib/privacy-copy";
 
-export const Route = createFileRoute("/")({ component: Home });
+// The environment is read on the server at request time; the page learns only whether
+// the email form is on, and the guide link.
+export const Route = createFileRoute("/")({
+  loader: () => getPublicConfig(),
+  component: Home,
+});
 
 function Home() {
+  const publicConfig = Route.useLoaderData();
   return (
     <main className="min-h-dvh bg-background px-4 py-8 sm:px-6 sm:py-12">
       <header className="mx-auto mb-8 max-w-6xl">
@@ -22,7 +29,7 @@ function Home() {
           magbayad.
         </p>
       </header>
-      <Calculator />
+      <Calculator publicConfig={publicConfig} />
       <footer className="mx-auto mt-10 max-w-6xl text-xs text-muted-foreground">
         {/* A new tab, so what the borrower typed is still here when they come back. */}
         <a

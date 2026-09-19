@@ -113,6 +113,22 @@ export const FEE_LABEL = "Mga fee na binawas sa natanggap";
 /** Names the fees so a borrower recognizes theirs; the list comes from rules.ts. */
 export const FEE_HINT = `Halimbawa: ${OTHER_FEES_EXAMPLES.join(", ")}. Ilagay ang kabuuan ng lahat ng binawas. 0 kung buo ang natanggap. Kasama sa EIR.`;
 
+/** The optional email form, shown below the result and never required for it. */
+export const EMAIL_HEADING = "Gusto mo ng libreng checklist at abiso kapag may bagong rules?";
+export const EMAIL_NOTE =
+  "Opsyonal. Hindi mo ito kailangan para makita ang resulta mo, at hindi kasama rito ang anumang numerong inilagay mo.";
+export const EMAIL_LABEL = "Email";
+export const CONSENT_BEFORE =
+  "Pumapayag akong padalhan ng email para sa checklist at mga abiso. Nabasa ko ang ";
+export const CONSENT_AFTER = ".";
+export const EMAIL_SUBMIT = "Ipadala";
+export const EMAIL_SENDING = "Ipinapadala…";
+export const EMAIL_DONE = "Salamat! Padadalhan ka namin ng checklist.";
+export const EMAIL_FAILED = "Hindi naipadala. Subukan ulit mamaya.";
+
+export const GUIDE_TITLE = "Gusto mo ng mas malalim na gabay?";
+export const GUIDE_LINK_LABEL = "Kunin ang ₱99 na gabay";
+
 export const HOW_TITLE = "Paano kinuwenta";
 
 /** Every figure behind the headline, both monthly readings included. */
