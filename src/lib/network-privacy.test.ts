@@ -2,8 +2,9 @@
  * CLAUDE.md principle 3: nothing the borrower types leaves their phone. That is only
  * true if the app cannot send or keep anything, so this reads every source file and lists
  * every network, storage and environment API it uses. Each use has to be on the
- * explicit ALLOWED list below, with the reason. The list starts empty; a change that
- * needs one adds the exact file and the reason here, where a reviewer sees it.
+ * explicit ALLOWED list below, with the reason. A change that needs one adds the exact
+ * file and the reason here, where a reviewer sees it. Everything on the list is server
+ * side; the browser code uses none of them until the email form's own request (below).
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -18,7 +19,16 @@ import {
 } from "./test-utils/source-strings.ts";
 
 /** API name -> the only files allowed to use it, and why. */
-const ALLOWED: Record<string, { files: string[]; why: string }> = {};
+const ALLOWED: Record<string, { files: string[]; why: string }> = {
+  fetch: {
+    files: ["lib/subscribe.ts"],
+    why: "server side: forwards the optional email form (email + consent time only) to the capture service",
+  },
+  "process.env": {
+    files: ["routes/api/subscribe.ts"],
+    why: "server side: reads EMAIL_CAPTURE_URL, which never reaches the browser",
+  },
+};
 
 /** Identifiers that reach the network or keep data. */
 const FORBIDDEN_IDENTIFIERS = [
