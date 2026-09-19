@@ -10,6 +10,7 @@ import {
   headline,
   howComputedRows,
   LEGAL_FOOT,
+  NO_STORAGE_NOTE,
   OLD_LOAN_NOTICE,
   PENALTY_HINT,
   STATE_TEXT,
@@ -149,6 +150,15 @@ describe("every cap and limit on screen is a cap segment (so it links to the sou
     if (long.status !== "ok") return;
     assert.equal(plainText(long.coverage.reasons[0]), "Ang tenor na 124 araw ay lampas sa 4 na buwan.");
     assert.deepEqual(capsIn(long.coverage.reasons[0]), ["4 na buwan"]);
+  });
+});
+
+describe("the privacy promise under the calculator", () => {
+  it("says, exactly, that the numbers are neither saved nor sent", () => {
+    assert.equal(
+      NO_STORAGE_NOTE,
+      "Hindi namin sine-save o ipinapadala ang mga numerong inilagay mo.",
+    );
   });
 });
 

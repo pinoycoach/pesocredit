@@ -136,6 +136,9 @@ export function howComputedRows(n: LoanNumbers): [label: string, value: string][
 
 export const EYEBROW = `Philippines · ${SOURCE.id}`;
 
+/** Shown under the input card, where the numbers are typed. */
+export const NO_STORAGE_NOTE = "Hindi namin sine-save o ipinapadala ang mga numerong inilagay mo.";
+
 export const PENALTY_HINT: Segments = [
   "Hindi kasama sa EIR; kasama sa ",
   cap(capPercent(CEILINGS.totalCostRatio)),
