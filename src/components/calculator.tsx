@@ -18,7 +18,7 @@ import {
   type LoanInput,
   type PresetId,
 } from "@/lib/loan-math";
-import { CANNOT_COMPUTE_TEXT } from "@/lib/copy";
+import { CANNOT_COMPUTE_TEXT, FEE_HINT, FEE_LABEL } from "@/lib/copy";
 import { cn, formatPeso } from "@/lib/utils";
 
 function parseMoney(s: string): number {
@@ -140,8 +140,8 @@ export function Calculator() {
           />
           <MoneyField
             id="fee"
-            label="Processing / service fee na binawas"
-            hint="0 kung buo ang natanggap. Kasama sa EIR."
+            label={FEE_LABEL}
+            hint={FEE_HINT}
             value={upfrontFee}
             onChange={setUpfrontFee}
           />

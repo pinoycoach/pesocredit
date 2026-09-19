@@ -4,6 +4,7 @@ import {
   CANNOT_COMPUTE_TEXT,
   CEILING_CAP_TEXT,
   COMPARISON_SOURCE,
+  FEE_HINT,
   formatDateFil,
   GRAY_EIR_TEXT,
   headline,
@@ -12,7 +13,7 @@ import {
   STATE_TEXT,
 } from "./copy.ts";
 import { analyzeLoan, type CannotComputeReason, type LoanInput } from "./loan-math.ts";
-import { SOURCE } from "./rules.ts";
+import { OTHER_FEES_EXAMPLES, SOURCE } from "./rules.ts";
 
 const base = (over: Partial<LoanInput> = {}): LoanInput => ({
   principal: 5_000,
@@ -104,6 +105,13 @@ describe("Paano kinuwenta rows", () => {
     assert.ok(values.includes("12.26%"), "compounded");
     assert.ok([...rows.keys()].some((k) => k.startsWith("Kada buwan, simple")));
     assert.ok([...rows.keys()].some((k) => k.startsWith("Kada buwan, compounded")));
+  });
+});
+
+describe("fee field", () => {
+  it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
+    assert.ok(OTHER_FEES_EXAMPLES.length > 0);
+    for (const fee of OTHER_FEES_EXAMPLES) assert.ok(FEE_HINT.includes(fee), fee);
   });
 });
 

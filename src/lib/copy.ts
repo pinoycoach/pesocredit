@@ -3,7 +3,14 @@
  * legal number goes into is built here from rules.ts, never typed out.
  */
 import type { CannotComputeReason, CheckId, Coverage, LoanNumbers } from "./loan-math.ts";
-import { CEILINGS, DAYS_PER_MONTH, SOURCE, COVERAGE, type Verdict } from "./rules.ts";
+import {
+  CEILINGS,
+  COVERAGE,
+  DAYS_PER_MONTH,
+  OTHER_FEES_EXAMPLES,
+  SOURCE,
+  type Verdict,
+} from "./rules.ts";
 import { formatPct, formatPeso } from "./utils.ts";
 
 const MONTHS_FIL = [
@@ -87,6 +94,11 @@ export const CEILING_CAP_TEXT: Record<CheckId, string> = {
 
 export const DISCLAIMER =
   "Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender.";
+
+export const FEE_LABEL = "Mga fee na binawas sa natanggap";
+
+/** Names the fees so a borrower recognizes theirs; the list comes from rules.ts. */
+export const FEE_HINT = `Halimbawa: ${OTHER_FEES_EXAMPLES.join(", ")}. Ilagay ang kabuuan ng lahat ng binawas. 0 kung buo ang natanggap. Kasama sa EIR.`;
 
 export const HOW_TITLE = "Paano kinuwenta";
 
