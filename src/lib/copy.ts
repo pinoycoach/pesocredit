@@ -121,5 +121,35 @@ export function howComputedRows(n: LoanNumbers): [label: string, value: string][
   ];
 }
 
+const pesoWhole = (n: number) => `₱${n.toLocaleString("en-PH")}`;
+
+export const EYEBROW = `Philippines · ${SOURCE.id}`;
+
+export const PENALTY_HINT = `Hindi kasama sa EIR; kasama sa ${capPercent(CEILINGS.totalCostRatio)} total-cost cap.`;
+
+export const DATE_HINT = `Para sa loans na pinasok, inayos o na-renew simula ${formatDateFil(COVERAGE.appliesToLoansFrom)}.`;
+
+export const LEGAL_FOOT_TITLE = "Batayan";
+
+/** The "Batayan" paragraphs: a bold term, then its text. Only what rules.ts records. */
+export const LEGAL_FOOT: { term: string; text: string }[] = [
+  {
+    term: SOURCE.id,
+    text: `— epektibo simula ${formatDateFil(SOURCE.effective)}. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa ${pesoWhole(COVERAGE.principalMax)} at hindi hihigit sa ${COVERAGE.tenorMonthsMax} na buwan.`,
+  },
+  {
+    term: "Mga ceiling",
+    text: `— nominal ${capPercent(CEILINGS.nominalPerMonth)} kada buwan, EIR ${capPercent(CEILINGS.effectivePerMonth)} kada buwan, at kabuuang gastos na hindi lalampas sa ${capPercent(CEILINGS.totalCostRatio)} ng inutang.`,
+  },
+  {
+    term: "Hindi sinusuri ng tool na ito",
+    text: `ang ceiling sa late penalty (${capPercent(CEILINGS.penaltyPerMonth)} kada buwan), dahil kailangan nito ng bilang ng araw na late.`,
+  },
+  {
+    term: "RA No. 3765 (Truth in Lending Act)",
+    text: `— ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×${DAYS_PER_MONTH} o compounded ang buwanang rate, kaya ipinapakita namin ang pareho.`,
+  },
+];
+
 export const HOW_METHOD_TEXT =
   "Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×30 o compounded — kaya ipinapakita namin ang pareho.";

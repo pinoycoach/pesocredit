@@ -18,7 +18,15 @@ import {
   type LoanInput,
   type PresetId,
 } from "@/lib/loan-math";
-import { CANNOT_COMPUTE_TEXT, FEE_HINT, FEE_LABEL } from "@/lib/copy";
+import {
+  CANNOT_COMPUTE_TEXT,
+  DATE_HINT,
+  FEE_HINT,
+  FEE_LABEL,
+  LEGAL_FOOT,
+  LEGAL_FOOT_TITLE,
+  PENALTY_HINT,
+} from "@/lib/copy";
 import { cn, formatPeso } from "@/lib/utils";
 
 function parseMoney(s: string): number {
@@ -198,7 +206,7 @@ export function Calculator() {
           <MoneyField
             id="penalty"
             label="Late penalty na siningil (kung meron)"
-            hint="Hindi kasama sa EIR; kasama sa 100% total-cost cap."
+            hint={PENALTY_HINT}
             value={penalty}
             onChange={setPenalty}
           />
@@ -259,10 +267,7 @@ export function Calculator() {
                 onChange={(e) => setBookedOn(e.target.value)}
                 className="h-11 rounded-md border border-border bg-surface px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               />
-              <p className="text-xs text-muted-foreground">
-                Simula 1 Abril 2026, EIR cap ng sakop na loan ay 12%/buwan (SEC MC 14). Bago noon, 15%
-                (Circ. 1133 / MC 3).
-              </p>
+              <p className="text-xs text-muted-foreground">{DATE_HINT}</p>
             </div>
           </div>
         </CardContent>
@@ -358,35 +363,15 @@ function LegalFoot() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Info className="size-4" strokeWidth={1.75} />
-          Batayan
+          {LEGAL_FOOT_TITLE}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm leading-relaxed text-muted-foreground text-pretty">
-        <p>
-          <span className="font-medium text-foreground">RA No. 3765</span> (Truth in Lending Act) —
-          written disclosure of finance charges at total cost bago ang transaksyon.
-        </p>
-        <p>
-          <span className="font-medium text-foreground">BSP Circular No. 1133, s. 2021</span> at{" "}
-          <span className="font-medium text-foreground">SEC MC No. 3, s. 2022</span> — para sa
-          unsecured general-purpose loans ng lending/financing companies at OLP, ≤₱10,000, tenor ≤4
-          buwan: nominal 6%/buwan, EIR 15%/buwan, late penalty 5%/buwan, total cost 100% ng inutang.
-          Hindi sakop ang bangko.
-        </p>
-        <p>
-          <span className="font-medium text-foreground">SEC MC No. 14, s. 2025</span> — parehong box;
-          EIR cap 12%/buwan para sa loan na entered/restructured/renewed simula 1 Abril 2026.
-        </p>
-        <p>
-          <span className="font-medium text-foreground">BSP Memorandum M-2011-040</span> / Circ. 730 —
-          EIR = rate na nagdi-discount ng future cash flows sa net proceeds (nominal + processing /
-          service / handling / verification fees; hindi late penalty).
-        </p>
-        <p>
-          <span className="font-medium text-foreground">CB Circular No. 905, s. 1982</span> —
-          suspended ang Usury Law ceilings. Labas sa small-loan box, walang published percentage cap;
-          nananatili ang disclosure at ang husgado kung unconscionable.
-        </p>
+        {LEGAL_FOOT.map(({ term, text }) => (
+          <p key={term}>
+            <span className="font-medium text-foreground">{term}</span> {text}
+          </p>
+        ))}
       </CardContent>
     </Card>
   );
