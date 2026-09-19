@@ -7,14 +7,11 @@
     "nf3": "0.3.17"
   },
   "scripts": {
-    "dev": "node scripts/with-app-env.mjs vite dev --port 8080",
-    "build": "node scripts/with-app-env.mjs vite build",
-    "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
-    "preview": "node scripts/with-app-env.mjs vite preview",
-    "preview:restart": "node scripts/preview.mjs restart",
-    "preview:stop": "node scripts/preview.mjs stop",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "test": "node --test scripts/with-app-env.test.mjs && node --experimental-strip-types --test src/lib/loan-math.test.ts",
+    "test": "node --experimental-strip-types --test src/lib/loan-math.test.ts",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
