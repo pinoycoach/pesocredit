@@ -1,7 +1,14 @@
 @import "tailwindcss";
 
+/* Fonts are served from this site (Fontsource, SIL OFL), never from a third party. */
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource/source-sans-3/400.css";
+@import "@fontsource/source-sans-3/400-italic.css";
+@import "@fontsource/source-sans-3/500.css";
+@import "@fontsource/source-sans-3/600.css";
+
 @theme {
-  --font-display: "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-display: "Newsreader Variable", "Newsreader", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --font-sans: "Source Sans 3", "Source Sans Pro", ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
@@ -39,6 +46,16 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /*
+   * The design was made when Newsreader was requested from Google at weights 500 and
+   * 600 only, so text asked for at normal weight was drawn at 500. The self-hosted font
+   * has every weight, so say 500 outright to keep the same look. A weight utility
+   * (font-medium, font-semibold) on the element still wins.
+   */
+  .font-display {
+    font-weight: 500;
   }
 
   button:not(:disabled),
