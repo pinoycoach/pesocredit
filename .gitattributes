@@ -1,0 +1,16 @@
+# One line-ending rule for every platform: LF in the repository and in every
+# checkout. Without it, Windows autocrlf rewrites files on checkout, and files
+# that tools regenerate with LF (src/routeTree.gen.ts after `npm run dev`) show
+# up as modified even though their content is unchanged.
+* text=auto eol=lf
+
+# Never touch binary files.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.pdf binary
