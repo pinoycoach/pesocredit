@@ -43,7 +43,7 @@ worth reconsidering if circumstances named here change).
 
 ## Revisit
 
-- (none yet)
+- N21 — Principle 1 "Never name a lender" and the banned-phrase test apply project-wide — REVISIT — kept as-is for launch (2026-09-23); scope both to the calculator before any lender-naming content is written, which can only happen after N8 is RESOLVED
 
 ---
 
