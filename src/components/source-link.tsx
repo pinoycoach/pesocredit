@@ -36,7 +36,7 @@ export function CapSegments({ segments }: { segments: Segments }) {
   );
 }
 
-/** "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19", with the circular linked. */
+/** The basis line, e.g. "Based on SEC MC No. 14, s. 2025 · as of {RULES_AS_OF}", with the circular linked. */
 export function BasisLine() {
   return (
     <>

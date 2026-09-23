@@ -195,7 +195,7 @@ describe("en: the comparison with the published limit", () => {
   it("shows the basis line", () => {
     const basis = `${en.basisLead} ${SOURCE.id} · ${en.basisAsOf}`;
     assert.equal(basis, `Based on ${SOURCE.id} · as of ${RULES_AS_OF}`);
-    assert.equal(basis, "Based on SEC MC No. 14, s. 2025 · as of 2026-09-19");
+    assert.equal(basis, "Based on SEC MC No. 14, s. 2025 · as of 2026-09-23");
   });
 
   it("shows the exact notice for loans dated before the circular takes effect", () => {
@@ -427,7 +427,7 @@ describe("fil: ceiling wording", () => {
   it("shows the basis line exactly as specified", () => {
     const basis = `${fil.basisLead} ${SOURCE.id} · ${fil.basisAsOf}`;
     assert.equal(basis, `Batay sa ${SOURCE.id} · as of ${RULES_AS_OF}`);
-    assert.equal(basis, "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19");
+    assert.equal(basis, "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-23");
   });
 
   it("uses the exact GRAY sentence for the effective rate", () => {

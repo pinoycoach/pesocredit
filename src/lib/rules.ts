@@ -11,7 +11,8 @@
  * NOTE: not to be confused with SEC MC No. 14, Series of 2026 (Umbrella Funds).
  */
 
-export const RULES_AS_OF = "2026-09-19";
+/** The day every value below was last checked against the circular. Shown on screen as "as of". */
+export const RULES_AS_OF = "2026-09-23";
 
 export const SOURCE = {
   id: "SEC MC No. 14, s. 2025",
@@ -24,7 +25,7 @@ export const COVERAGE = {
   lenderTypes: ["financing_company", "lending_company"] as const, // Sec. 2(a),(b): excludes banks, pawnshops, coops
   unsecured: true, // Sec. 2(e)
   generalPurpose: true, // Sec. 2(f)
-  principalMax: 10_000, // "do not exceed ₱10,000"
+  principalMax: 10_000, // "do not exceed the amount of Ten Thousand Pesos (PhP10,000.00)"
   tenorMonthsMax: 4, // "loan tenor of up to four (4) months"
   /** 4 months ≠ 120 days. 121–123 days may still be 4 calendar months → GRAY, never "not covered". */
   tenorDaysSurelyCovered: 120,
@@ -84,7 +85,7 @@ export const CIRCUMVENTION_EXAMPLES = [
   "shifting of loan tenor",
   "simulated collateral",
   "sham guaranty arrangements",
-  "disguised charges",
+  "imposition of disguised charges",
 ] as const;
 
 export type Verdict = "WITHIN" | "GRAY" | "OVER";
