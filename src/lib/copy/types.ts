@@ -88,6 +88,11 @@ export type Copy = {
   grayEirText: string;
   unsureCoverageText: string;
   /**
+   * Under the nominal row, which shows no verdict (N42): the limit applies to the rate in the
+   * contract, and this number comes from the payments. Null where no wording is approved yet.
+   */
+  nominalNote: string | null;
+  /**
    * Under the comparison rows: what the comparison does and does not tell (N36, no false
    * hope). Null where no wording is approved yet; then nothing is shown.
    */

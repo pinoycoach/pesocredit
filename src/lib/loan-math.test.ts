@@ -126,7 +126,9 @@ describe("golden cases (GOLDEN-CASES.md)", () => {
       check(totalCost, n.totalCostRatio, "total cost");
 
       assert.equal(a.coverage.state, "COVERED", `${id} is inside the coverage box`);
-      assert.equal(a.checks.nominal.state, /NIR over/i.test(verdictText) ? "OVER" : "WITHIN");
+      // "NIR over" is the figure worked out from the payments; the page shows it with no verdict (N42).
+      assert.equal(a.checks.nominal.raw, /NIR over/i.test(verdictText) ? "OVER" : "WITHIN");
+      assert.equal(a.checks.nominal.state, null);
       assert.equal(
         a.checks.totalCost.state,
         /total-cost OVER/i.test(verdictText) ? "OVER" : "WITHIN",
@@ -359,8 +361,8 @@ describe("ceilings", () => {
     const a = expectOk(base({ principal: 10_000, payment: 11_200 }));
     assert.ok(Math.abs(a.numbers.eirPerMonthCompounded - a.checks.eir.cap) < 1e-9);
     assert.equal(a.checks.eir.state, "WITHIN");
-    // The nominal rate of this loan is a separate check and is over its own cap.
-    assert.equal(a.checks.nominal.state, "OVER");
+    // Worked out from the payments, this loan's nominal rate is over its own cap.
+    assert.equal(a.checks.nominal.raw, "OVER");
   });
 
   it("a loan clearly over both readings of the monthly rate is OVER", () => {
@@ -368,9 +370,21 @@ describe("ceilings", () => {
     assert.equal(a.checks.eir.state, "OVER");
   });
 
-  it("the nominal cap is two-state: at the cap is WITHIN, above it is OVER", () => {
-    assert.equal(expectOk(base({ payment: 5_300 })).checks.nominal.state, "WITHIN");
-    assert.equal(expectOk(base({ payment: 5_301 })).checks.nominal.state, "OVER");
+  it("the nominal comparison is two-state: at the cap is WITHIN, above it is OVER", () => {
+    assert.equal(expectOk(base({ payment: 5_300 })).checks.nominal.raw, "WITHIN");
+    assert.equal(expectOk(base({ payment: 5_301 })).checks.nominal.raw, "OVER");
+  });
+
+  it("the nominal row shows no verdict and never moves the overall one (N42)", () => {
+    // 120 days, one payment of ₱6,500 on ₱5,000: 7.5% a month worked out from the payments,
+    // while the EIR (about 6.6%) and the total cost (30%) are within their limits.
+    const a = expectOk(single(COVERAGE.tenorDaysSurelyCovered, { payment: 6_500 }));
+    assert.equal(a.coverage.state, "COVERED");
+    assert.equal(a.checks.nominal.raw, "OVER");
+    assert.equal(a.checks.nominal.state, null, "no verdict on screen");
+    assert.equal(a.checks.eir.state, "WITHIN");
+    assert.equal(a.checks.totalCost.state, "WITHIN");
+    assert.equal(a.overall, "WITHIN", "the nominal figure does not make the loan look over");
   });
 
   it("the total-cost cap is two-state: exactly 100% is WITHIN, above it is OVER", () => {

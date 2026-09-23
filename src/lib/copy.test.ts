@@ -159,6 +159,12 @@ describe("en: the comparison with the published limit", () => {
     );
   });
 
+  it("explains the nominal row, which shows no verdict (C118, N42)", () => {
+    assert.equal(en.nominalNote, "This limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.");
+    const card = readFileSync(join(srcRoot(), "components/result.tsx"), "utf8");
+    assert.match(card, /id === "nominal"\s*\?\s*copy\.nominalNote/, "the nominal row shows this note");
+  });
+
   it("says what the comparison does not tell (N1; N36, no false hope)", () => {
     assert.equal(
       en.comparisonNote,

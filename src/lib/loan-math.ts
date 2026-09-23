@@ -62,7 +62,9 @@ export type CheckId = "nominal" | "eir" | "totalCost";
 /**
  * One ceiling comparison. `raw` is the verdict on the numbers alone; `state` is what
  * to show once coverage is applied (null when the ceilings do not apply to this loan,
- * and OVER softened to GRAY when coverage is uncertain).
+ * and OVER softened to GRAY when coverage is uncertain). The nominal check's state is
+ * always null: its number is worked out from the payments, while the limit applies to
+ * the rate in the contract (circular Sec. 2(c)), so it shows no verdict (DECISIONS N42).
  */
 export type Check = {
   id: CheckId;
@@ -281,7 +283,8 @@ export function analyzeLoan(input: LoanInput): LoanAnalysis {
       actual: numbers.nominalPerMonth,
       cap: CEILINGS.nominalPerMonth,
       raw: rawNominal,
-      state: applyCoverage(rawNominal, coverage.state),
+      // No verdict: a false "over" is the worst error this tool can make (N42).
+      state: null,
     },
     eir: {
       id: "eir",

@@ -71,12 +71,15 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
               // GRAY means two different things: the law is unclear about the monthly
               // rate (raw GRAY), or the number is over but coverage is uncertain (raw OVER).
               const softened = check.state === "GRAY" && check.raw === "OVER";
+              // The nominal row has no verdict (its state is null), only this note (N42).
               const note =
-                id === "eir" && check.raw === "GRAY"
-                  ? copy.grayEirText
-                  : softened
-                    ? copy.unsureCoverageText
-                    : null;
+                id === "nominal"
+                  ? copy.nominalNote
+                  : id === "eir" && check.raw === "GRAY"
+                    ? copy.grayEirText
+                    : softened
+                      ? copy.unsureCoverageText
+                      : null;
               return (
                 <li
                   key={id}

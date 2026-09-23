@@ -448,6 +448,9 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   }
   add(copy.grayEirText, at("grayEirText"), "under the EIR row when the EIR is GRAY");
   add(copy.unsureCoverageText, at("unsureCoverageText"), "under a row that is over while coverage is uncertain");
+  if (copy.nominalNote !== null) {
+    add(copy.nominalNote, at("nominalNote"), "under the nominal row, always; that row shows no verdict (N42)", "C118");
+  }
   if (copy.comparisonNote !== null) {
     add(copy.comparisonNote, at("comparisonNote"), "directly under the rows, whenever they are shown, in normal-size text (added in step F3)", "C115");
   }

@@ -177,6 +177,8 @@ export const en: Copy = {
     "Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use.",
   unsureCoverageText:
     "Your number may be above the limit, but it is not certain that the limit applies to this loan.",
+  nominalNote:
+    "This limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.",
   comparisonNote:
     "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
   disclaimer:

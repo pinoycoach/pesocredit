@@ -92,6 +92,7 @@ function verdictWording() {
       unsureCoverageText: copy.unsureCoverageText,
       unsureCoverageBadge: copy.unsureCoverageBadge,
       comparisonNote: copy.comparisonNote,
+      nominalNote: copy.nominalNote,
       comparisonTitle: copy.comparisonTitle,
       basis: `${copy.basisLead} ${rules.SOURCE.id} · ${copy.basisAsOf}`,
       coverageText: copy.coverageText,

@@ -175,6 +175,8 @@ export const fil: Copy = {
     "Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular.",
   unsureCoverageText:
     "Maaaring lumampas ang numero mo, pero hindi tiyak kung sakop ang loan na ito.",
+  // The nominal row's note (N42) has no approved Filipino yet (N40).
+  nominalNote: null,
   // Added in English first (F1, N1); no Filipino wording is approved yet.
   comparisonNote: null,
   disclaimer:
