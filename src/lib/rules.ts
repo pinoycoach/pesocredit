@@ -6,6 +6,8 @@
  *   "Recalibrated Ceilings on Interest Rates and Other Fees Charged by
  *    Financing Companies and Lending Companies" — signed 10 Dec 2025,
  *    effective 01 Apr 2026. Read in full 19 Sep 2026.
+ * The circular itself (a 3-page scan): docs/sources/SEC-MC-14-s2025.pdf. Every value below was
+ * checked against it on 23 Sep 2026 (DECISIONS N42).
  * NOTE: not to be confused with SEC MC No. 14, Series of 2026 (Umbrella Funds).
  */
 

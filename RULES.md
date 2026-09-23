@@ -3,6 +3,15 @@
 Point 1: every fact from outside the code lives in exactly one sourced place. This file says where
 each kind of fact lives. It does not repeat any of them.
 
+## The source itself → `docs/sources/SEC-MC-14-s2025.pdf`
+
+The circular every legal number comes from: SEC Memorandum Circular No. 14, Series of 2025,
+"Recalibrated Ceilings on Interest Rates and Other Fees Charged by Financing Companies and Lending
+Companies", signed 10 December 2025, filed with the UP Law Center on 10 December 2025, published
+11 December 2025, in effect 1 April 2026. A 3-page scan with no text layer, saved by Napoleon on
+2026-09-23 (sha256 `c1ba6568add24c0f563f5a3cc8d75d9df047af78a3d748fb73bead33daafd680`). Every value
+in `rules.ts` was checked against it on 2026-09-23 (DECISIONS N42).
+
 ## Legal numbers and caps → `src/lib/rules.ts`
 
 Every legal number (which circular applies and from when, what loans it covers, and every ceiling)
