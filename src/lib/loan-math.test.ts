@@ -153,6 +153,14 @@ describe("golden cases (GOLDEN-CASES.md)", () => {
     assert.ok(Math.abs(a.numbers.eirPerDay - expected) < 1e-9);
   });
 
+  it("G7 keeps the late penalty out of the scheduled payments, and in the total cost (N41)", () => {
+    const n = expectOk(GOLDEN_INPUTS.G7).numbers;
+    assert.equal(n.scheduledPayments, 3_150);
+    assert.equal(n.penalty, 2_900);
+    assert.equal(n.totalPayments, 6_050);
+    assert.equal(n.totalCost, 3_050);
+  });
+
   it("G3 is GRAY, never OVER: the daily rate is under the cap but its compounded month is over", () => {
     const a = expectOk(GOLDEN_INPUTS.G3);
     assert.equal(a.checks.eir.state, "GRAY");
@@ -476,6 +484,8 @@ describe("properties", () => {
       assert.ok(n.totalCostRatio >= 0);
       for (const v of [
         n.netProceeds,
+        n.scheduledPayments,
+        n.penalty,
         n.totalPayments,
         n.eirPerDay,
         n.eirPerMonthSimple,
@@ -484,6 +494,7 @@ describe("properties", () => {
       ]) {
         assert.ok(Number.isFinite(v), JSON.stringify(input));
       }
+      assert.ok(Math.abs(n.scheduledPayments + n.penalty - n.totalPayments) < 1e-9, "total = scheduled + penalty");
       assert.ok(n.eirPerDay >= 0, "a computable loan never has a negative rate");
       assert.ok(n.eirPerMonthCompounded >= n.eirPerMonthSimple - 1e-12);
     }

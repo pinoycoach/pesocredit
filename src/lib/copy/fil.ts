@@ -139,6 +139,9 @@ export const fil: Copy = {
   },
   headline: (n) =>
     `Ang totoong gastos mo: ${formatPct(n.eirPerMonthSimple)} kada buwan. Sa araw ${n.tenorDays}, ${formatPeso(n.totalPayments)} ang kabuuang babayaran mo.`,
+  // N41's late-penalty sentence and row have no approved Filipino yet (N40); until then this
+  // headline still counts the penalty in its total.
+  penaltySentence: null,
   headlineMethodNote: `Ito ay ang rate kada araw × ${DAYS_PER_MONTH}. Nasa "Paano kinuwenta" ang compounded na bersyon.`,
   oldLoanNotice: `Ang tool na ito ay para sa loans simula ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
   comparisonTitle: "Kumpara sa naka-publish na ceiling",
@@ -193,6 +196,7 @@ export const fil: Copy = {
     ],
     ["Nominal na interes kada buwan", formatPct(n.nominalPerMonth)],
   ],
+  penaltyRowLabel: null,
   howMethodText: `Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×${DAYS_PER_MONTH} o compounded — kaya ipinapakita namin ang pareho.`,
 
   calendarTitle: "Kalendaryo ng loan",

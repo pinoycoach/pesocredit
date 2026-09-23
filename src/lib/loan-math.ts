@@ -82,6 +82,11 @@ export type CannotComputeReason =
 export type LoanNumbers = {
   netProceeds: number;
   tenorDays: number;
+  /** The scheduled payments added up: all due by tenorDays, and what the rate is worked out from. */
+  scheduledPayments: number;
+  /** The late penalty the borrower entered (0 if none). It is paid after its due day. */
+  penalty: number;
+  /** scheduledPayments + penalty. Not all due by tenorDays, since the penalty is paid late. */
   totalPayments: number;
   /** Interest + fees + penalties: total paid minus what was received. Never negative. */
   totalCost: number;
@@ -246,6 +251,8 @@ export function analyzeLoan(input: LoanInput): LoanAnalysis {
   const numbers: LoanNumbers = {
     netProceeds,
     tenorDays,
+    scheduledPayments: scheduled,
+    penalty: input.penalty,
     totalPayments,
     totalCost,
     totalCostRatio: totalCost / input.principal,

@@ -12,7 +12,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { findBanned, LENDER_NAMES } from "./banned.ts";
-import { copy, type Copy } from "./copy.ts";
+import { computedRows, copy, type Copy, headlineText } from "./copy.ts";
 import { en } from "./copy/en.ts";
 import { fil } from "./copy/fil.ts";
 import { analyzeLoan, type CoverageReason, type LoanInput } from "./loan-math.ts";
@@ -51,7 +51,7 @@ const LANGUAGES: Record<string, Copy> = { en, fil };
 
 /** The name of every template (a function) in the copy. */
 type TemplateKey = {
-  [K in keyof Copy]: Copy[K] extends (...args: never[]) => unknown ? K : never;
+  [K in keyof Copy]: NonNullable<Copy[K]> extends (...args: never[]) => unknown ? K : never;
 }[keyof Copy];
 
 /**
@@ -74,6 +74,7 @@ function templateSamples(c: Copy): Record<TemplateKey, unknown> {
     formatDate: c.formatDate("2026-04-01"),
     coverageReason: reasons.map((reason) => plainText(c.coverageReason(reason))),
     headline: c.headline(analysis.numbers),
+    penaltySentence: c.penaltySentence?.("₱2,900.00") ?? null,
     howComputedRows: c.howComputedRows(analysis.numbers),
     calendarSubtitle: [c.calendarSubtitle(7, 1), c.calendarSubtitle(28, 4)],
     timelineReceived: c.timelineReceived("₱5,000.00"),
@@ -192,8 +193,8 @@ describe("banned phrases: what the calculator produces", () => {
       shown.push(...stringsIn(analysis));
       for (const c of Object.values(LANGUAGES)) {
         if (analysis.status !== "cannot_compute") {
-          shown.push(c.headline(analysis.numbers));
-          shown.push(...stringsIn(c.howComputedRows(analysis.numbers)));
+          shown.push(headlineText(analysis.numbers, c));
+          shown.push(...stringsIn(computedRows(analysis.numbers, c)));
         }
         if (analysis.status === "ok") {
           shown.push(...analysis.coverage.reasons.map((r) => plainText(c.coverageReason(r))));

@@ -16,7 +16,7 @@
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import ts from "typescript";
-import { copy } from "../src/lib/copy.ts";
+import { copy, headlineText, PENALTY_ROW_INDEX } from "../src/lib/copy.ts";
 import { analyzeLoan, PRESETS, type LoanInput } from "../src/lib/loan-math.ts";
 import * as privacy from "../src/lib/privacy-copy.ts";
 import { CIRCUMVENTION_EXAMPLES, DAYS_PER_MONTH, SOURCE } from "../src/lib/rules.ts";
@@ -210,6 +210,7 @@ const FRIENDLY: Record<string, string> = {
   "{formatPct(n.eirPerMonthSimple)}": "{X%}",
   "{n.tenorDays}": "{Z}",
   "{formatPeso(n.totalPayments)}": "{₱Y}",
+  "{formatPeso(n.scheduledPayments)}": "{₱Y}",
   "{DAYS_PER_MONTH}": String(DAYS_PER_MONTH),
   "{formatPeso(n.totalCost)}": "{₱ total cost}",
   "{formatPct(n.totalCostRatio)}": "{%}",
@@ -345,6 +346,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   };
 
   const G2 = analyzed(GOLDEN_INPUTS.G2);
+  const G7 = analyzed(GOLDEN_INPUTS.G7);
 
   // -------------------------------------------------------------------------
   newScreen("1. Calculator page (peso.credit/)", "C", "The page a borrower lands on. Top to bottom.");
@@ -398,7 +400,14 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   }
 
   newSection("1.4 Result headline");
-  add(friendly(L.written("headline", "=>")), at("headline", "=>"), `template; e.g. G2: "${copy.headline(G2.numbers)}"`);
+  add(
+    friendly(L.written("headline", "=>")),
+    at("headline", "=>"),
+    `template; e.g. G2: "${headlineText(G2.numbers)}"; with a late penalty, G7: "${headlineText(G7.numbers)}"`,
+  );
+  if (copy.penaltySentence) {
+    add(copy.penaltySentence("{₱P}"), at("penaltySentence"), "added to the headline only when a late penalty is entered (N41)", "C116");
+  }
   add(copy.headlineMethodNote, at("headlineMethodNote"), "under the headline");
 
   newSection("1.5 Comparison with the published limit");
@@ -449,6 +458,9 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   const rows = L.length("howComputedRows", "=>");
   for (let i = 0; i < rows; i++) {
     add(friendly(L.written("howComputedRows", "=>", i, 0)), at("howComputedRows", "=>", i, 0), "row label; value beside it");
+    if (i === PENALTY_ROW_INDEX - 1 && copy.penaltyRowLabel) {
+      add(copy.penaltyRowLabel, at("penaltyRowLabel"), "row label, only when a late penalty is entered (N41); the penalty beside it", "C117");
+    }
   }
   // Values are numbers; a value with words of its own is listed too.
   const valueWhen: Record<number, string> = { 2: "value of the total-cost row" };

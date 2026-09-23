@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { copy } from "./copy.ts";
+import { computedRows, copy, headlineText, PENALTY_ROW_INDEX } from "./copy.ts";
 import { en } from "./copy/en.ts";
 import { fil } from "./copy/fil.ts";
 import type { Copy } from "./copy/types.ts";
@@ -93,15 +93,34 @@ describe("en: headline", () => {
     );
   });
 
-  it("uses the last payment day and the total of every payment, penalty included (G6, G7)", () => {
+  it("counts the scheduled payments, all due by the last payment day (G6, G7)", () => {
     assert.equal(
       en.headline(numbersFor(G6)),
       "Estimated cost: 4.08% a month (daily rate × 30). Total payments by day 28: ₱10,240.00.",
     );
     assert.equal(
       en.headline(numbersFor(G7)),
-      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱6,050.00.",
+      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00.",
     );
+  });
+
+  it("says a late penalty in a sentence of its own, since it is paid after its due day (G7, N41)", () => {
+    assert.equal(
+      headlineText(numbersFor(G7), en),
+      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00.",
+    );
+    // No penalty, no extra sentence (G2).
+    assert.equal(headlineText(numbersFor(base()), en), en.headline(numbersFor(base())));
+  });
+
+  it("shows a late penalty in a row of its own, after the payments due by the last day; total cost keeps it (G7, N41)", () => {
+    assert.deepEqual(computedRows(numbersFor(G7), en).slice(1, 4), [
+      ["Total you pay (by day 30)", "₱3,150.00"],
+      ["Late penalty you entered", "₱2,900.00"],
+      ["Total cost (interest + fees + penalty)", "₱3,050.00 · 101.67% of the amount borrowed"],
+    ]);
+    // No penalty, no row (G2).
+    assert.ok(!computedRows(numbersFor(base()), en).some(([label]) => label === en.penaltyRowLabel));
   });
 
   it("leads with the simple monthly figure, not the compounded one (G3)", () => {
@@ -239,6 +258,14 @@ describe("en: the rest of the page", () => {
 });
 
 describe("both languages", () => {
+  it("put the penalty row right after the payments due by the last day, where they have one (N41)", () => {
+    const n = numbersFor(G7);
+    for (const c of [en, fil]) {
+      if (!c.penaltyRowLabel) continue;
+      assert.equal(c.howComputedRows(n)[PENALTY_ROW_INDEX - 1][1], "₱3,150.00", `${c.htmlLang}: the row before it`);
+    }
+  });
+
   it("link the same caps and limits, with the same figures (only the words differ)", () => {
     const figures = (caps: string[]) => caps.map((c) => c.match(/₱?[\d,.]+%?/)?.[0] ?? `no figure in "${c}"`);
     assert.deepEqual(figures(capsOf(en)), figures(capsOf(fil)));

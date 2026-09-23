@@ -1,7 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { copy } from "@/lib/copy";
+import { computedRows, copy, headlineText } from "@/lib/copy";
 import { BasisLine, CapSegments } from "@/components/source-link";
 import type { CheckId, LoanAnalysis } from "@/lib/loan-math";
 import { plainText } from "@/lib/segments";
@@ -18,7 +18,7 @@ export function Headline({ analysis }: { analysis: Computed }) {
     <Card>
       <CardContent className="grid gap-2 p-5 sm:p-6">
         <h2 className="font-display text-2xl leading-snug text-balance sm:text-3xl">
-          {copy.headline(analysis.numbers)}
+          {headlineText(analysis.numbers)}
         </h2>
         <p className="text-sm text-muted-foreground text-pretty">{copy.headlineMethodNote}</p>
       </CardContent>
@@ -125,7 +125,7 @@ export function HowComputed({ analysis }: { analysis: Computed }) {
       </summary>
       <div className="grid gap-4 border-t border-border p-4">
         <dl className="grid gap-2 text-sm">
-          {copy.howComputedRows(analysis.numbers).map(([label, value]) => (
+          {computedRows(analysis.numbers).map(([label, value]) => (
             <div key={label} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5">
               <dt className="text-muted-foreground">{label}</dt>
               <dd className="tabular-nums">{value}</dd>

@@ -11,7 +11,7 @@
  * Used only by tests and tools/signoff.ts. Nothing here reaches the site.
  */
 import { createHash } from "node:crypto";
-import { copy } from "./copy.ts";
+import { copy, headlineText } from "./copy.ts";
 import { analyzeLoan, type LoanInput } from "./loan-math.ts";
 import {
   BACK_TO_CALCULATOR,
@@ -70,11 +70,11 @@ function loanWording(input: LoanInput) {
   const a = analyzeLoan(input);
   if (a.status === "ok") {
     return {
-      headline: copy.headline(a.numbers),
+      headline: headlineText(a.numbers),
       coverage: { state: a.coverage.state, reasons: a.coverage.reasons.map(copy.coverageReason) },
     };
   }
-  if (a.status === "before_effective_date") return { headline: copy.headline(a.numbers) };
+  if (a.status === "before_effective_date") return { headline: headlineText(a.numbers) };
   return { cannotCompute: a.reason };
 }
 

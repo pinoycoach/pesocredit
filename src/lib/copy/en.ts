@@ -142,7 +142,8 @@ export const en: Copy = {
     no_solution: "We can't work out a rate from these numbers. Please check them.",
   },
   headline: (n) =>
-    `Estimated cost: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.totalPayments)}.`,
+    `Estimated cost: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.scheduledPayments)}.`,
+  penaltySentence: (penalty) => `Plus the late penalty you entered: ${penalty}.`,
   headlineMethodNote: `This is the daily rate × ${DAYS_PER_MONTH}. The compounded version is under “How we calculated this”.`,
   oldLoanNotice: `The limit comparison is for loans from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
   comparisonTitle: "Compared with the published limit",
@@ -184,7 +185,7 @@ export const en: Copy = {
   howTitle: "How we calculated this",
   howComputedRows: (n) => [
     ["What you received (net proceeds)", formatPeso(n.netProceeds)],
-    [`Total you pay (by day ${n.tenorDays})`, formatPeso(n.totalPayments)],
+    [`Total you pay (by day ${n.tenorDays})`, formatPeso(n.scheduledPayments)],
     [
       "Total cost (interest + fees + penalty)",
       `${formatPeso(n.totalCost)} · ${formatPct(n.totalCostRatio)} of the amount borrowed`,
@@ -197,6 +198,7 @@ export const en: Copy = {
     ],
     ["Nominal interest per month (from your payments)", formatPct(n.nominalPerMonth)],
   ],
+  penaltyRowLabel: "Late penalty you entered",
   howMethodText: `The EIR is the daily rate that balances what you received with everything you pay, not counting late penalties. The circular does not say how to turn the daily rate into a monthly one, ×${DAYS_PER_MONTH} or compounded, so we show both.`,
 
   calendarTitle: "Loan calendar",

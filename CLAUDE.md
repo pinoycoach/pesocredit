@@ -41,6 +41,7 @@ Two points matter more here than they did on fengshui.mom, because peso.credit i
 A free calculator, in English first (N34; the Filipino copy is kept, unused, for a later
 Tagalog version). A borrower enters the numbers from their own loan;
 the app shows the estimated cost: **"Estimated cost: X% a month (daily rate × 30). Total payments by day Z: ₱Y."**
+₱Y counts the scheduled payments, all due by day Z; a late penalty, if entered, gets a sentence of its own (N41).
 The comparison to the published SEC limit (the circular calls it a ceiling) appears underneath,
 as a fact with its source.
 

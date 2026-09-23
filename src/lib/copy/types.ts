@@ -66,6 +66,12 @@ export type Copy = {
   // The result.
   cannotCompute: Record<CannotComputeReason, string>;
   headline: (n: LoanNumbers) => string;
+  /**
+   * Added to the headline when a late penalty is entered (N41): the headline's total counts only
+   * the scheduled payments, all due by the day it names, and a penalty is paid late. Null where
+   * no wording is approved yet; that language's headline then still counts the penalty itself.
+   */
+  penaltySentence: ((penalty: string) => string) | null;
   headlineMethodNote: string;
   oldLoanNotice: string;
   comparisonTitle: string;
@@ -91,6 +97,8 @@ export type Copy = {
   // How it was calculated.
   howTitle: string;
   howComputedRows: (n: LoanNumbers) => [label: string, value: string][];
+  /** The row that follows the payments due by the last day when a late penalty is entered (N41). Null as above. */
+  penaltyRowLabel: string | null;
   howMethodText: string;
 
   // The loan calendar and the schedule.
