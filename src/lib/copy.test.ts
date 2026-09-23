@@ -153,12 +153,19 @@ describe("en: the comparison with the published limit", () => {
     assert.match(en.pageIntro, /whether the published SEC limits apply to your loan/);
     assert.equal(en.documentTitle, "Tunay na Interes · Check your loan against the SEC limits");
     assert.equal(en.unsureCoverageBadge, "Not sure the limit applies");
+    assert.equal(
+      en.unsureCoverageText,
+      "Your number may be higher than the limit, but it is not certain that the SEC limits apply to this loan.",
+    );
+    assert.equal(en.comparisonTitle, "Compared with the published limits");
+    assert.match(en.metaDescription, /next to the published limits in the Philippines\.$/);
   });
 
   it("names how each row's number is worked out (C58, C59, C79)", () => {
     // The EIR row shows the daily rate × 30, and its badge checks the compounded rate too
     // (rules.ts eirVerdict), so the label says both.
-    assert.equal(en.ceilingLabel.eir, "EIR per month (daily EIR × 30; the compounded rate is checked too)");
+    // One phrase everywhere: "daily rate" (C76 ties it to the EIR).
+    assert.equal(en.ceilingLabel.eir, "EIR per month (daily rate × 30; the compounded rate is checked too)");
     assert.equal(en.ceilingLabel.nominal, "Nominal interest per month (from your payments)");
     const rows = en.howComputedRows(numbersFor(base())).map(([label]) => label);
     assert.ok(rows.includes("Nominal interest per month (from your payments)"));
@@ -180,7 +187,7 @@ describe("en: the comparison with the published limit", () => {
   it("says what the comparison does not tell (N1; N36, no false hope)", () => {
     assert.equal(
       en.comparisonNote,
-      "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
+      "This compares your numbers with published limits. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
     );
   });
 
@@ -229,8 +236,15 @@ describe("en: the comparison with the published limit", () => {
   });
 
   it("words the coverage reasons, marking the limits they mention", () => {
-    assert.equal(plainText(en.coverageReason(REASONS[3])), "A principal of ₱10,001 is more than the ₱10,000 the limit covers.");
-    assert.equal(plainText(en.coverageReason(REASONS[4])), "A term of 124 days is longer than 4 months.");
+    // Every reason that speaks of the limits says "the SEC limits" (plural), like the badge above it (C49-C51).
+    assert.deepEqual(REASONS.map((r) => plainText(en.coverageReason(r))), [
+      "The SEC limits are for lending and financing companies, not banks.",
+      "The SEC limits are for unsecured loans.",
+      "The SEC limits are for general-purpose loans.",
+      "A principal of ₱10,001 is more than the ₱10,000 the SEC limits cover.",
+      "A term of 124 days is longer than 4 months.",
+      "A term of 121 days may still be within 4 months, depending on the calendar. The SEC limits may apply.",
+    ]);
     assert.deepEqual(capsIn(en.coverageReason(REASONS[3])), ["₱10,000"]);
     assert.deepEqual(capsIn(en.coverageReason(REASONS[4])), ["4 months"]);
   });

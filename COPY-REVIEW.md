@@ -112,18 +112,18 @@ Shown in place of the whole result.
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | C46 | The limit comparison is for loans taken out, restructured or renewed from 1 April 2026. | `src/lib/copy/en.ts:148` | instead of this whole card, when the contract is dated before the circular applies |
-| C47 | Compared with the published limit | `src/lib/copy/en.ts:149` | card title |
+| C47 | Compared with the published limits | `src/lib/copy/en.ts:149` | card title |
 | C48 | Based on <u>SEC MC No. 14, s. 2025</u> · as of 23 September 2026 | `src/components/source-link.tsx:43` | card subtitle; also at the end of Sources (1.9) |
 | C49 | Based on your answers, the SEC limits apply to this loan. | `src/lib/copy/en.ts:153` | coverage badge: COVERED |
 | C50 | The SEC limits may apply to this loan. | `src/lib/copy/en.ts:154` | coverage badge: MAYBE |
 | C51 | Based on your answers, the SEC limits do not apply to this loan. | `src/lib/copy/en.ts:155` | coverage badge: NOT_COVERED |
-| C52 | The limit is for lending and financing companies, not banks. | `src/lib/copy/en.ts:59` | reason under the coverage badge |
-| C53 | The limit is for unsecured loans. | `src/lib/copy/en.ts:61` | reason under the coverage badge |
-| C54 | The limit is for general-purpose loans. | `src/lib/copy/en.ts:63` | reason under the coverage badge |
-| C55 | A principal of ₱10,001 is more than the <u>₱10,000</u> the limit covers. | `src/lib/copy/en.ts:65` | reason under the coverage badge (example: the number varies) |
+| C52 | The SEC limits are for lending and financing companies, not banks. | `src/lib/copy/en.ts:59` | reason under the coverage badge |
+| C53 | The SEC limits are for unsecured loans. | `src/lib/copy/en.ts:61` | reason under the coverage badge |
+| C54 | The SEC limits are for general-purpose loans. | `src/lib/copy/en.ts:63` | reason under the coverage badge |
+| C55 | A principal of ₱10,001 is more than the <u>₱10,000</u> the SEC limits cover. | `src/lib/copy/en.ts:65` | reason under the coverage badge (example: the number varies) |
 | C56 | A term of 124 days is longer than <u>4 months</u>. | `src/lib/copy/en.ts:71` | reason under the coverage badge (example: the number varies) |
-| C57 | A term of 121 days may still be within <u>4 months</u>, depending on the calendar. The limit may apply. | `src/lib/copy/en.ts:73` | reason under the coverage badge (example: the number varies) |
-| C58 | EIR per month (daily EIR × 30; the compounded rate is checked too) | `src/lib/copy/en.ts:159` | row label (eir) |
+| C57 | A term of 121 days may still be within <u>4 months</u>, depending on the calendar. The SEC limits may apply. | `src/lib/copy/en.ts:73` | reason under the coverage badge (example: the number varies) |
+| C58 | EIR per month (daily rate × 30; the compounded rate is checked too) | `src/lib/copy/en.ts:159` | row label (eir) |
 | C59 | Nominal interest per month (from your payments) | `src/lib/copy/en.ts:160` | row label (nominal) |
 | C60 | Total cost compared with the amount borrowed | `src/lib/copy/en.ts:161` | row label (totalCost) |
 | C61 | Your number is lower than the limit | `src/lib/copy/en.ts:164` | row badge: WITHIN |
@@ -135,9 +135,9 @@ Shown in place of the whole result.
 | C67 | <u>6% a month</u> | `src/lib/copy/en.ts:173` | cap in the nominal row (links to the circular) |
 | C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:174` | cap in the totalCost row (links to the circular) |
 | C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:177` | under the EIR row when the EIR is GRAY |
-| C70 | Your number may be above the limit, but it is not certain that the limit applies to this loan. | `src/lib/copy/en.ts:179` | under a row that is over while coverage is uncertain |
+| C70 | Your number may be higher than the limit, but it is not certain that the SEC limits apply to this loan. | `src/lib/copy/en.ts:179` | under a row that is over while coverage is uncertain |
 | C118 | The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them. | `src/lib/copy/en.ts:181` | under the nominal row, always; that row shows no verdict (N42) |
-| C115 | This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next. | `src/lib/copy/en.ts:183` | directly under the rows, whenever they are shown, in normal-size text (added in step F3) |
+| C115 | This compares your numbers with published limits. It does not tell you whether the loan or lender is safe, what you owe, or what happens next. | `src/lib/copy/en.ts:183` | directly under the rows, whenever they are shown, in normal-size text (added in step F3) |
 | C71 | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | `src/lib/copy/en.ts:185` | always, bottom of the card |
 
 ### 1.6 How we calculated this (expander)
@@ -306,7 +306,7 @@ Text that appears outside the page body.
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | T01 | Tunay na Interes · Check your loan against the SEC limits | `src/lib/copy/en.ts:85` | tab title, calculator page |
-| T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines. | `src/lib/copy/en.ts:87` | search-result description |
+| T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limits in the Philippines. | `src/lib/copy/en.ts:87` | search-result description |
 | T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:336` | tab title, privacy page while draft |
 | T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:337` | tab title, privacy page once final |
 

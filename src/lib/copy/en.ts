@@ -56,16 +56,16 @@ const PRIVACY_TITLE = "Privacy Policy";
 function coverageReason(reason: CoverageReason): Segments {
   switch (reason.kind) {
     case "lender":
-      return ["The limit is for lending and financing companies, not banks."];
+      return ["The SEC limits are for lending and financing companies, not banks."];
     case "secured":
-      return ["The limit is for unsecured loans."];
+      return ["The SEC limits are for unsecured loans."];
     case "purpose":
-      return ["The limit is for general-purpose loans."];
+      return ["The SEC limits are for general-purpose loans."];
     case "principal":
       return [
         `A principal of ${pesoWhole(reason.principal)} is more than the `,
         cap(PRINCIPAL_LIMIT_TEXT),
-        " the limit covers.",
+        " the SEC limits cover.",
       ];
     case "tenorOver":
       return [`A term of ${reason.tenorDays} days is longer than `, cap(TENOR_LIMIT_TEXT), "."];
@@ -73,7 +73,7 @@ function coverageReason(reason: CoverageReason): Segments {
       return [
         `A term of ${reason.tenorDays} days may still be within `,
         cap(TENOR_LIMIT_TEXT),
-        ", depending on the calendar. The limit may apply.",
+        ", depending on the calendar. The SEC limits may apply.",
       ];
   }
 }
@@ -84,7 +84,7 @@ export const en: Copy = {
 
   documentTitle: "Tunay na Interes · Check your loan against the SEC limits",
   metaDescription:
-    "Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines.",
+    "Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limits in the Philippines.",
   eyebrow: `Philippines · ${SOURCE.id}`,
   pageTitle: "Tunay na Interes",
   pageIntro:
@@ -146,7 +146,7 @@ export const en: Copy = {
   penaltySentence: (penalty) => `Plus the late penalty you entered: ${penalty}.`,
   headlineMethodNote: "The compounded version is under “How we calculated this”.",
   oldLoanNotice: `The limit comparison is for loans taken out, restructured or renewed from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
-  comparisonTitle: "Compared with the published limit",
+  comparisonTitle: "Compared with the published limits",
   basisLead: "Based on",
   basisAsOf: `as of ${formatDate(RULES_AS_OF)}`,
   coverageText: {
@@ -156,7 +156,7 @@ export const en: Copy = {
   },
   coverageReason,
   ceilingLabel: {
-    eir: `EIR per month (daily EIR × ${DAYS_PER_MONTH}; the compounded rate is checked too)`,
+    eir: `EIR per month (daily rate × ${DAYS_PER_MONTH}; the compounded rate is checked too)`,
     nominal: "Nominal interest per month (from your payments)",
     totalCost: "Total cost compared with the amount borrowed",
   },
@@ -176,11 +176,11 @@ export const en: Copy = {
   grayEirText:
     "Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use.",
   unsureCoverageText:
-    "Your number may be above the limit, but it is not certain that the limit applies to this loan.",
+    "Your number may be higher than the limit, but it is not certain that the SEC limits apply to this loan.",
   nominalNote:
     "The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.",
   comparisonNote:
-    "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
+    "This compares your numbers with published limits. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
   disclaimer:
     "An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender.",
 
