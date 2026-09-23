@@ -10,6 +10,7 @@ import {
 } from "./loan-math.ts";
 import { COVERAGE, DAYS_PER_MONTH, type Verdict } from "./rules.ts";
 import { base, GOLDEN_INPUTS, single } from "./test-utils/loan-fixtures.ts";
+import { sourceFiles, srcRoot } from "./test-utils/source-strings.ts";
 
 function expectOk(input: LoanInput) {
   const analysis = analyzeLoan(input);
@@ -500,5 +501,40 @@ describe("properties", () => {
       }
       if (a.coverage.state === "NOT_COVERED") assert.equal(a.overall, null);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// The test list. package.json names every test file explicitly, so a new one that
+// is not added would silently never run. This lives here, in the test file CLAUDE.md
+// names, because a guard in a file of its own could itself be left off the list.
+// ---------------------------------------------------------------------------
+
+describe("npm test runs every test file", () => {
+  const listed = (
+    JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as {
+      scripts: Record<string, string>;
+    }
+  ).scripts.test
+    .split(/\s+/)
+    .filter((token) => /\.test\.tsx?$/.test(token))
+    .sort();
+  const onDisk = sourceFiles(srcRoot(), (p) => !/\.test\.tsx?$/.test(p))
+    .map((p) => `src/${p}`)
+    .sort();
+
+  it("every *.test.ts under src/ is in the test script", () => {
+    const missing = onDisk.filter((file) => !listed.includes(file));
+    assert.deepEqual(missing, [], `add to "test" in package.json: ${missing.join(" ")}`);
+  });
+
+  it("every file in the test script exists", () => {
+    const gone = listed.filter((file) => !onDisk.includes(file));
+    assert.deepEqual(gone, [], `listed in package.json but not found: ${gone.join(" ")}`);
+  });
+
+  it("finds the test files it guards, not an empty list", () => {
+    assert.ok(onDisk.includes("src/lib/loan-math.test.ts"));
+    assert.ok(onDisk.length >= 12, `only ${onDisk.length} test files found`);
   });
 });
