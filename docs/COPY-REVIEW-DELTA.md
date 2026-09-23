@@ -39,7 +39,8 @@ For each entry, please note, by ID:
 4. Anything unclear, awkward, or inconsistent with the rest, including with the other entries here.
 
 The rules this copy must keep: inform, never accuse; never name a lender; never say ilegal, illegal,
-scam, fraud or loan shark; where the law is unclear, say so, never say "over"; not legal advice.
+scam, fraud or loan shark; when the law is unclear (the methods disagree), the result shows "close to
+the limit", never "over"; not legal advice.
 
 Each entry gives **Where** it shows on screen, **Reviewers saw** (nothing, when the line is new),
 **Now**, and **Why** it changed.

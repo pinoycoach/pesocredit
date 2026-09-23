@@ -82,13 +82,13 @@ export const en: Copy = {
   htmlLang: "en",
   formatDate,
 
-  documentTitle: "Tunay na Interes · Check your loan against the SEC limit",
+  documentTitle: "Tunay na Interes · Check your loan against the SEC limits",
   metaDescription:
     "Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines.",
   eyebrow: `Philippines · ${SOURCE.id}`,
   pageTitle: "Tunay na Interes",
   pageIntro:
-    "Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limit applies to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay.",
+    "Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limits apply to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay.",
 
   inputsTitle: "Your loan numbers",
   inputsDescription:
@@ -125,7 +125,7 @@ export const en: Copy = {
   followUpHint:
     "Optional, and not part of the calculation. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan.",
   followUpDayLabel: "Day of the first follow-up",
-  coverageHeading: "Does the limit apply?",
+  coverageHeading: "Do the SEC limits apply?",
   lenderToggle: "Lending or financing company (not a bank)",
   unsecuredToggle: "Unsecured, general-purpose loan",
   dateLabel: "Contract or renewal date",
@@ -142,28 +142,28 @@ export const en: Copy = {
     no_solution: "We can't work out a rate from these numbers. Please check them.",
   },
   headline: (n) =>
-    `Estimated cost: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.scheduledPayments)}.`,
+    `Estimated interest rate: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.scheduledPayments)}.`,
   penaltySentence: (penalty) => `Plus the late penalty you entered: ${penalty}.`,
   headlineMethodNote: "The compounded version is under “How we calculated this”.",
-  oldLoanNotice: `The limit comparison is for loans from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
+  oldLoanNotice: `The limit comparison is for loans taken out, restructured or renewed from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
   comparisonTitle: "Compared with the published limit",
   basisLead: "Based on",
-  basisAsOf: `as of ${RULES_AS_OF}`,
+  basisAsOf: `as of ${formatDate(RULES_AS_OF)}`,
   coverageText: {
-    COVERED: "Based on your answers, the limit applies to this loan.",
-    MAYBE: "The limit may apply to this loan.",
-    NOT_COVERED: "Based on your answers, the limit does not apply to this loan.",
+    COVERED: "Based on your answers, the SEC limits apply to this loan.",
+    MAYBE: "The SEC limits may apply to this loan.",
+    NOT_COVERED: "Based on your answers, the SEC limits do not apply to this loan.",
   },
   coverageReason,
   ceilingLabel: {
-    eir: `EIR per month (daily rate × ${DAYS_PER_MONTH}; the compounded rate is checked too)`,
+    eir: `EIR per month (daily EIR × ${DAYS_PER_MONTH}; the compounded rate is checked too)`,
     nominal: "Nominal interest per month (from your payments)",
     totalCost: "Total cost compared with the amount borrowed",
   },
   stateText: {
-    WITHIN: "Your number is under the limit",
+    WITHIN: "Your number is lower than the limit",
     GRAY: "Your number is close to the limit",
-    OVER: "Your number is over the limit",
+    OVER: "Your number is higher than the limit",
   },
   unsureCoverageBadge: "Not sure the limit applies",
   rowNumberLabel: "Your number:",
@@ -178,7 +178,7 @@ export const en: Copy = {
   unsureCoverageText:
     "Your number may be above the limit, but it is not certain that the limit applies to this loan.",
   nominalNote:
-    "This limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.",
+    "The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.",
   comparisonNote:
     "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
   disclaimer:

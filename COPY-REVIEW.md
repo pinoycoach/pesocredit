@@ -27,8 +27,8 @@ circular's own words. Read it as a borrower would. Please note, by ID:
 4. Anything unclear, awkward, or inconsistent with the rest.
 
 The rules this copy must keep: inform, never accuse; never name a lender; never say ilegal,
-illegal, scam, fraud or loan shark; where the law is unclear, say so (GRAY), never OVER; not
-legal advice.
+illegal, scam, fraud or loan shark; when the law is unclear (the methods disagree), the result
+shows "close to the limit", never "over"; not legal advice.
 
 This review is what Napoleon signs on (SIGNOFF.json, `reviewedBy`). What each signature covers:
 `verdict-wording` is sections 1.3–1.5; `privacy-page` is section 2 except P03 (the DRAFT banner
@@ -45,7 +45,7 @@ The page a borrower lands on. Top to bottom.
 |---|---|---|---|
 | C01 | Philippines · SEC MC No. 14, s. 2025 | `src/lib/copy/en.ts:88` | always (small caps above the title) |
 | C02 | Tunay na Interes | `src/lib/copy/en.ts:89` | always (page title) |
-| C03 | Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limit applies to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay. | `src/lib/copy/en.ts:91` | always |
+| C03 | Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limits apply to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay. | `src/lib/copy/en.ts:91` | always |
 
 ### 1.2 Loan inputs card
 
@@ -80,7 +80,7 @@ The page a borrower lands on. Top to bottom.
 | C30 | Note: first follow-up | `src/lib/copy/en.ts:124` | switch label (optional note) |
 | C31 | Optional, and not part of the calculation. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan. | `src/lib/copy/en.ts:126` | switch hint |
 | C32 | Day of the first follow-up | `src/lib/copy/en.ts:127` | field label, only when the switch is on |
-| C33 | Does the limit apply? | `src/lib/copy/en.ts:128` | small caps heading |
+| C33 | Do the SEC limits apply? | `src/lib/copy/en.ts:128` | small caps heading |
 | C34 | Lending or financing company (not a bank) | `src/lib/copy/en.ts:129` | switch |
 | C35 | Unsecured, general-purpose loan | `src/lib/copy/en.ts:130` | switch |
 | C36 | Contract or renewal date | `src/lib/copy/en.ts:131` | date field label |
@@ -103,7 +103,7 @@ Shown in place of the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C44 | Estimated cost: {X%} a month (daily rate × 30). Total payments by day {Z}: {₱Y}. | `src/lib/copy/en.ts:145` | template; e.g. G2: "Estimated cost: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00."; with a late penalty, G7: "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00." |
+| C44 | Estimated interest rate: {X%} a month (daily rate × 30). Total payments by day {Z}: {₱Y}. | `src/lib/copy/en.ts:145` | template; e.g. G2: "Estimated interest rate: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00."; with a late penalty, G7: "Estimated interest rate: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00." |
 | C116 | Plus the late penalty you entered: {₱P}. | `src/lib/copy/en.ts:146` | added to the headline only when a late penalty is entered (N41) |
 | C45 | The compounded version is under “How we calculated this”. | `src/lib/copy/en.ts:147` | under the headline |
 
@@ -111,24 +111,24 @@ Shown in place of the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C46 | The limit comparison is for loans from 1 April 2026. | `src/lib/copy/en.ts:148` | instead of this whole card, when the contract is dated before the circular applies |
+| C46 | The limit comparison is for loans taken out, restructured or renewed from 1 April 2026. | `src/lib/copy/en.ts:148` | instead of this whole card, when the contract is dated before the circular applies |
 | C47 | Compared with the published limit | `src/lib/copy/en.ts:149` | card title |
-| C48 | Based on <u>SEC MC No. 14, s. 2025</u> · as of 2026-09-23 | `src/components/source-link.tsx:43` | card subtitle; also at the end of Sources (1.9) |
-| C49 | Based on your answers, the limit applies to this loan. | `src/lib/copy/en.ts:153` | coverage badge: COVERED |
-| C50 | The limit may apply to this loan. | `src/lib/copy/en.ts:154` | coverage badge: MAYBE |
-| C51 | Based on your answers, the limit does not apply to this loan. | `src/lib/copy/en.ts:155` | coverage badge: NOT_COVERED |
+| C48 | Based on <u>SEC MC No. 14, s. 2025</u> · as of 23 September 2026 | `src/components/source-link.tsx:43` | card subtitle; also at the end of Sources (1.9) |
+| C49 | Based on your answers, the SEC limits apply to this loan. | `src/lib/copy/en.ts:153` | coverage badge: COVERED |
+| C50 | The SEC limits may apply to this loan. | `src/lib/copy/en.ts:154` | coverage badge: MAYBE |
+| C51 | Based on your answers, the SEC limits do not apply to this loan. | `src/lib/copy/en.ts:155` | coverage badge: NOT_COVERED |
 | C52 | The limit is for lending and financing companies, not banks. | `src/lib/copy/en.ts:59` | reason under the coverage badge |
 | C53 | The limit is for unsecured loans. | `src/lib/copy/en.ts:61` | reason under the coverage badge |
 | C54 | The limit is for general-purpose loans. | `src/lib/copy/en.ts:63` | reason under the coverage badge |
 | C55 | A principal of ₱10,001 is more than the <u>₱10,000</u> the limit covers. | `src/lib/copy/en.ts:65` | reason under the coverage badge (example: the number varies) |
 | C56 | A term of 124 days is longer than <u>4 months</u>. | `src/lib/copy/en.ts:71` | reason under the coverage badge (example: the number varies) |
 | C57 | A term of 121 days may still be within <u>4 months</u>, depending on the calendar. The limit may apply. | `src/lib/copy/en.ts:73` | reason under the coverage badge (example: the number varies) |
-| C58 | EIR per month (daily rate × 30; the compounded rate is checked too) | `src/lib/copy/en.ts:159` | row label (eir) |
+| C58 | EIR per month (daily EIR × 30; the compounded rate is checked too) | `src/lib/copy/en.ts:159` | row label (eir) |
 | C59 | Nominal interest per month (from your payments) | `src/lib/copy/en.ts:160` | row label (nominal) |
 | C60 | Total cost compared with the amount borrowed | `src/lib/copy/en.ts:161` | row label (totalCost) |
-| C61 | Your number is under the limit | `src/lib/copy/en.ts:164` | row badge: WITHIN |
+| C61 | Your number is lower than the limit | `src/lib/copy/en.ts:164` | row badge: WITHIN |
 | C62 | Your number is close to the limit | `src/lib/copy/en.ts:165` | row badge: GRAY |
-| C63 | Your number is over the limit | `src/lib/copy/en.ts:166` | row badge: OVER |
+| C63 | Your number is higher than the limit | `src/lib/copy/en.ts:166` | row badge: OVER |
 | C64 | Not sure the limit applies | `src/lib/copy/en.ts:168` | row badge when the number is over but coverage is uncertain |
 | C65 | Your number: {the borrower's figure} · Limit: {cap, linked} | `src/lib/copy/en.ts:169` | every row; the cap text is below (words from rowNumberLabel and rowCeilingLabel) |
 | C66 | <u>12% a month</u> | `src/lib/copy/en.ts:172` | cap in the eir row (links to the circular) |
@@ -136,7 +136,7 @@ Shown in place of the whole result.
 | C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:174` | cap in the totalCost row (links to the circular) |
 | C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:177` | under the EIR row when the EIR is GRAY |
 | C70 | Your number may be above the limit, but it is not certain that the limit applies to this loan. | `src/lib/copy/en.ts:179` | under a row that is over while coverage is uncertain |
-| C118 | This limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them. | `src/lib/copy/en.ts:181` | under the nominal row, always; that row shows no verdict (N42) |
+| C118 | The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them. | `src/lib/copy/en.ts:181` | under the nominal row, always; that row shows no verdict (N42) |
 | C115 | This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next. | `src/lib/copy/en.ts:183` | directly under the rows, whenever they are shown, in normal-size text (added in step F3) |
 | C71 | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | `src/lib/copy/en.ts:185` | always, bottom of the card |
 
@@ -305,7 +305,7 @@ Text that appears outside the page body.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| T01 | Tunay na Interes · Check your loan against the SEC limit | `src/lib/copy/en.ts:85` | tab title, calculator page |
+| T01 | Tunay na Interes · Check your loan against the SEC limits | `src/lib/copy/en.ts:85` | tab title, calculator page |
 | T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines. | `src/lib/copy/en.ts:87` | search-result description |
 | T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:336` | tab title, privacy page while draft |
 | T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:337` | tab title, privacy page once final |

@@ -607,8 +607,8 @@ ${language.reviewNote} Please note, by ID:
 4. Anything unclear, awkward, or inconsistent with the rest.
 
 The rules this copy must keep: inform, never accuse; never name a lender; never say ilegal,
-illegal, scam, fraud or loan shark; where the law is unclear, say so (GRAY), never OVER; not
-legal advice.
+illegal, scam, fraud or loan shark; when the law is unclear (the methods disagree), the result
+shows "close to the limit", never "over"; not legal advice.
 
 This review is what Napoleon signs on (SIGNOFF.json, \`reviewedBy\`). What each signature covers:
 \`verdict-wording\` is sections 1.3–1.5; \`privacy-page\` is section 2 except P03 (the DRAFT banner

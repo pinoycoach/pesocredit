@@ -89,25 +89,25 @@ describe("en: headline", () => {
   it("states the reviewed headline: the estimated monthly cost, its method, the day and the total (G2)", () => {
     assert.equal(
       en.headline(numbersFor(base())),
-      "Estimated cost: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00.",
+      "Estimated interest rate: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00.",
     );
   });
 
   it("counts the scheduled payments, all due by the last payment day (G6, G7)", () => {
     assert.equal(
       en.headline(numbersFor(G6)),
-      "Estimated cost: 4.08% a month (daily rate × 30). Total payments by day 28: ₱10,240.00.",
+      "Estimated interest rate: 4.08% a month (daily rate × 30). Total payments by day 28: ₱10,240.00.",
     );
     assert.equal(
       en.headline(numbersFor(G7)),
-      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00.",
+      "Estimated interest rate: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00.",
     );
   });
 
   it("says a late penalty in a sentence of its own, since it is paid after its due day (G7, N41)", () => {
     assert.equal(
       headlineText(numbersFor(G7), en),
-      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00.",
+      "Estimated interest rate: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00.",
     );
     // No penalty, no extra sentence (G2).
     assert.equal(headlineText(numbersFor(base()), en), en.headline(numbersFor(base())));
@@ -129,24 +129,36 @@ describe("en: headline", () => {
 
   it("leads with the simple monthly figure, not the compounded one (G3)", () => {
     const g3 = numbersFor(base({ upfrontFee: 65, payment: 5_070 }));
-    assert.match(en.headline(g3), /^Estimated cost: 11\.59% a month \(daily rate × 30\)\./);
+    assert.match(en.headline(g3), /^Estimated interest rate: 11\.59% a month \(daily rate × 30\)\./);
     assert.ok(!en.headline(g3).includes("12.26"));
   });
 });
 
 describe("en: the comparison with the published limit", () => {
-  it("says each badge is about the number, and GRAY is a state of its own, never over (principle 2)", () => {
+  it("says each badge is about the number, and GRAY is a state of its own, never shown as OVER (principle 2)", () => {
     assert.deepEqual(en.stateText, {
-      WITHIN: "Your number is under the limit",
+      WITHIN: "Your number is lower than the limit",
       GRAY: "Your number is close to the limit",
-      OVER: "Your number is over the limit",
+      OVER: "Your number is higher than the limit",
     });
+  });
+
+  it("says the SEC limits (plural) in every coverage statement; row badges keep the limit (round 2)", () => {
+    assert.equal(en.coverageHeading, "Do the SEC limits apply?");
+    assert.deepEqual(en.coverageText, {
+      COVERED: "Based on your answers, the SEC limits apply to this loan.",
+      MAYBE: "The SEC limits may apply to this loan.",
+      NOT_COVERED: "Based on your answers, the SEC limits do not apply to this loan.",
+    });
+    assert.match(en.pageIntro, /whether the published SEC limits apply to your loan/);
+    assert.equal(en.documentTitle, "Tunay na Interes · Check your loan against the SEC limits");
+    assert.equal(en.unsureCoverageBadge, "Not sure the limit applies");
   });
 
   it("names how each row's number is worked out (C58, C59, C79)", () => {
     // The EIR row shows the daily rate × 30, and its badge checks the compounded rate too
     // (rules.ts eirVerdict), so the label says both.
-    assert.equal(en.ceilingLabel.eir, "EIR per month (daily rate × 30; the compounded rate is checked too)");
+    assert.equal(en.ceilingLabel.eir, "EIR per month (daily EIR × 30; the compounded rate is checked too)");
     assert.equal(en.ceilingLabel.nominal, "Nominal interest per month (from your payments)");
     const rows = en.howComputedRows(numbersFor(base())).map(([label]) => label);
     assert.ok(rows.includes("Nominal interest per month (from your payments)"));
@@ -160,7 +172,7 @@ describe("en: the comparison with the published limit", () => {
   });
 
   it("explains the nominal row, which shows no verdict (C118, N42)", () => {
-    assert.equal(en.nominalNote, "This limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.");
+    assert.equal(en.nominalNote, "The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them.");
     const card = readFileSync(join(srcRoot(), "components/result.tsx"), "utf8");
     assert.match(card, /id === "nominal"\s*\?\s*copy\.nominalNote/, "the nominal row shows this note");
   });
@@ -194,12 +206,15 @@ describe("en: the comparison with the published limit", () => {
 
   it("shows the basis line", () => {
     const basis = `${en.basisLead} ${SOURCE.id} · ${en.basisAsOf}`;
-    assert.equal(basis, `Based on ${SOURCE.id} · as of ${RULES_AS_OF}`);
-    assert.equal(basis, "Based on SEC MC No. 14, s. 2025 · as of 2026-09-23");
+    assert.equal(basis, `Based on ${SOURCE.id} · as of ${en.formatDate(RULES_AS_OF)}`);
+    assert.equal(basis, "Based on SEC MC No. 14, s. 2025 · as of 23 September 2026");
   });
 
   it("shows the exact notice for loans dated before the circular takes effect", () => {
-    assert.equal(en.oldLoanNotice, "The limit comparison is for loans from 1 April 2026.");
+    assert.equal(
+      en.oldLoanNotice,
+      "The limit comparison is for loans taken out, restructured or renewed from 1 April 2026.",
+    );
   });
 
   it("builds the cap text from rules.ts", () => {
