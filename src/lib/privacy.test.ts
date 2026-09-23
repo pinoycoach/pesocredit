@@ -4,19 +4,38 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import { NO_STORAGE_NOTE } from "./copy.ts";
 import {
+  CONTACT_EMAIL,
   DRAFT_BANNER,
   placeholder,
   PRIVACY_SECTIONS,
+  PRIVACY_STATUS,
+  privacyHeadMeta,
+  type PrivacyStatus,
   remainingPlaceholders,
+  showDraftBanner,
   splitPlaceholders,
 } from "./privacy-copy.ts";
-import { handleSubscribe } from "./subscribe.ts";
-import { srcRoot } from "./test-utils/source-strings.ts";
+import type { SignoffRecord } from "./signoff.ts";
+import { handleSubscribe, isValidEmail } from "./subscribe.ts";
+import { literalsIn, srcRoot } from "./test-utils/source-strings.ts";
 
 const root = srcRoot();
 const read = (file: string) => readFileSync(join(root, file), "utf8");
 const section = (pattern: RegExp) => PRIVACY_SECTIONS.find((s) => pattern.test(s.heading));
 const textOf = (s: { paragraphs: string[] } | undefined) => (s?.paragraphs ?? []).join(" ");
+const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/;
+
+/** The status the page must have: final only once it is signed and has no blanks left. */
+const requiredStatus = (signed: boolean, blanks: number): PrivacyStatus =>
+  signed && blanks === 0 ? "final" : "draft";
+
+/** Whether SIGNOFF.json signs the privacy page (signoff.test.ts checks the hash still matches). */
+function privacyPageSigned(): boolean {
+  const record = JSON.parse(
+    readFileSync(new URL("../../SIGNOFF.json", import.meta.url), "utf8"),
+  ) as SignoffRecord;
+  return record.items.find((item) => item.id === "privacy-page")?.signature != null;
+}
 
 describe("privacy page (DRAFT)", () => {
   it("covers what is collected, why, how to unsubscribe, and how to make contact", () => {
@@ -31,11 +50,43 @@ describe("privacy page (DRAFT)", () => {
     }
   });
 
-  it("is marked DRAFT for a lawyer, in the copy and on the page", () => {
+  it("is final exactly when it is signed in SIGNOFF.json with no blanks left, and a draft otherwise", () => {
+    const required = requiredStatus(privacyPageSigned(), remainingPlaceholders().length);
+    assert.equal(
+      PRIVACY_STATUS,
+      required,
+      required === "final"
+        ? "the page is signed and complete: set PRIVACY_STATUS to \"final\" to drop DRAFT and let it be indexed"
+        : "a final page must be signed in SIGNOFF.json and have no blanks left",
+    );
+  });
+
+  it("the status decides the banner and the head tags, on the real page", () => {
+    const page = read("routes/privacy.tsx");
+    // The import alone is not enough: the banner has to be rendered, behind the status.
+    assert.match(page, /\{showDraftBanner\(PRIVACY_STATUS\) && \(/, "the banner shows only for a draft");
+    assert.match(page, /\{DRAFT_BANNER\}/, "the page renders the banner");
+    assert.match(page, /meta: privacyHeadMeta\(PRIVACY_STATUS\)/, "the head tags come from the status");
+    assert.doesNotMatch(page, /noindex|\(DRAFT\)/, "no head tag is typed out on the page itself");
+  });
+
+  it("a draft says DRAFT for a lawyer, in the banner and the title, and is hidden from search", () => {
     assert.match(DRAFT_BANNER, /DRAFT/);
     assert.match(DRAFT_BANNER, /abogado/i);
-    // The import alone is not enough: the banner has to be rendered on the page.
-    assert.match(read("routes/privacy.tsx"), /\{DRAFT_BANNER\}/, "the page must show the banner");
+    assert.equal(showDraftBanner("draft"), true);
+    const meta = privacyHeadMeta("draft");
+    assert.ok(meta.some((m) => m.title?.includes("(DRAFT)")));
+    assert.ok(meta.some((m) => m.name === "robots" && m.content === "noindex"));
+  });
+
+  it("the workflow succeeding: a final page drops DRAFT everywhere and can be indexed", () => {
+    assert.equal(requiredStatus(true, 0), "final");
+    assert.equal(requiredStatus(true, 1), "draft", "signed with a blank left is still a draft");
+    assert.equal(requiredStatus(false, 0), "draft", "complete but unsigned is still a draft");
+    assert.equal(showDraftBanner("final"), false);
+    const meta = privacyHeadMeta("final");
+    assert.ok(meta.some((m) => m.title !== undefined && !m.title.includes("DRAFT")));
+    assert.ok(!meta.some((m) => m.name === "robots"), "no robots tag: indexable");
   });
 
   it("says the calculator's numbers are neither saved nor sent, in the same words as the calculator", () => {
@@ -71,16 +122,27 @@ describe("privacy page (DRAFT)", () => {
     }
   });
 
-  it("keeps the page out of search results while any blank is unfilled", () => {
-    const source = read("routes/privacy.tsx");
-    if (remainingPlaceholders().length > 0) {
-      assert.match(source, /name:\s*"robots",\s*content:\s*"noindex"/);
-    }
+  it("an email address appears only through CONTACT_EMAIL, its one designated field", () => {
+    if (CONTACT_EMAIL !== "") assert.ok(isValidEmail(CONTACT_EMAIL), "CONTACT_EMAIL is not an address");
+    const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
+    const shown = [...new Set(text.match(new RegExp(EMAIL.source, "g")) ?? [])];
+    assert.deepEqual(shown, CONTACT_EMAIL === "" ? [] : [CONTACT_EMAIL], "an address outside CONTACT_EMAIL");
+    // Nowhere else in the source either: only the CONTACT_EMAIL declaration may hold one.
+    const literals = literalsIn("lib/privacy-copy.ts", read("lib/privacy-copy.ts")).filter(
+      (l) => l.kind === "string" && EMAIL.test(l.text),
+    );
+    assert.ok(literals.length <= 1 && literals.every((l) => l.text === CONTACT_EMAIL), JSON.stringify(literals));
   });
 
-  it("states no operator, address, provider or period of its own: those are blanks", () => {
+  it("the designated field fills every place the page gives an address", () => {
     const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
-    assert.doesNotMatch(text, /[\w.+-]+@[\w-]+\.[\w.]+/, "no email address is written into the page");
+    const addressBlanks = remainingPlaceholders().filter((b) => /email address/i.test(b));
+    assert.equal(addressBlanks.length, CONTACT_EMAIL === "" ? 2 : 0);
+    if (CONTACT_EMAIL !== "") assert.equal(text.split(CONTACT_EMAIL).length - 1, 2);
+  });
+
+  it("states no web address of its own", () => {
+    const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
     assert.doesNotMatch(text, /https?:\/\//);
   });
 

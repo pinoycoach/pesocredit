@@ -4,18 +4,16 @@ import {
   BACK_TO_CALCULATOR,
   DRAFT_BANNER,
   PRIVACY_SECTIONS,
+  PRIVACY_STATUS,
   PRIVACY_TITLE,
+  privacyHeadMeta,
+  showDraftBanner,
   splitPlaceholders,
 } from "@/lib/privacy-copy";
 
 export const Route = createFileRoute("/privacy")({
-  // A draft with blanks must not show up in search results (privacy.test.ts enforces this).
-  head: () => ({
-    meta: [
-      { title: `${PRIVACY_TITLE} (DRAFT) · Tunay na Interes` },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  // A draft is hidden from search; a signed, final page is not (privacy.test.ts).
+  head: () => ({ meta: privacyHeadMeta(PRIVACY_STATUS) }),
   component: Privacy,
 });
 
@@ -29,12 +27,14 @@ function Privacy() {
 
         <header className="grid gap-3">
           <h1 className="font-display text-4xl tracking-tight text-foreground">{PRIVACY_TITLE}</h1>
-          <p
-            role="note"
-            className="rounded-lg border border-warn/40 bg-warn-soft px-4 py-3 text-sm font-medium text-warn"
-          >
-            {DRAFT_BANNER}
-          </p>
+          {showDraftBanner(PRIVACY_STATUS) && (
+            <p
+              role="note"
+              className="rounded-lg border border-warn/40 bg-warn-soft px-4 py-3 text-sm font-medium text-warn"
+            >
+              {DRAFT_BANNER}
+            </p>
+          )}
         </header>
 
         {PRIVACY_SECTIONS.map((section) => (

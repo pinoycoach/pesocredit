@@ -4,8 +4,11 @@
  * It states only what this app verifiably does (see network-privacy.test.ts and
  * subscribe.test.ts) and leaves a visible [ILAGAY DITO: ...] placeholder for everything
  * the owner must supply or a lawyer must decide. No operator, address, provider name or
- * retention period is invented here. A test lists the placeholders that remain, and the
- * page stays noindex while any do.
+ * retention period is invented here. A test lists the placeholders that remain.
+ *
+ * PRIVACY_STATUS is "draft" until Napoleon signs the page in SIGNOFF.json with no blanks
+ * left; then it must be "final" (privacy.test.ts enforces both directions). A draft shows
+ * the DRAFT banner and is hidden from search; a final page is neither.
  */
 import { NO_STORAGE_NOTE } from "./copy.ts";
 
@@ -13,6 +16,17 @@ export const PLACEHOLDER_OPEN = "[ILAGAY DITO:";
 
 /** A blank the owner (or a lawyer) has to fill before this page is final. */
 export const placeholder = (what: string) => `${PLACEHOLDER_OPEN} ${what}]`;
+
+export type PrivacyStatus = "draft" | "final";
+
+/** Switched to "final" in the same commit as Napoleon's signature for privacy-page. */
+export const PRIVACY_STATUS: PrivacyStatus = "draft";
+
+/**
+ * The one designated place for the page's email address, used wherever the page gives
+ * one. Empty until supplied: the page shows its placeholders instead.
+ */
+export const CONTACT_EMAIL = "";
 
 export const PRIVACY_TITLE = "Patakaran sa Privacy";
 
@@ -61,7 +75,7 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
     heading: "Paano mag-unsubscribe o magpabura ng email",
     paragraphs: [
       `Gamitin ang unsubscribe link sa bawat email na matatanggap mo. ${placeholder("kumpirmahin na may unsubscribe link ang napiling email service provider")}`,
-      `Puwede ka ring sumulat sa ${placeholder("email address para sa mga kahilingan")} at hihilingin naming burahin ang email mo.`,
+      `Puwede ka ring sumulat sa ${CONTACT_EMAIL || placeholder("email address para sa mga kahilingan")} at hihilingin naming burahin ang email mo.`,
     ],
   },
   {
@@ -71,10 +85,19 @@ export const PRIVACY_SECTIONS: PrivacySection[] = [
   {
     heading: "Makipag-ugnayan",
     paragraphs: [
-      `${placeholder("pangalan ng operator ng site")} · ${placeholder("email address ng contact")}`,
+      `${placeholder("pangalan ng operator ng site")} · ${CONTACT_EMAIL || placeholder("email address ng contact")}`,
     ],
   },
 ];
+
+/** The page's head tags: a draft is hidden from search and says DRAFT in its title. */
+export function privacyHeadMeta(status: PrivacyStatus) {
+  return status === "final"
+    ? [{ title: `${PRIVACY_TITLE} · Tunay na Interes` }]
+    : [{ title: `${PRIVACY_TITLE} (DRAFT) · Tunay na Interes` }, { name: "robots", content: "noindex" }];
+}
+
+export const showDraftBanner = (status: PrivacyStatus) => status === "draft";
 
 /** Every blank still to fill, from all sections. */
 export function remainingPlaceholders(): string[] {
