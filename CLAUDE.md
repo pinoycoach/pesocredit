@@ -149,10 +149,10 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B,
 C, E (Netlify + Resend) and F (English first, N34: F1 the approved English, F2 every word moved
 into `src/lib/copy/`, F3 English on screen) are complete, and the independent review of the
-English (N32) is applied (2026-09-23); stopped for review. Still Napoleon's: the headline's total
-when a late penalty is entered (N41), the fact checks before cap-values is signed (N42), the
-privacy blanks with the lawyer (N17) and the mobile re-check on the English UI (N31); then step
-group D, the live proof of the /api/subscribe limit (N18). Every step group stops for review.
+English (N32) is applied, and every value in `rules.ts` is checked against the circular (N42)
+(2026-09-23); stopped for review. Still Napoleon's: signing SIGNOFF.json (cap-values is ready),
+the privacy blanks with the lawyer (N17) and the mobile re-check on the English UI (N31); then
+step group D, the live proof of the /api/subscribe limit (N18). Every step group stops for review.
 
 ## Lessons
 
