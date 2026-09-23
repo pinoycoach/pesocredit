@@ -21,7 +21,6 @@ worth reconsidering if circumstances named here change).
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
-- N29 — Point 11: the bundle secret scan was done by hand (b0a9bdb, 6e975d1) and is not in CI — OPEN — Group C step C9: fresh build with a dummy secret, fail if it appears in client output
 - N31 — Point 11: mobile layout last checked at 1e9c32e; seven UI commits since, and /privacy has never had a recorded mobile check — OPEN — re-run on the current UI before launch. ("UI hash" was the one-time Phase 1 SHA-256 before/after check that cleanup changed no pixels; not a standing check, nothing to re-run.)
 
 ## Blocking
@@ -51,6 +50,7 @@ worth reconsidering if circumstances named here change).
 - N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — RESOLVED — the NUL in the test string is written as the escape \u0000 (same runtime string); the file has no NUL byte, so git diffs it as text (2026-09-23)
 - N27 — Points 1 and 9: tools/golden/oracle.py is not run by CI, so the independent check of G1–G7 can go stale — RESOLVED — CI runs tools/golden/check.py on every job: it runs oracle.py and compares all 49 G1–G7 cells with GOLDEN-CASES.md (2026-09-23)
 - N28 — Point 1: oracle.py hardcodes its own caps, outside rules.ts — RESOLVED — kept as the one documented exception, stated in RULES.md and at the top of oracle.py; tools/golden/check.py (CI) compares the oracle's cap literals with rules.ts CEILINGS directly, since a cap change that flips no G1–G7 value would not show in the output (2026-09-23)
+- N29 — Point 11: the bundle secret scan was done by hand (b0a9bdb, 6e975d1) and is not in CI — RESOLVED — CI runs .github/scripts/bundle-secret-scan.mjs on every job: it deletes the build output, builds fresh with a dummy EMAIL_CAPTURE_URL carrying a random secret, and fails if the secret, the capture address or the variable name is in any client file, or the value is baked into the server bundle (2026-09-23)
 
 ## Revisit
 

@@ -38,5 +38,7 @@ jobs:
       - name: Independent oracle agrees with GOLDEN-CASES.md, and its caps with rules.ts
         run: python tools/golden/check.py
       - run: npm run build
+      - name: Fresh build with a dummy EMAIL_CAPTURE_URL leaks no secret to the client
+        run: node .github/scripts/bundle-secret-scan.mjs
       - name: npm run dev starts, serves the page, and listens on loopback only
         run: node .github/scripts/dev-smoke.mjs

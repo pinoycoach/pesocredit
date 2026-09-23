@@ -98,6 +98,8 @@ No integrations are defined yet.
 - `npm run typecheck`, `npm run lint`, `npm run build` all pass.
 - `python tools/golden/check.py` passes: the independent oracle agrees with GOLDEN-CASES.md, and its
   own caps with `rules.ts` (CI runs it).
+- `node .github/scripts/bundle-secret-scan.mjs` passes: a fresh build with a dummy `EMAIL_CAPTURE_URL`
+  leaks no secret to the client (CI runs it).
 
 ## Working rules for Claude
 - Plan first; wait for approval before code. One commit per step.
