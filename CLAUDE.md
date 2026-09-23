@@ -88,6 +88,8 @@ logic (`src/lib/subscribe.ts`) stays host-agnostic.
   the new host.
 - `src/lib/public-config.ts` — under a dev server the form shows only when `NETLIFY_DEV` is set,
   because `/api/subscribe` exists only under `netlify dev`.
+- `tools/prove-rate-limit.mjs` — the live proof that `/api/subscribe` is rate limited; it also
+  checks Netlify's default function address `/.netlify/functions/subscribe`.
 
 ## Environment (point 8) — INCOMPLETE (test runner unconfirmed), see DECISIONS.md N9
 

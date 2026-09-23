@@ -69,7 +69,9 @@ STEP GROUP D — Deploy prep (I do the dashboard steps; you write the
 checklist from what I show you on screen, point 12)
 - Netlify site, peso.credit domain + DNS (N9)
 - Rate limiting on /api/subscribe: a limit of its own, proven on the
-  live site by sending requests until it answers 429 (N18, point 12)
+  live site by sending requests until it answers 429 (N18, point 12):
+  node tools/prove-rate-limit.mjs https://<site> on a deploy preview,
+  then on production; record the output in N18
 - Resend: peso.credit sending domain verified, DNS records copied from
   the live Resend screen (point 12); a Sending-access key restricted to
   that domain, set only in Netlify's environment; the Full-access key
