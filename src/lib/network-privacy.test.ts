@@ -7,7 +7,7 @@
  * side; the browser code uses none of them until the email form's own request (below).
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import ts from "typescript";
@@ -18,6 +18,9 @@ import {
   srcRoot,
 } from "./test-utils/source-strings.ts";
 
+/** The host's own functions (netlify/functions), scanned too; paths are relative to src/. */
+const HOST_FUNCTIONS = "../netlify/functions";
+
 /** API name -> the only files allowed to use it, and why. */
 const ALLOWED: Record<string, { files: string[]; why: string }> = {
   fetch: {
@@ -25,8 +28,12 @@ const ALLOWED: Record<string, { files: string[]; why: string }> = {
     why: "subscribe.ts (server): forwards the optional email form, email + consent time only, to the capture service. subscribe-client.ts (browser): posts only the typed email to this site's own /api/subscribe; it imports nothing, so it cannot reach the loan numbers",
   },
   "process.env": {
-    files: ["routes/api/subscribe.ts", "lib/get-public-config.ts"],
-    why: "server side: reads EMAIL_CAPTURE_URL and GUIDE_URL; the capture address never reaches the browser",
+    files: [`${HOST_FUNCTIONS}/subscribe.mts`, "lib/get-public-config.ts"],
+    why: "server side: the /api/subscribe function reads EMAIL_CAPTURE_URL; the page's config reads EMAIL_CAPTURE_URL, GUIDE_URL and NETLIFY_DEV. The capture address never reaches the browser",
+  },
+  "import.meta.env": {
+    files: ["lib/get-public-config.ts"],
+    why: "server side: import.meta.env.DEV tells the page's config whether it runs under a dev server, where /api/subscribe exists only under netlify dev; a boolean, no data",
   },
 };
 
@@ -100,11 +107,22 @@ export function webAddresses(file: string, source: string): { text: string; line
 
 describe("nothing leaves the phone: the app cannot send or keep data", () => {
   const root = srcRoot();
-  const files = sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/rules.ts");
+  const hostFunctions = readdirSync(join(root, HOST_FUNCTIONS))
+    .filter((name) => /\.m?tsx?$/.test(name))
+    .map((name) => `${HOST_FUNCTIONS}/${name}`);
+  const files = [
+    ...sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/rules.ts"),
+    ...hostFunctions,
+  ];
   const read = (file: string) => readFileSync(join(root, file), "utf8");
 
-  it("scans the real app source", () => {
-    for (const expected of ["components/calculator.tsx", "lib/loan-math.ts", "routes/__root.tsx"]) {
+  it("scans the real app source, and the host's functions", () => {
+    for (const expected of [
+      "components/calculator.tsx",
+      "lib/loan-math.ts",
+      "routes/__root.tsx",
+      `${HOST_FUNCTIONS}/subscribe.mts`,
+    ]) {
       assert.ok(files.includes(expected), `${expected} is not being scanned`);
     }
   });

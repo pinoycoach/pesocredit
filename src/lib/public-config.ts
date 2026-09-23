@@ -23,9 +23,18 @@ export function normalizeGuideUrl(raw: string | undefined): string | null {
   }
 }
 
-export function readPublicConfig(env: Record<string, string | undefined>): PublicConfig {
+/**
+ * `devServer` is true under a Vite dev server. There, /api/subscribe exists only under
+ * `netlify dev` (it is a Netlify function, not an app route), which sets NETLIFY_DEV. Under
+ * plain `npm run dev` the form is hidden, so it can never show and then fail.
+ */
+export function readPublicConfig(
+  env: Record<string, string | undefined>,
+  { devServer = false }: { devServer?: boolean } = {},
+): PublicConfig {
+  const endpointServed = !devServer || env.NETLIFY_DEV === "true";
   return {
-    emailCaptureEnabled: normalizeCaptureUrl(env.EMAIL_CAPTURE_URL) !== null,
+    emailCaptureEnabled: endpointServed && normalizeCaptureUrl(env.EMAIL_CAPTURE_URL) !== null,
     guideUrl: normalizeGuideUrl(env.GUIDE_URL),
   };
 }

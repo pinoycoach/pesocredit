@@ -7,5 +7,5 @@ import { readPublicConfig } from "./public-config.ts";
  * address itself never leaves the server.
  */
 export const getPublicConfig = createServerFn({ method: "GET" }).handler(async () =>
-  readPublicConfig(process.env),
+  readPublicConfig(process.env, { devServer: import.meta.env.DEV }),
 );

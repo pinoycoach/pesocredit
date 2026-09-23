@@ -35,6 +35,22 @@ describe("public config", () => {
     }
   });
 
+  it("under a dev server the form shows only where /api/subscribe exists (netlify dev)", () => {
+    const env = { EMAIL_CAPTURE_URL: "https://capture.example/hook" };
+    assert.equal(readPublicConfig(env, { devServer: true }).emailCaptureEnabled, false, "plain npm run dev");
+    assert.equal(
+      readPublicConfig({ ...env, NETLIFY_DEV: "true" }, { devServer: true }).emailCaptureEnabled,
+      true,
+      "netlify dev",
+    );
+    assert.equal(readPublicConfig(env).emailCaptureEnabled, true, "a production build");
+    assert.equal(
+      readPublicConfig({ GUIDE_URL: "https://guide.example/p" }, { devServer: true }).guideUrl,
+      "https://guide.example/p",
+      "the guide link does not depend on the endpoint",
+    );
+  });
+
   it("the guide link and the form are independent of each other", () => {
     assert.deepEqual(readPublicConfig({ GUIDE_URL: "https://guide.example/p" }), {
       emailCaptureEnabled: false,
