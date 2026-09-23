@@ -100,7 +100,7 @@ No integrations are defined yet.
 
 ## Current phase
 
-Phase 0 done. Now: Phase 4, step group A in HANDOVER.md (bring the calculator up to v2, then
+Phase 0 done. Now: Phase 4, step group B in HANDOVER.md (bring the calculator up to v2, then
 deploy). Every step group stops for review.
 
 ## Lessons
