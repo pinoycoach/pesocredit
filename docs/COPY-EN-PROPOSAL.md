@@ -1,8 +1,8 @@
 # English copy proposal (step F1): peso.credit
 
-**Status: PROPOSAL.** Nothing here is in the code. When you approve (edit any English cell,
-or say "yes" per ID or to all), step F2/F3 puts it in `src/lib/copy/en.ts`, and COPY-REVIEW.md
-is regenerated in English for the independent review (N32). The Filipino stays in the repo,
+**Status: APPROVED by Napoleon, 2026-09-23, with edits (C31, C69, C71, C101, T01; the brand
+stays "Tunay na Interes").** Step F3 puts it in `src/lib/copy/en.ts`, and COPY-REVIEW.md is
+regenerated in English for the independent review (N32). The Filipino stays in the repo,
 unused, as the future Tagalog version (N34).
 
 Written for people already struggling with online-lending-app debt (N36): calm, plain,
@@ -13,15 +13,14 @@ GRAY is never OVER; not legal advice.
 - One row per COPY-REVIEW ID (143 rows). The Filipino is copied from COPY-REVIEW.md, not retyped.
 - `{…}` is a part that varies. <u>Underlined</u> text links to the SEC circular. **Bold** is bold on screen.
 
-## Decisions for you
+## Decisions (approved)
 
-1. **Product name (C02, T01–T04).** "True Interest", or keep "Tunay na Interes" as the brand?
-2. **"Limit" for the circular's "ceiling"** (everywhere). "Limit" is plainer; the circular's
-   word stays visible in the sources (C101 note). Or keep "ceiling"?
+1. **Product name:** the brand stays "Tunay na Interes" (C02, T03, T04). The tab title is
+   "Tunay na Interes · The true cost of your loan" (T01).
+2. **"Limit"** for the circular's "ceiling", everywhere. C101 says the circular calls them ceilings.
 3. **The headline (C44):** "Your true cost: {X%} a month. By day {Z}, you pay {₱Y} in total."
-   CLAUDE.md is updated to this wording once approved.
-4. **The GRAY label (C62):** "Close to the limit". CLAUDE.md principle 2 is updated with it.
-5. **One new line (N1, below)** against false hope. It isn't a translation, so it needs its own yes.
+4. **The GRAY label (C62):** "Close to the limit".
+5. **The new line N1:** yes.
 
 ## Style used throughout
 
@@ -31,11 +30,11 @@ GRAY is never OVER; not legal advice.
 - EIR keeps its name and is spelled out once (C03). The fee names in C17 are the circular's own words, unchanged.
 - Dates as "1 April 2026".
 
-## New lines (not translations)
+## New lines (not translations; approved)
 
 | ID | Where | Proposed English | Why |
 |---|---|---|---|
-| N1 | Comparison card (1.5), directly under the rows, above C71 | This compares your numbers with a published limit. It does not tell you what you owe or what happens next. | N36, no false hope: “Above the limit” must not read as “you don't have to pay”. It states only what the tool does, with no claim about the law, so it is not legal advice. Would join the signed verdict wording. |
+| N1 | Comparison card (1.5), directly under the rows, above C71 | This compares your numbers with a published limit. It does not tell you what you owe or what happens next. | APPROVED. N36, no false hope: “Above the limit” must not read as “you don't have to pay”. It states only what the tool does, with no claim about the law, so it is not legal advice. Would join the signed verdict wording. |
 
 ## 1. Calculator page (peso.credit/)
 
@@ -44,7 +43,7 @@ GRAY is never OVER; not legal advice.
 | ID | Now (Filipino) | Proposed English | Note |
 |---|---|---|---|
 | C01 | Philippines · SEC MC No. 14, s. 2025 | Philippines · SEC MC No. 14, s. 2025 | Unchanged: a citation. |
-| C02 | Tunay na Interes | True Interest | DECIDE: translate the product name, or keep “Tunay na Interes” as the brand. |
+| C02 | Tunay na Interes | Tunay na Interes | APPROVED: the brand stays “Tunay na Interes”. |
 | C03 | Ilagay ang inutang, ang hulog, at ilang beses magbabayad. Kasama ang 7-araw na loan. Ang tool ay nagkukuwenta ng effective interest (EIR) at tinitingnan kung sakop ka ng naka-publish na ceiling — hindi nagnangalan ng lender, hindi nagpapayo kung paano magbayad. | Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool works out the effective interest rate (EIR) and checks whether the published SEC limit covers your loan. It names no lender and gives no advice on how to pay. |  |
 
 ### 1.2 Loan inputs card
@@ -78,7 +77,7 @@ GRAY is never OVER; not legal advice.
 | C28 | Late penalty na siningil (kung meron) | Late penalty charged (if any) |  |
 | C29 | Hindi kasama sa EIR; kasama sa <u>100%</u> total-cost cap. | Not part of the EIR. It counts toward the <u>100%</u> total-cost limit. |  |
 | C30 | Tala: unang follow-up | Note: first follow-up |  |
-| C31 | Opsyonal. Ilagay kung kailan unang tumawag o nag-message — hal. araw 4 sa 7-araw na loan. Hindi ito interes at hindi paratang sa sinuman. | Optional. When did they first call or message you? For example, day 4 of a 7-day loan. This is not interest, and it does not accuse anyone. |  |
+| C31 | Opsyonal. Ilagay kung kailan unang tumawag o nag-message — hal. araw 4 sa 7-araw na loan. Hindi ito interes at hindi paratang sa sinuman. | Optional. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan. This is not interest, and it does not accuse anyone. | Edited by Napoleon. |
 | C32 | Araw ng unang follow-up | Day of the first follow-up |  |
 | C33 | Saklaw ng ceiling | Does the limit apply? | Small heading above the three coverage questions. |
 | C34 | Lending / financing company (hindi bangko) | Lending or financing company (not a bank) |  |
@@ -101,7 +100,7 @@ GRAY is never OVER; not legal advice.
 
 | ID | Now (Filipino) | Proposed English | Note |
 |---|---|---|---|
-| C44 | Ang totoong gastos mo: {X%} kada buwan. Sa araw {Z}, {₱Y} ang kabuuang babayaran mo. | Your true cost: {X%} a month. By day {Z}, you pay {₱Y} in total. | DECIDE: the headline. CLAUDE.md fixes the Filipino wording; it gets this English once you approve. |
+| C44 | Ang totoong gastos mo: {X%} kada buwan. Sa araw {Z}, {₱Y} ang kabuuang babayaran mo. | Your true cost: {X%} a month. By day {Z}, you pay {₱Y} in total. | APPROVED headline; CLAUDE.md is updated with it. |
 | C45 | Ito ay ang rate kada araw × 30. Nasa "Paano kinuwenta" ang compounded na bersyon. | This is the daily rate × 30. The compounded version is under “How we calculated this”. |  |
 
 ### 1.5 Comparison with the published ceiling
@@ -109,7 +108,7 @@ GRAY is never OVER; not legal advice.
 | ID | Now (Filipino) | Proposed English | Note |
 |---|---|---|---|
 | C46 | Ang tool na ito ay para sa loans simula 1 Abril 2026. | This tool is for loans from 1 April 2026. |  |
-| C47 | Kumpara sa naka-publish na ceiling | Compared with the published limit | “Limit” for the circular's “ceiling” throughout: plainer. DECIDE (see the list above). |
+| C47 | Kumpara sa naka-publish na ceiling | Compared with the published limit | APPROVED: “limit” throughout. |
 | C48 | Batay sa <u>SEC MC No. 14, s. 2025</u> · as of 2026-09-19 | Based on <u>SEC MC No. 14, s. 2025</u> · as of 2026-09-19 |  |
 | C49 | Sakop ng ceiling ang loan na ito. | The limit applies to this loan. |  |
 | C50 | Maaaring sakop ang loan na ito. | The limit may apply to this loan. |  |
@@ -124,16 +123,16 @@ GRAY is never OVER; not legal advice.
 | C59 | Nominal na interes kada buwan | Nominal interest per month |  |
 | C60 | Kabuuang gastos kumpara sa inutang | Total cost compared with the amount borrowed |  |
 | C61 | Nasa loob ng ceiling | Within the limit |  |
-| C62 | Malapit sa ceiling | Close to the limit | DECIDE: the GRAY label. CLAUDE.md principle 2 quotes “malapit sa ceiling”; it gets this English. |
+| C62 | Malapit sa ceiling | Close to the limit | APPROVED GRAY label; CLAUDE.md principle 2 is updated with it. |
 | C63 | Lampas sa ceiling | Above the limit | N36: never “illegal”, never “you don't have to pay”. See the NEW line N1 below. |
 | C64 | Hindi tiyak kung sakop | Not sure the limit applies |  |
 | C65 | Numero mo: {the borrower's figure} · Ceiling: {cap, linked} | Your number: {the borrower's figure} · Limit: {cap, linked} |  |
 | C66 | <u>12% kada buwan</u> | <u>12% a month</u> |  |
 | C67 | <u>6% kada buwan</u> | <u>6% a month</u> |  |
 | C68 | <u>100% ng inutang</u> | <u>100% of the amount borrowed</u> |  |
-| C69 | Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular. | Close to the limit. It depends on how the monthly rate is worked out, and the circular does not say which way. |  |
+| C69 | Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular. | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | Edited by Napoleon. |
 | C70 | Maaaring lumampas ang numero mo, pero hindi tiyak kung sakop ang loan na ito. | Your number may be above the limit, but it is not certain that the limit applies to this loan. |  |
-| C71 | Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender. | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any lender. |  |
+| C71 | Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender. | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | Edited by Napoleon. |
 
 ### 1.6 Paano kinuwenta (expander)
 
@@ -183,7 +182,7 @@ GRAY is never OVER; not legal advice.
 |---|---|---|---|
 | C99 | Batayan | Sources | The Filipino “Batayan” is “basis”. |
 | C100 | **<u>SEC MC No. 14, s. 2025</u>** — epektibo simula 1 Abril 2026. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa <u>₱10,000</u> at hindi hihigit sa <u>4 na buwan</u>. | **<u>SEC MC No. 14, s. 2025</u>** In effect from 1 April 2026. For unsecured, general-purpose loans from lending and financing companies of up to <u>₱10,000</u> and up to <u>4 months</u>. |  |
-| C101 | **Mga ceiling** — nominal <u>6% kada buwan</u>, EIR <u>12% kada buwan</u>, at kabuuang gastos na hindi lalampas sa <u>100% ng inutang</u>. | **The limits** Nominal interest <u>6% a month</u>, EIR <u>12% a month</u>, and a total cost of no more than <u>100% of the amount borrowed</u>. | The circular calls these “ceilings”. |
+| C101 | **Mga ceiling** — nominal <u>6% kada buwan</u>, EIR <u>12% kada buwan</u>, at kabuuang gastos na hindi lalampas sa <u>100% ng inutang</u>. | **The limits** (the circular calls them ceilings) Nominal interest <u>6% a month</u>, EIR <u>12% a month</u>, and a total cost of no more than <u>100% of the amount borrowed</u>. | Edited by Napoleon. |
 | C102 | **Hindi sinusuri ng tool na ito** ang ceiling sa late penalty (<u>5% kada buwan</u>), dahil kailangan nito ng bilang ng araw na late. | **This tool does not check** the late-penalty limit (<u>5% a month</u>), because that needs the number of days late. |  |
 | C103 | **RA No. 3765 (Truth in Lending Act)** — ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×30 o compounded ang buwanang rate, kaya ipinapakita namin ang pareho. | **RA No. 3765 (Truth in Lending Act)** The basis for calculating the EIR, according to the circular. The circular does not say whether the monthly rate is ×30 or compounded, so we show both. |  |
 
@@ -289,10 +288,10 @@ GRAY is never OVER; not legal advice.
 
 | ID | Now (Filipino) | Proposed English | Note |
 |---|---|---|---|
-| T01 | Tunay na Interes | True Interest | Follows the C02 decision. |
+| T01 | Tunay na Interes | Tunay na Interes · The true cost of your loan | Edited by Napoleon. |
 | T02 | Libre. Ilagay ang loan amount, hulog, at bilang ng bayad. Tingnan ang EIR laban sa naka-publish na ceiling sa Pilipinas. | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines. |  |
-| T03 | Patakaran sa Privacy (DRAFT) · Tunay na Interes | Privacy Policy (DRAFT) · True Interest |  |
-| T04 | Patakaran sa Privacy · Tunay na Interes | Privacy Policy · True Interest |  |
+| T03 | Patakaran sa Privacy (DRAFT) · Tunay na Interes | Privacy Policy (DRAFT) · Tunay na Interes | Follows the C02 decision. |
+| T04 | Patakaran sa Privacy · Tunay na Interes | Privacy Policy · Tunay na Interes | Follows the C02 decision. |
 
 ## 4. Error page
 
