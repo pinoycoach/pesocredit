@@ -128,6 +128,9 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 - Property checks: a bigger deducted fee always raises the EIR; total cost is never negative.
 - Banned-phrase test: fails if any on-screen string contains a banned word (list above) or any lender name.
 - `npm run typecheck`, `npm run lint`, `npm run build` all pass.
+- No code runs directly in a `describe()` body: when it throws there, the run still exits 0 (N39:
+  run on Node 24; Node 22's source does the same). Compute inside `it()` or a hook;
+  `loan-math.test.ts` fails otherwise.
 - `python tools/golden/check.py` passes: the independent oracle agrees with GOLDEN-CASES.md, and its
   own caps with `rules.ts` (CI runs it).
 - `node .github/scripts/bundle-secret-scan.mjs` passes: a fresh build with dummy Resend settings leaks
@@ -160,6 +163,7 @@ here during the final retro phase — point 17.)
   restore an untracked file (injected test signatures stayed in the not-yet-tracked SIGNOFF.json),
   and it silently discards uncommitted work in a tracked one (step C4's edits to privacy-copy.ts
   were wiped). Byte-compare each file against its backup before moving on.
-- A breakage proof passes only if the run exits non-zero, not just because a ✖ appears. Node 24
+- A breakage proof passes only if the run exits non-zero, not just because a ✖ appears. Node
   prints ✖ for a describe() body that throws, yet counts no failure and exits 0, so a guard
-  computed there can stop running unseen (N39, found in step F3). Compute guards inside `it`.
+  computed there can stop running unseen (N39, found in step F3). Compute guards inside `it`;
+  `loan-math.test.ts` now enforces it.

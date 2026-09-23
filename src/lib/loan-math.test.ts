@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it } from "node:test";
+import ts from "typescript";
 import {
   analyzeLoan,
   buildSchedule,
@@ -77,10 +79,17 @@ function annuityDailyRate(principal: number, payment: number, count: number, int
   return Math.pow(1 + (lo + hi) / 2, 1 / intervalDays) - 1;
 }
 
+/** The golden loans as [id, input], in loan-fixtures.ts order. */
+const GOLDEN_CASES = Object.entries(GOLDEN_INPUTS);
+
 describe("golden cases (GOLDEN-CASES.md)", () => {
-  const { rows: table, found } = goldenTable();
+  // Read inside the tests, never while the suite is set up (N39): if GOLDEN-CASES.md cannot be read,
+  // every golden test fails, instead of the suite silently not running.
+  let cached: ReturnType<typeof goldenTable> | undefined;
+  const golden = () => (cached ??= goldenTable());
 
   it("the table has G1 to G7, each exactly once", () => {
+    const { rows: table, found } = golden();
     const duplicates = found.filter((row, i) => found.findIndex((r) => r.id === row.id) !== i);
     assert.deepEqual(
       duplicates,
@@ -96,8 +105,9 @@ describe("golden cases (GOLDEN-CASES.md)", () => {
     assert.deepEqual(Object.keys(GOLDEN_INPUTS), [...table.keys()]);
   });
 
-  for (const [id, input] of Object.entries(GOLDEN_INPUTS)) {
+  for (const [id, input] of GOLDEN_CASES) {
     it(`${id} reproduces every printed value`, () => {
+      const { rows: table, found } = golden();
       assert.equal(found.filter((row) => row.id === id).length, 1, `${id} must have exactly one row`);
       const cells = table.get(id);
       assert.ok(cells && cells.length === 7, `${id}: expected 7 cells`);
@@ -510,8 +520,9 @@ describe("properties", () => {
 // names, because a guard in a file of its own could itself be left off the list.
 // ---------------------------------------------------------------------------
 
-describe("npm test runs every test file", () => {
-  const listed = (
+/** The test files npm test runs, as package.json lists them. */
+function listedTests(): string[] {
+  return (
     JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as {
       scripts: Record<string, string>;
     }
@@ -519,22 +530,135 @@ describe("npm test runs every test file", () => {
     .split(/\s+/)
     .filter((token) => /\.test\.tsx?$/.test(token))
     .sort();
-  const onDisk = sourceFiles(srcRoot(), (p) => !/\.test\.tsx?$/.test(p))
+}
+
+/** The test files under src/, as paths from the repository root. */
+function testFilesOnDisk(): string[] {
+  return sourceFiles(srcRoot(), (p) => !/\.test\.tsx?$/.test(p))
     .map((p) => `src/${p}`)
     .sort();
+}
 
+describe("npm test runs every test file", () => {
   it("every *.test.ts under src/ is in the test script", () => {
-    const missing = onDisk.filter((file) => !listed.includes(file));
+    const listed = listedTests();
+    const missing = testFilesOnDisk().filter((file) => !listed.includes(file));
     assert.deepEqual(missing, [], `add to "test" in package.json: ${missing.join(" ")}`);
   });
 
   it("every file in the test script exists", () => {
-    const gone = listed.filter((file) => !onDisk.includes(file));
+    const onDisk = testFilesOnDisk();
+    const gone = listedTests().filter((file) => !onDisk.includes(file));
     assert.deepEqual(gone, [], `listed in package.json but not found: ${gone.join(" ")}`);
   });
 
   it("finds the test files it guards, not an empty list", () => {
+    const onDisk = testFilesOnDisk();
     assert.ok(onDisk.includes("src/lib/loan-math.test.ts"));
     assert.ok(onDisk.length >= 12, `only ${onDisk.length} test files found`);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// No code runs while a describe() body is built. When code there throws, Node 24 lists the
+// error but counts no failure and exits 0 (N39), so a guard computed there could stop
+// running while npm test passes. This lives here for the same reason as the test list.
+// ---------------------------------------------------------------------------
+
+/** Calls that only register a suite, a test or a hook. */
+const REGISTERS = new Set(["describe", "suite", "it", "test", "before", "after", "beforeEach", "afterEach"]);
+
+/** "it" for it(...), it.skip(...) or it.only(...); undefined for any other node. */
+function registration(node: ts.Node): string | undefined {
+  if (!ts.isCallExpression(node)) return undefined;
+  const callee = ts.isPropertyAccessExpression(node.expression) ? node.expression.expression : node.expression;
+  return ts.isIdentifier(callee) && REGISTERS.has(callee.text) ? callee.text : undefined;
+}
+
+/** Whether evaluating the node runs code: a call, `new`, a tagged template or `await` outside any function in it. */
+function runsCode(node: ts.Node): boolean {
+  if (ts.isFunctionLike(node)) return false;
+  if (ts.isCallExpression(node) || ts.isNewExpression(node) || ts.isTaggedTemplateExpression(node) || ts.isAwaitExpression(node)) {
+    return true;
+  }
+  return ts.forEachChild(node, (child) => (runsCode(child) ? true : undefined)) ?? false;
+}
+
+/**
+ * Statements of a describe() body that run code while the suite is built. Allowed: registering
+ * suites, tests and hooks (their names and options computed without a call), declaring functions
+ * and values that need no call, and looping over an existing value to register one test each.
+ * Property reads are allowed; keep them to values that exist.
+ */
+function eagerStatements(statements: readonly ts.Statement[]): ts.Statement[] {
+  return statements.filter((s) => {
+    if (ts.isFunctionDeclaration(s) || ts.isEmptyStatement(s)) return false;
+    if (ts.isVariableStatement(s)) {
+      return s.declarationList.declarations.some((d) => d.initializer !== undefined && runsCode(d.initializer));
+    }
+    if (ts.isExpressionStatement(s) && ts.isCallExpression(s.expression) && registration(s.expression)) {
+      return s.expression.arguments.some((arg) => !ts.isFunctionLike(arg) && runsCode(arg));
+    }
+    if (ts.isForOfStatement(s)) {
+      const body = ts.isBlock(s.statement) ? s.statement.statements : [s.statement];
+      return runsCode(s.expression) || eagerStatements(body).length > 0;
+    }
+    return true;
+  });
+}
+
+/** Every statement in a file's describe() bodies that runs code, as "file:line code". */
+export function eagerCode(file: string, source: string): string[] {
+  const sf = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const found: string[] = [];
+  const report = (node: ts.Node) => {
+    const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
+    found.push(`${file}:${line} ${node.getText(sf).split("\n")[0].slice(0, 100)}`);
+  };
+  const visit = (node: ts.Node): void => {
+    const kind = registration(node);
+    if ((kind === "describe" || kind === "suite") && ts.isCallExpression(node)) {
+      const body = [...node.arguments].reverse().find(ts.isFunctionLike);
+      if (body && (ts.isArrowFunction(body) || ts.isFunctionExpression(body))) {
+        if (ts.isBlock(body.body)) eagerStatements(body.body.statements).forEach(report);
+        else if (!registration(body.body) || runsCode(body.body)) report(body.body);
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return found;
+}
+
+describe("no code runs while a describe() body is built (N39)", () => {
+  it("every test file computes inside it() or a hook, never in a describe() body", () => {
+    const root = srcRoot();
+    const files = sourceFiles(root, (p) => !/\.test\.tsx?$/.test(p));
+    assert.ok(files.length >= 12, `only ${files.length} test files read`);
+    const found = files.flatMap((file) => eagerCode(file, readFileSync(join(root, file), "utf8")));
+    assert.deepEqual(found, [], `move this into it() or a before() hook:\n${found.join("\n")}`);
+  });
+
+  it("the check itself: flags code that runs, allows what only registers tests", () => {
+    const sample = [
+      'import { before, describe, it } from "node:test";',
+      'describe("s", () => {',
+      "  const files = sourceFiles(root);",
+      "  const read = (f: string) => readFileSync(f);",
+      "  let cached: string[] | undefined;",
+      "  const LIMIT = 3;",
+      "  function helper() { return compute(); }",
+      "  before(() => { compute(); });",
+      '  it("t", () => { compute(); });',
+      "  it(`${name()}`, () => {});",
+      "  for (const [id] of CASES) { it(id, () => {}); }",
+      "  for (const [id] of Object.entries(X)) { it(id, () => {}); }",
+      '  if (LIMIT > 2) it("u", () => {});',
+      "  compute();",
+      '  describe("inner", () => { const x = new Thing(); it("v", () => {}); });',
+      "});",
+    ].join("\n");
+    const lines = eagerCode("sample.test.ts", sample).map((f) => Number(/:(\d+) /.exec(f)?.[1]));
+    assert.deepEqual(lines, [3, 10, 12, 13, 14, 15]);
   });
 });

@@ -114,15 +114,17 @@ export function webAddresses(file: string, source: string): { text: string; line
 }
 
 describe("nothing leaves the phone: the app cannot send or keep data", () => {
-  const root = srcRoot();
-  const hostFunctions = readdirSync(join(root, HOST_FUNCTIONS))
-    .filter((name) => /\.m?tsx?$/.test(name))
-    .map((name) => `${HOST_FUNCTIONS}/${name}`);
-  const files = [
-    ...sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/rules.ts"),
-    ...hostFunctions,
-  ];
-  const read = (file: string) => readFileSync(join(root, file), "utf8");
+  // Listed inside the tests, never while the suite is set up (N39): if netlify/functions/ is missing, every
+  // test here fails, instead of the whole suite silently not running.
+  let scanned: string[] | undefined;
+  const files = () =>
+    (scanned ??= [
+      ...sourceFiles(srcRoot(), (p) => isTestOrGenerated(p) || p === "lib/rules.ts"),
+      ...readdirSync(join(srcRoot(), HOST_FUNCTIONS))
+        .filter((name) => /\.m?tsx?$/.test(name))
+        .map((name) => `${HOST_FUNCTIONS}/${name}`),
+    ]);
+  const read = (file: string) => readFileSync(join(srcRoot(), file), "utf8");
 
   it("scans the real app source, and the host's functions", () => {
     for (const expected of [
@@ -131,12 +133,12 @@ describe("nothing leaves the phone: the app cannot send or keep data", () => {
       "routes/__root.tsx",
       `${HOST_FUNCTIONS}/subscribe.mts`,
     ]) {
-      assert.ok(files.includes(expected), `${expected} is not being scanned`);
+      assert.ok(files().includes(expected), `${expected} is not being scanned`);
     }
   });
 
   it("every network, storage and environment API is on the allowed list", () => {
-    const problems = files.flatMap((file) =>
+    const problems = files().flatMap((file) =>
       apiUses(file, read(file))
         .filter((use) => !ALLOWED[use.api]?.files.includes(file))
         .map((use) => `${file}:${use.line} uses ${use.api}`),
@@ -147,7 +149,7 @@ describe("nothing leaves the phone: the app cannot send or keep data", () => {
   it("the allowed list only names files that exist and really use the API", () => {
     for (const [api, { files: allowedFiles }] of Object.entries(ALLOWED)) {
       for (const file of allowedFiles) {
-        assert.ok(files.includes(file), `${api}: ${file} does not exist`);
+        assert.ok(files().includes(file), `${api}: ${file} does not exist`);
         assert.ok(
           apiUses(file, read(file)).some((use) => use.api === api),
           `${api}: ${file} no longer uses it; remove it from the list`,
@@ -157,7 +159,7 @@ describe("nothing leaves the phone: the app cannot send or keep data", () => {
   });
 
   it("no source file writes a web address, except those on the allowed list (rules.ts holds the one link to the circular)", () => {
-    const found = files.flatMap((file) =>
+    const found = files().flatMap((file) =>
       webAddresses(file, read(file))
         .filter((a) => !ALLOWED_ADDRESSES[file]?.addresses.includes(a.text))
         .map((a) => `${file}:${a.line} "${a.text}"`),

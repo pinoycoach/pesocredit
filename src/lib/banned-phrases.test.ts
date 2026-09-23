@@ -20,6 +20,7 @@ import * as rules from "./rules.ts";
 import { plainText } from "./segments.ts";
 import {
   isTestOrGenerated,
+  type Literal,
   literalsIn,
   sourceFiles,
   srcRoot,
@@ -100,13 +101,20 @@ const base = (over: Partial<LoanInput> = {}): LoanInput => ({
 });
 
 describe("banned phrases: source", () => {
-  const root = srcRoot();
-  const files = sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/banned.ts");
-  const strings = files.flatMap((file) =>
-    literalsIn(file, readFileSync(join(root, file), "utf8")).filter((l) => l.kind === "string"),
-  );
+  // Read inside the tests, never while the suite is set up (N39).
+  let cached: { files: string[]; strings: Literal[] } | undefined;
+  const source = () => {
+    if (cached) return cached;
+    const root = srcRoot();
+    const files = sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/banned.ts");
+    const strings = files.flatMap((file) =>
+      literalsIn(file, readFileSync(join(root, file), "utf8")).filter((l) => l.kind === "string"),
+    );
+    return (cached = { files, strings });
+  };
 
   it("scans the real app source, not an empty list", () => {
+    const { files, strings } = source();
     for (const expected of [
       "lib/loan-math.ts",
       "lib/copy.ts",
@@ -124,7 +132,7 @@ describe("banned phrases: source", () => {
   });
 
   it("no string in the source contains a banned word or a lender name", () => {
-    const found = strings.flatMap((l) =>
+    const found = source().strings.flatMap((l) =>
       findBanned(l.text).map((hit) => `${l.file}:${l.line} "${l.text.slice(0, 70)}" contains "${hit}"`),
     );
     assert.deepEqual(found, [], found.join("\n"));

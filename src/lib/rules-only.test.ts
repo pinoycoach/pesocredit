@@ -75,29 +75,32 @@ function violations(file: string, source: string): string[] {
 }
 
 describe("legal numbers live only in rules.ts", () => {
-  const root = srcRoot();
-  const files = sourceFiles(root, (p) => isTestOrGenerated(p) || p === "lib/rules.ts");
+  // Listed inside the tests, never while the suite is set up (N39).
+  const files = () => sourceFiles(srcRoot(), (p) => isTestOrGenerated(p) || p === "lib/rules.ts");
+  const read = (file: string) => readFileSync(join(srcRoot(), file), "utf8");
 
   it("scans the real app source, not an empty list", () => {
     for (const expected of [
       "lib/loan-math.ts",
       "lib/copy.ts",
+      "lib/copy/en.ts",
+      "lib/copy/fil.ts",
       "components/calculator.tsx",
       "components/result.tsx",
       "routes/index.tsx",
     ]) {
-      assert.ok(files.includes(expected), `${expected} is not being scanned`);
+      assert.ok(files().includes(expected), `${expected} is not being scanned`);
     }
-    assert.ok(!files.includes("lib/rules.ts"));
+    assert.ok(!files().includes("lib/rules.ts"));
   });
 
   it("no source file writes a legal number", () => {
-    const found = files.flatMap((file) => violations(file, readFileSync(join(root, file), "utf8")));
+    const found = files().flatMap((file) => violations(file, read(file)));
     assert.deepEqual(found, [], `legal numbers outside rules.ts:\n${found.join("\n")}`);
   });
 
   it("loan-math.ts takes its caps from rules.ts", () => {
-    const source = readFileSync(join(root, "lib/loan-math.ts"), "utf8");
+    const source = read("lib/loan-math.ts");
     assert.match(source, /from "\.\/rules\.ts"/);
     for (const name of ["CEILINGS", "COVERAGE", "DAYS_PER_MONTH", "eirVerdict"]) {
       assert.ok(source.includes(name), `${name} is not used`);
