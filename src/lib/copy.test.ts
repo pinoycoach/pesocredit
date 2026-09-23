@@ -123,6 +123,10 @@ describe("en: headline", () => {
     assert.ok(!computedRows(numbersFor(base()), en).some(([label]) => label === en.penaltyRowLabel));
   });
 
+  it("points to the compounded figure without repeating the headline's method (C45)", () => {
+    assert.equal(en.headlineMethodNote, "The compounded version is under “How we calculated this”.");
+  });
+
   it("leads with the simple monthly figure, not the compounded one (G3)", () => {
     const g3 = numbersFor(base({ upfrontFee: 65, payment: 5_070 }));
     assert.match(en.headline(g3), /^Estimated cost: 11\.59% a month \(daily rate × 30\)\./);

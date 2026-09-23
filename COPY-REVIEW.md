@@ -105,7 +105,7 @@ Shown in place of the whole result.
 |---|---|---|---|
 | C44 | Estimated cost: {X%} a month (daily rate × 30). Total payments by day {Z}: {₱Y}. | `src/lib/copy/en.ts:145` | template; e.g. G2: "Estimated cost: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00."; with a late penalty, G7: "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱3,150.00. Plus the late penalty you entered: ₱2,900.00." |
 | C116 | Plus the late penalty you entered: {₱P}. | `src/lib/copy/en.ts:146` | added to the headline only when a late penalty is entered (N41) |
-| C45 | This is the daily rate × 30. The compounded version is under “How we calculated this”. | `src/lib/copy/en.ts:147` | under the headline |
+| C45 | The compounded version is under “How we calculated this”. | `src/lib/copy/en.ts:147` | under the headline |
 
 ### 1.5 Comparison with the published limit
 

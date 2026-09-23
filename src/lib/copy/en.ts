@@ -144,7 +144,7 @@ export const en: Copy = {
   headline: (n) =>
     `Estimated cost: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.scheduledPayments)}.`,
   penaltySentence: (penalty) => `Plus the late penalty you entered: ${penalty}.`,
-  headlineMethodNote: `This is the daily rate × ${DAYS_PER_MONTH}. The compounded version is under “How we calculated this”.`,
+  headlineMethodNote: "The compounded version is under “How we calculated this”.",
   oldLoanNotice: `The limit comparison is for loans from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
   comparisonTitle: "Compared with the published limit",
   basisLead: "Based on",
