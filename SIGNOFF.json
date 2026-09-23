@@ -2,6 +2,6 @@
   "items": [
     { "id": "privacy-page", "signature": null },
     { "id": "verdict-wording", "signature": null },
-    { "id": "cap-values", "signature": null }
+    { "id": "cap-values", "signature": { "signer": "Napoleon", "date": "2026-09-24", "hash": "sha256:1246b904744cdd7f2b0e4129ae0347606a10ed56b4cb20a1fcf93f35078707a0", "reviewedBy": "Checked by Napoleon against docs/sources/SEC-MC-14-s2025.pdf (Sec. 1, 2(h), 3, 3(2), 5, 9)" } }
   ]
 }
