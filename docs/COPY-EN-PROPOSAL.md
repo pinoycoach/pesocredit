@@ -5,6 +5,10 @@ stays "Tunay na Interes").** Step F3 put it on screen in `src/lib/copy/en.ts`, a
 is regenerated in English for the independent review (N32), with these same IDs; the new line N1
 is C115 there. The Filipino stays in the repo, unused, as the future Tagalog version (N34).
 
+**Partly superseded (2026-09-23):** the independent review (DECISIONS N32) changed C03, C31, C39,
+C41, C44, C46, C49, C51, C58, C59, C61–C63, C79, C94, C115 and T01. This proposal is kept as the
+record of step F1; COPY-REVIEW.md shows the text on screen.
+
 Written for people already struggling with online-lending-app debt (N36): calm, plain,
 short sentences; no shame or blame; no false hope; no advice; no accusation. The standing
 rules still hold: never name a lender; never "illegal", "scam", "fraud" or "loan shark";

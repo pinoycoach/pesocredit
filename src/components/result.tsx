@@ -104,7 +104,7 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
           </ul>
         ) : null}
         {coverage.state !== "NOT_COVERED" && copy.comparisonNote ? (
-          <p className="text-sm text-pretty">{copy.comparisonNote}</p>
+          <p className="text-base leading-relaxed text-pretty">{copy.comparisonNote}</p>
         ) : null}
 
         <p className="text-xs text-muted-foreground text-pretty">{copy.disclaimer}</p>

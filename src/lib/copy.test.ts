@@ -1,6 +1,7 @@
 /**
  * Pins the wording of each language (DECISIONS N34): English, on screen, as approved in
- * docs/COPY-EN-PROPOSAL.md; and the Filipino, kept for the Tagalog version.
+ * docs/COPY-EN-PROPOSAL.md and changed by the independent review (N32); and the Filipino, kept
+ * for the Tagalog version.
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -85,38 +86,47 @@ describe("the language on screen", () => {
 });
 
 describe("en: headline", () => {
-  it("states the approved headline: the true monthly cost, the day, the total to pay (G2)", () => {
+  it("states the reviewed headline: the estimated monthly cost, its method, the day and the total (G2)", () => {
     assert.equal(
       en.headline(numbersFor(base())),
-      "Your true cost: 114.58% a month. By day 7, you pay ₱6,500.00 in total.",
+      "Estimated cost: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00.",
     );
   });
 
   it("uses the last payment day and the total of every payment, penalty included (G6, G7)", () => {
     assert.equal(
       en.headline(numbersFor(G6)),
-      "Your true cost: 4.08% a month. By day 28, you pay ₱10,240.00 in total.",
+      "Estimated cost: 4.08% a month (daily rate × 30). Total payments by day 28: ₱10,240.00.",
     );
     assert.equal(
       en.headline(numbersFor(G7)),
-      "Your true cost: 4.88% a month. By day 30, you pay ₱6,050.00 in total.",
+      "Estimated cost: 4.88% a month (daily rate × 30). Total payments by day 30: ₱6,050.00.",
     );
   });
 
   it("leads with the simple monthly figure, not the compounded one (G3)", () => {
     const g3 = numbersFor(base({ upfrontFee: 65, payment: 5_070 }));
-    assert.match(en.headline(g3), /^Your true cost: 11\.59% a month\./);
+    assert.match(en.headline(g3), /^Estimated cost: 11\.59% a month \(daily rate × 30\)\./);
     assert.ok(!en.headline(g3).includes("12.26"));
   });
 });
 
 describe("en: the comparison with the published limit", () => {
-  it("labels GRAY \"Close to the limit\", a state of its own, never over (principle 2)", () => {
+  it("says each badge is about the number, and GRAY is a state of its own, never over (principle 2)", () => {
     assert.deepEqual(en.stateText, {
-      WITHIN: "Within the limit",
-      GRAY: "Close to the limit",
-      OVER: "Above the limit",
+      WITHIN: "Your number is under the limit",
+      GRAY: "Your number is close to the limit",
+      OVER: "Your number is over the limit",
     });
+  });
+
+  it("names how each row's number is worked out (C58, C59, C79)", () => {
+    // The EIR row shows the daily rate × 30, and its badge checks the compounded rate too
+    // (rules.ts eirVerdict), so the label says both.
+    assert.equal(en.ceilingLabel.eir, "EIR per month (daily rate × 30; the compounded rate is checked too)");
+    assert.equal(en.ceilingLabel.nominal, "Nominal interest per month (from your payments)");
+    const rows = en.howComputedRows(numbersFor(base())).map(([label]) => label);
+    assert.ok(rows.includes("Nominal interest per month (from your payments)"));
   });
 
   it("explains GRAY with the approved sentence (C69)", () => {
@@ -129,7 +139,7 @@ describe("en: the comparison with the published limit", () => {
   it("says what the comparison does not tell (N1; N36, no false hope)", () => {
     assert.equal(
       en.comparisonNote,
-      "This compares your numbers with a published limit. It does not tell you what you owe or what happens next.",
+      "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
     );
   });
 
@@ -140,6 +150,10 @@ describe("en: the comparison with the published limit", () => {
     const disclaimer = card.indexOf("{copy.disclaimer}");
     assert.ok(rows > 0 && rows < note && note < disclaimer, "rows, then the note, then the disclaimer");
     assert.match(card, /\{coverage\.state !== "NOT_COVERED" && copy\.comparisonNote \? \(/, "shown with the rows");
+    // Normal-size text, not small (review N32).
+    const tag = /<p className="([^"]*)">\{copy\.comparisonNote\}<\/p>/.exec(card);
+    assert.ok(tag, "the note is one paragraph");
+    assert.doesNotMatch(tag[1], /\btext-(xs|sm)\b/, "the note is not small text");
   });
 
   it("disclaims legal advice and any specific lender (C71)", () => {
@@ -156,7 +170,7 @@ describe("en: the comparison with the published limit", () => {
   });
 
   it("shows the exact notice for loans dated before the circular takes effect", () => {
-    assert.equal(en.oldLoanNotice, "This tool is for loans from 1 April 2026.");
+    assert.equal(en.oldLoanNotice, "The limit comparison is for loans from 1 April 2026.");
   });
 
   it("builds the cap text from rules.ts", () => {

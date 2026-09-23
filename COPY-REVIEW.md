@@ -43,49 +43,49 @@ The page a borrower lands on. Top to bottom.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C01 | Philippines · SEC MC No. 14, s. 2025 | `src/lib/copy/en.ts:87` | always (small caps above the title) |
-| C02 | Tunay na Interes | `src/lib/copy/en.ts:88` | always (page title) |
-| C03 | Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool works out the effective interest rate (EIR) and checks whether the published SEC limit covers your loan. It names no lender and gives no advice on how to pay. | `src/lib/copy/en.ts:90` | always |
+| C01 | Philippines · SEC MC No. 14, s. 2025 | `src/lib/copy/en.ts:88` | always (small caps above the title) |
+| C02 | Tunay na Interes | `src/lib/copy/en.ts:89` | always (page title) |
+| C03 | Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limit applies to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay. | `src/lib/copy/en.ts:91` | always |
 
 ### 1.2 Loan inputs card
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C04 | Your loan numbers | `src/lib/copy/en.ts:92` | card title |
-| C05 | Take them from your disclosure statement, receipt or app screen, not from an ad. | `src/lib/copy/en.ts:94` | card description |
-| C06 | 7 days | `src/lib/copy/en.ts:96` | quick-fill button, top line |
-| C07 | One payment on day 7 | `src/lib/copy/en.ts:96` | quick-fill button, second line |
-| C08 | 14 days | `src/lib/copy/en.ts:97` | quick-fill button, top line |
-| C09 | One payment on day 14 | `src/lib/copy/en.ts:97` | quick-fill button, second line |
-| C10 | 30 days · 1 payment | `src/lib/copy/en.ts:98` | quick-fill button, top line |
-| C11 | One payment at the end of the month | `src/lib/copy/en.ts:98` | quick-fill button, second line |
-| C12 | 4 payments | `src/lib/copy/en.ts:99` | quick-fill button, top line |
-| C13 | Weekly, four payments | `src/lib/copy/en.ts:99` | quick-fill button, second line |
-| C14 | Amount borrowed (principal) | `src/lib/copy/en.ts:101` | field label |
-| C15 | The amount on your contract, not what you received if something was deducted. | `src/lib/copy/en.ts:102` | field hint |
-| C16 | Fees deducted from what you received | `src/lib/copy/en.ts:103` | field label |
-| C17 | For example: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee. Enter the total of everything deducted. Enter 0 if you received the full amount. Included in the EIR. | `src/lib/copy/en.ts:104` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
-| C18 | Amount of each payment | `src/lib/copy/en.ts:105` | field label |
-| C19 | As written on your schedule. Just one number if you pay once at the end. | `src/lib/copy/en.ts:106` | field hint |
-| C20 | Number of payments | `src/lib/copy/en.ts:107` | field label |
-| C21 | First payment due (day) | `src/lib/copy/en.ts:108` | field label |
-| C22 | 7 = due on day 7 | `src/lib/copy/en.ts:109` | field hint |
-| C23 | How often you pay | `src/lib/copy/en.ts:110` | label above the four frequency buttons |
-| C24 | Daily | `src/lib/copy/en.ts:112` | frequency button |
-| C25 | Every 7 days | `src/lib/copy/en.ts:113` | frequency button |
-| C26 | Every 14 days | `src/lib/copy/en.ts:114` | frequency button |
-| C27 | Monthly (~30 days) | `src/lib/copy/en.ts:115` | frequency button |
-| C28 | Late penalty charged (if any) | `src/lib/copy/en.ts:117` | field label |
-| C29 | Not part of the EIR. It counts toward the <u>100%</u> total-cost limit. | `src/lib/copy/en.ts:118` | field hint |
-| C30 | Note: first follow-up | `src/lib/copy/en.ts:123` | switch label (optional note) |
-| C31 | Optional. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan. This is not interest, and it does not accuse anyone. | `src/lib/copy/en.ts:125` | switch hint |
-| C32 | Day of the first follow-up | `src/lib/copy/en.ts:126` | field label, only when the switch is on |
-| C33 | Does the limit apply? | `src/lib/copy/en.ts:127` | small caps heading |
-| C34 | Lending or financing company (not a bank) | `src/lib/copy/en.ts:128` | switch |
-| C35 | Unsecured, general-purpose loan | `src/lib/copy/en.ts:129` | switch |
-| C36 | Contract or renewal date | `src/lib/copy/en.ts:130` | date field label |
-| C37 | For loans taken out, restructured or renewed from 1 April 2026. | `src/lib/copy/en.ts:131` | date field hint |
-| C38 | We don't save or send the numbers you enter. | `src/lib/copy/en.ts:50` | always, directly under the inputs card |
+| C04 | Your loan numbers | `src/lib/copy/en.ts:93` | card title |
+| C05 | Take them from your disclosure statement, receipt or app screen, not from an ad. | `src/lib/copy/en.ts:95` | card description |
+| C06 | 7 days | `src/lib/copy/en.ts:97` | quick-fill button, top line |
+| C07 | One payment on day 7 | `src/lib/copy/en.ts:97` | quick-fill button, second line |
+| C08 | 14 days | `src/lib/copy/en.ts:98` | quick-fill button, top line |
+| C09 | One payment on day 14 | `src/lib/copy/en.ts:98` | quick-fill button, second line |
+| C10 | 30 days · 1 payment | `src/lib/copy/en.ts:99` | quick-fill button, top line |
+| C11 | One payment at the end of the month | `src/lib/copy/en.ts:99` | quick-fill button, second line |
+| C12 | 4 payments | `src/lib/copy/en.ts:100` | quick-fill button, top line |
+| C13 | Weekly, four payments | `src/lib/copy/en.ts:100` | quick-fill button, second line |
+| C14 | Amount borrowed (principal) | `src/lib/copy/en.ts:102` | field label |
+| C15 | The amount on your contract, not what you received if something was deducted. | `src/lib/copy/en.ts:103` | field hint |
+| C16 | Fees deducted from what you received | `src/lib/copy/en.ts:104` | field label |
+| C17 | For example: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee. Enter the total of everything deducted. Enter 0 if you received the full amount. Included in the EIR. | `src/lib/copy/en.ts:105` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
+| C18 | Amount of each payment | `src/lib/copy/en.ts:106` | field label |
+| C19 | As written on your schedule. Just one number if you pay once at the end. | `src/lib/copy/en.ts:107` | field hint |
+| C20 | Number of payments | `src/lib/copy/en.ts:108` | field label |
+| C21 | First payment due (day) | `src/lib/copy/en.ts:109` | field label |
+| C22 | 7 = due on day 7 | `src/lib/copy/en.ts:110` | field hint |
+| C23 | How often you pay | `src/lib/copy/en.ts:111` | label above the four frequency buttons |
+| C24 | Daily | `src/lib/copy/en.ts:113` | frequency button |
+| C25 | Every 7 days | `src/lib/copy/en.ts:114` | frequency button |
+| C26 | Every 14 days | `src/lib/copy/en.ts:115` | frequency button |
+| C27 | Monthly (~30 days) | `src/lib/copy/en.ts:116` | frequency button |
+| C28 | Late penalty charged (if any) | `src/lib/copy/en.ts:118` | field label |
+| C29 | Not part of the EIR. It counts toward the <u>100%</u> total-cost limit. | `src/lib/copy/en.ts:119` | field hint |
+| C30 | Note: first follow-up | `src/lib/copy/en.ts:124` | switch label (optional note) |
+| C31 | Optional, and not part of the calculation. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan. | `src/lib/copy/en.ts:126` | switch hint |
+| C32 | Day of the first follow-up | `src/lib/copy/en.ts:127` | field label, only when the switch is on |
+| C33 | Does the limit apply? | `src/lib/copy/en.ts:128` | small caps heading |
+| C34 | Lending or financing company (not a bank) | `src/lib/copy/en.ts:129` | switch |
+| C35 | Unsecured, general-purpose loan | `src/lib/copy/en.ts:130` | switch |
+| C36 | Contract or renewal date | `src/lib/copy/en.ts:131` | date field label |
+| C37 | For loans taken out, restructured or renewed from 1 April 2026. | `src/lib/copy/en.ts:132` | date field hint |
+| C38 | We don't save or send the numbers you enter. | `src/lib/copy/en.ts:51` | always, directly under the inputs card |
 
 ### 1.3 When the numbers cannot be used
 
@@ -93,92 +93,92 @@ Shown in place of the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C39 | Enter the amount borrowed and a payment to see the true cost. | `src/lib/copy/en.ts:135` | principal or payment missing, or not a usable number |
-| C40 | Enter the contract date to see the result. | `src/lib/copy/en.ts:136` | contract date missing or not a real date |
-| C41 | We can't calculate this: the deducted fees can't be equal to or more than the amount borrowed. Please check the numbers. | `src/lib/copy/en.ts:138` | the deducted fee is equal to or more than the amount borrowed |
-| C42 | We can't calculate this: your payments add up to less than what you received. Please check the numbers. | `src/lib/copy/en.ts:140` | the payments add up to less than what was received |
-| C43 | We can't work out a rate from these numbers. Please check them. | `src/lib/copy/en.ts:141` | no rate fits these numbers |
+| C39 | Enter the amount borrowed and a payment to see the cost. | `src/lib/copy/en.ts:136` | principal or payment missing, or not a usable number |
+| C40 | Enter the contract date to see the result. | `src/lib/copy/en.ts:137` | contract date missing or not a real date |
+| C41 | This tool can't calculate a rate when the deducted fees are equal to or more than the amount borrowed. Please check the numbers. | `src/lib/copy/en.ts:139` | the deducted fee is equal to or more than the amount borrowed |
+| C42 | We can't calculate this: your payments add up to less than what you received. Please check the numbers. | `src/lib/copy/en.ts:141` | the payments add up to less than what was received |
+| C43 | We can't work out a rate from these numbers. Please check them. | `src/lib/copy/en.ts:142` | no rate fits these numbers |
 
 ### 1.4 Result headline
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C44 | Your true cost: {X%} a month. By day {Z}, you pay {₱Y} in total. | `src/lib/copy/en.ts:144` | template; e.g. G2: "Your true cost: 114.58% a month. By day 7, you pay ₱6,500.00 in total." |
-| C45 | This is the daily rate × 30. The compounded version is under “How we calculated this”. | `src/lib/copy/en.ts:145` | under the headline |
+| C44 | Estimated cost: {X%} a month (daily rate × 30). Total payments by day {Z}: {₱Y}. | `src/lib/copy/en.ts:145` | template; e.g. G2: "Estimated cost: 114.58% a month (daily rate × 30). Total payments by day 7: ₱6,500.00." |
+| C45 | This is the daily rate × 30. The compounded version is under “How we calculated this”. | `src/lib/copy/en.ts:146` | under the headline |
 
 ### 1.5 Comparison with the published limit
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C46 | This tool is for loans from 1 April 2026. | `src/lib/copy/en.ts:146` | instead of this whole card, when the contract is dated before the circular applies |
-| C47 | Compared with the published limit | `src/lib/copy/en.ts:147` | card title |
+| C46 | The limit comparison is for loans from 1 April 2026. | `src/lib/copy/en.ts:147` | instead of this whole card, when the contract is dated before the circular applies |
+| C47 | Compared with the published limit | `src/lib/copy/en.ts:148` | card title |
 | C48 | Based on <u>SEC MC No. 14, s. 2025</u> · as of 2026-09-19 | `src/components/source-link.tsx:43` | card subtitle; also at the end of Sources (1.9) |
-| C49 | The limit applies to this loan. | `src/lib/copy/en.ts:151` | coverage badge: COVERED |
-| C50 | The limit may apply to this loan. | `src/lib/copy/en.ts:152` | coverage badge: MAYBE |
-| C51 | The limit does not apply to this loan. | `src/lib/copy/en.ts:153` | coverage badge: NOT_COVERED |
-| C52 | The limit is for lending and financing companies, not banks. | `src/lib/copy/en.ts:58` | reason under the coverage badge |
-| C53 | The limit is for unsecured loans. | `src/lib/copy/en.ts:60` | reason under the coverage badge |
-| C54 | The limit is for general-purpose loans. | `src/lib/copy/en.ts:62` | reason under the coverage badge |
-| C55 | A principal of ₱10,001 is more than the <u>₱10,000</u> the limit covers. | `src/lib/copy/en.ts:64` | reason under the coverage badge (example: the number varies) |
-| C56 | A term of 124 days is longer than <u>4 months</u>. | `src/lib/copy/en.ts:70` | reason under the coverage badge (example: the number varies) |
-| C57 | A term of 121 days may still be within <u>4 months</u>, depending on the calendar. The limit may apply. | `src/lib/copy/en.ts:72` | reason under the coverage badge (example: the number varies) |
-| C58 | Effective interest rate (EIR) per month | `src/lib/copy/en.ts:157` | row label (eir) |
-| C59 | Nominal interest per month | `src/lib/copy/en.ts:158` | row label (nominal) |
-| C60 | Total cost compared with the amount borrowed | `src/lib/copy/en.ts:159` | row label (totalCost) |
-| C61 | Within the limit | `src/lib/copy/en.ts:162` | row badge: WITHIN |
-| C62 | Close to the limit | `src/lib/copy/en.ts:163` | row badge: GRAY |
-| C63 | Above the limit | `src/lib/copy/en.ts:164` | row badge: OVER |
-| C64 | Not sure the limit applies | `src/lib/copy/en.ts:166` | row badge when the number is over but coverage is uncertain |
-| C65 | Your number: {the borrower's figure} · Limit: {cap, linked} | `src/lib/copy/en.ts:167` | every row; the cap text is below (words from rowNumberLabel and rowCeilingLabel) |
-| C66 | <u>12% a month</u> | `src/lib/copy/en.ts:170` | cap in the eir row (links to the circular) |
-| C67 | <u>6% a month</u> | `src/lib/copy/en.ts:171` | cap in the nominal row (links to the circular) |
-| C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:172` | cap in the totalCost row (links to the circular) |
-| C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:175` | under the EIR row when the EIR is GRAY |
-| C70 | Your number may be above the limit, but it is not certain that the limit applies to this loan. | `src/lib/copy/en.ts:177` | under a row that is over while coverage is uncertain |
-| C115 | This compares your numbers with a published limit. It does not tell you what you owe or what happens next. | `src/lib/copy/en.ts:179` | directly under the rows, whenever they are shown, in small text (added in step F3) |
-| C71 | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | `src/lib/copy/en.ts:181` | always, bottom of the card |
+| C49 | Based on your answers, the limit applies to this loan. | `src/lib/copy/en.ts:152` | coverage badge: COVERED |
+| C50 | The limit may apply to this loan. | `src/lib/copy/en.ts:153` | coverage badge: MAYBE |
+| C51 | Based on your answers, the limit does not apply to this loan. | `src/lib/copy/en.ts:154` | coverage badge: NOT_COVERED |
+| C52 | The limit is for lending and financing companies, not banks. | `src/lib/copy/en.ts:59` | reason under the coverage badge |
+| C53 | The limit is for unsecured loans. | `src/lib/copy/en.ts:61` | reason under the coverage badge |
+| C54 | The limit is for general-purpose loans. | `src/lib/copy/en.ts:63` | reason under the coverage badge |
+| C55 | A principal of ₱10,001 is more than the <u>₱10,000</u> the limit covers. | `src/lib/copy/en.ts:65` | reason under the coverage badge (example: the number varies) |
+| C56 | A term of 124 days is longer than <u>4 months</u>. | `src/lib/copy/en.ts:71` | reason under the coverage badge (example: the number varies) |
+| C57 | A term of 121 days may still be within <u>4 months</u>, depending on the calendar. The limit may apply. | `src/lib/copy/en.ts:73` | reason under the coverage badge (example: the number varies) |
+| C58 | EIR per month (daily rate × 30; the compounded rate is checked too) | `src/lib/copy/en.ts:158` | row label (eir) |
+| C59 | Nominal interest per month (from your payments) | `src/lib/copy/en.ts:159` | row label (nominal) |
+| C60 | Total cost compared with the amount borrowed | `src/lib/copy/en.ts:160` | row label (totalCost) |
+| C61 | Your number is under the limit | `src/lib/copy/en.ts:163` | row badge: WITHIN |
+| C62 | Your number is close to the limit | `src/lib/copy/en.ts:164` | row badge: GRAY |
+| C63 | Your number is over the limit | `src/lib/copy/en.ts:165` | row badge: OVER |
+| C64 | Not sure the limit applies | `src/lib/copy/en.ts:167` | row badge when the number is over but coverage is uncertain |
+| C65 | Your number: {the borrower's figure} · Limit: {cap, linked} | `src/lib/copy/en.ts:168` | every row; the cap text is below (words from rowNumberLabel and rowCeilingLabel) |
+| C66 | <u>12% a month</u> | `src/lib/copy/en.ts:171` | cap in the eir row (links to the circular) |
+| C67 | <u>6% a month</u> | `src/lib/copy/en.ts:172` | cap in the nominal row (links to the circular) |
+| C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:173` | cap in the totalCost row (links to the circular) |
+| C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:176` | under the EIR row when the EIR is GRAY |
+| C70 | Your number may be above the limit, but it is not certain that the limit applies to this loan. | `src/lib/copy/en.ts:178` | under a row that is over while coverage is uncertain |
+| C115 | This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next. | `src/lib/copy/en.ts:180` | directly under the rows, whenever they are shown, in normal-size text (added in step F3) |
+| C71 | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | `src/lib/copy/en.ts:182` | always, bottom of the card |
 
 ### 1.6 How we calculated this (expander)
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C72 | How we calculated this | `src/lib/copy/en.ts:183` | expander title |
-| C73 | What you received (net proceeds) | `src/lib/copy/en.ts:185` | row label; value beside it |
-| C74 | Total you pay (by day {Z}) | `src/lib/copy/en.ts:186` | row label; value beside it |
-| C75 | Total cost (interest + fees + penalty) | `src/lib/copy/en.ts:188` | row label; value beside it |
-| C76 | Daily rate (EIR) | `src/lib/copy/en.ts:191` | row label; value beside it |
-| C77 | Per month, simple (daily rate × 30) | `src/lib/copy/en.ts:192` | row label; value beside it |
-| C78 | Per month, compounded ((1 + daily rate) ^ 30 − 1) | `src/lib/copy/en.ts:194` | row label; value beside it |
-| C79 | Nominal interest per month | `src/lib/copy/en.ts:197` | row label; value beside it |
-| C80 | {₱ total cost} · {%} of the amount borrowed | `src/lib/copy/en.ts:189` | value of the total-cost row |
-| C81 | The EIR is the daily rate that balances what you received with everything you pay, not counting late penalties. The circular does not say how to turn the daily rate into a monthly one, ×30 or compounded, so we show both. | `src/lib/copy/en.ts:199` | below the rows |
+| C72 | How we calculated this | `src/lib/copy/en.ts:184` | expander title |
+| C73 | What you received (net proceeds) | `src/lib/copy/en.ts:186` | row label; value beside it |
+| C74 | Total you pay (by day {Z}) | `src/lib/copy/en.ts:187` | row label; value beside it |
+| C75 | Total cost (interest + fees + penalty) | `src/lib/copy/en.ts:189` | row label; value beside it |
+| C76 | Daily rate (EIR) | `src/lib/copy/en.ts:192` | row label; value beside it |
+| C77 | Per month, simple (daily rate × 30) | `src/lib/copy/en.ts:193` | row label; value beside it |
+| C78 | Per month, compounded ((1 + daily rate) ^ 30 − 1) | `src/lib/copy/en.ts:195` | row label; value beside it |
+| C79 | Nominal interest per month (from your payments) | `src/lib/copy/en.ts:198` | row label; value beside it |
+| C80 | {₱ total cost} · {%} of the amount borrowed | `src/lib/copy/en.ts:190` | value of the total-cost row |
+| C81 | The EIR is the daily rate that balances what you received with everything you pay, not counting late penalties. The circular does not say how to turn the daily rate into a monthly one, ×30 or compounded, so we show both. | `src/lib/copy/en.ts:200` | below the rows |
 
 ### 1.7 Loan calendar
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C82 | Loan calendar | `src/lib/copy/en.ts:201` | card title |
-| C83 | {days}-day term · {number of payments} payments | `src/lib/copy/en.ts:202` | card subtitle; with one payment: "{days}-day term · 1 payment" |
-| C84 | Day 0 | `src/lib/copy/en.ts:204` | loans over 16 days: list, first row |
-| C85 | Received · {₱ received} | `src/lib/copy/en.ts:205` | list, first row |
-| C86 | Day {day} | `src/lib/copy/en.ts:206` | list, one row per payment |
-| C87 | Payment {n} · {₱ amount} | `src/lib/copy/en.ts:207` | list, one row per payment |
-| C88 | First follow-up (your note) | `src/lib/copy/en.ts:208` | list, when a follow-up day is set |
-| C89 | Day | `src/lib/copy/en.ts:209` | loans of 16 days or less: day grid, every cell |
-| C90 | Received | `src/lib/copy/en.ts:210` | grid cell, day 0 |
-| C91 | Due | `src/lib/copy/en.ts:211` | grid cell, a due day |
-| C92 | Follow-up | `src/lib/copy/en.ts:212` | grid cell, the follow-up day |
-| C93 | Day 0 = the day you got the money. Due = a payment day, as you entered it. | `src/lib/copy/en.ts:213` | legend under the grid |
-| C94 | Follow-up = day {day} (your optional note: not a charge, and not a judgment of the lender). | `src/lib/copy/en.ts:214` | legend, when a follow-up day is set |
+| C82 | Loan calendar | `src/lib/copy/en.ts:202` | card title |
+| C83 | {days}-day term · {number of payments} payments | `src/lib/copy/en.ts:203` | card subtitle; with one payment: "{days}-day term · 1 payment" |
+| C84 | Day 0 | `src/lib/copy/en.ts:205` | loans over 16 days: list, first row |
+| C85 | Received · {₱ received} | `src/lib/copy/en.ts:206` | list, first row |
+| C86 | Day {day} | `src/lib/copy/en.ts:207` | list, one row per payment |
+| C87 | Payment {n} · {₱ amount} | `src/lib/copy/en.ts:208` | list, one row per payment |
+| C88 | First follow-up (your note) | `src/lib/copy/en.ts:209` | list, when a follow-up day is set |
+| C89 | Day | `src/lib/copy/en.ts:210` | loans of 16 days or less: day grid, every cell |
+| C90 | Received | `src/lib/copy/en.ts:211` | grid cell, day 0 |
+| C91 | Due | `src/lib/copy/en.ts:212` | grid cell, a due day |
+| C92 | Follow-up | `src/lib/copy/en.ts:213` | grid cell, the follow-up day |
+| C93 | Day 0 = the day you got the money. Due = a payment day, as you entered it. | `src/lib/copy/en.ts:214` | legend under the grid |
+| C94 | Follow-up = day {day} (your optional note) | `src/lib/copy/en.ts:215` | legend, when a follow-up day is set |
 
 ### 1.8 Schedule
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C95 | Schedule | `src/lib/copy/en.ts:216` | card title |
-| C96 | Day | `src/lib/copy/en.ts:217` | column heading |
-| C97 | Payment | `src/lib/copy/en.ts:218` | column heading |
-| C98 | Received | `src/lib/copy/en.ts:219` | first row (day 0) |
+| C95 | Schedule | `src/lib/copy/en.ts:217` | card title |
+| C96 | Day | `src/lib/copy/en.ts:218` | column heading |
+| C97 | Payment | `src/lib/copy/en.ts:219` | column heading |
+| C98 | Received | `src/lib/copy/en.ts:220` | first row (day 0) |
 
 ### 1.9 Sources
 
@@ -186,11 +186,11 @@ Terms in bold; linked text underlined.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C99 | Sources | `src/lib/copy/en.ts:221` | card title |
-| C100 | **<u>SEC MC No. 14, s. 2025</u>** In effect from 1 April 2026. For unsecured, general-purpose loans from lending and financing companies of up to <u>₱10,000</u> and up to <u>4 months</u>. | `src/lib/copy/en.ts:224` | paragraph |
-| C101 | **The limits** (the circular calls them ceilings) Nominal interest <u>6% a month</u>, EIR <u>12% a month</u>, and a total cost of no more than <u>100% of the amount borrowed</u>. | `src/lib/copy/en.ts:235` | paragraph |
-| C102 | **This tool does not check** the late-penalty limit (<u>5% a month</u>), because that needs the number of days late. | `src/lib/copy/en.ts:247` | paragraph |
-| C103 | **RA No. 3765 (Truth in Lending Act)** The basis for calculating the EIR, according to the circular. The circular does not say whether the monthly rate is ×30 or compounded, so we show both. | `src/lib/copy/en.ts:255` | paragraph |
+| C99 | Sources | `src/lib/copy/en.ts:222` | card title |
+| C100 | **<u>SEC MC No. 14, s. 2025</u>** In effect from 1 April 2026. For unsecured, general-purpose loans from lending and financing companies of up to <u>₱10,000</u> and up to <u>4 months</u>. | `src/lib/copy/en.ts:225` | paragraph |
+| C101 | **The limits** (the circular calls them ceilings) Nominal interest <u>6% a month</u>, EIR <u>12% a month</u>, and a total cost of no more than <u>100% of the amount borrowed</u>. | `src/lib/copy/en.ts:236` | paragraph |
+| C102 | **This tool does not check** the late-penalty limit (<u>5% a month</u>), because that needs the number of days late. | `src/lib/copy/en.ts:248` | paragraph |
+| C103 | **RA No. 3765 (Truth in Lending Act)** The basis for calculating the EIR, according to the circular. The circular does not say whether the monthly rate is ×30 or compounded, so we show both. | `src/lib/copy/en.ts:256` | paragraph |
 
 ### 1.10 Email form
 
@@ -198,14 +198,14 @@ Only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBS
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C104 | Want a free checklist, and a note when the rules change? | `src/lib/copy/en.ts:262` | card title |
-| C105 | Optional. You don't need it to see your result, and none of the numbers you entered are included. | `src/lib/copy/en.ts:264` | card description |
-| C106 | Email | `src/lib/copy/en.ts:265` | field label |
-| C107 | I agree to get emails with the checklist and updates. I have read the <u>Privacy Policy</u>. | `src/lib/copy/en.ts:266` | consent checkbox label; the link opens /privacy (link text from privacyLinkLabel) |
-| C108 | Send | `src/lib/copy/en.ts:268` | button |
-| C109 | Sending… | `src/lib/copy/en.ts:269` | button, while sending |
-| C110 | Thank you. We'll email you the checklist. | `src/lib/copy/en.ts:270` | replaces the form after success |
-| C111 | It didn't go through. Please try again later. | `src/lib/copy/en.ts:271` | beside the button after a failure |
+| C104 | Want a free checklist, and a note when the rules change? | `src/lib/copy/en.ts:263` | card title |
+| C105 | Optional. You don't need it to see your result, and none of the numbers you entered are included. | `src/lib/copy/en.ts:265` | card description |
+| C106 | Email | `src/lib/copy/en.ts:266` | field label |
+| C107 | I agree to get emails with the checklist and updates. I have read the <u>Privacy Policy</u>. | `src/lib/copy/en.ts:267` | consent checkbox label; the link opens /privacy (link text from privacyLinkLabel) |
+| C108 | Send | `src/lib/copy/en.ts:269` | button |
+| C109 | Sending… | `src/lib/copy/en.ts:270` | button, while sending |
+| C110 | Thank you. We'll email you the checklist. | `src/lib/copy/en.ts:271` | replaces the form after success |
+| C111 | It didn't go through. Please try again later. | `src/lib/copy/en.ts:272` | beside the button after a failure |
 
 ### 1.11 Guide link
 
@@ -213,14 +213,14 @@ Only when GUIDE_URL is set.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C112 | Want a fuller guide? | `src/lib/copy/en.ts:272` | card text |
-| C113 | Get the ₱99 guide (in Tagalog) | `src/lib/copy/en.ts:273` | link |
+| C112 | Want a fuller guide? | `src/lib/copy/en.ts:273` | card text |
+| C113 | Get the ₱99 guide (in Tagalog) | `src/lib/copy/en.ts:274` | link |
 
 ### 1.12 Footer
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C114 | Privacy Policy | `src/lib/copy/en.ts:280` | link to /privacy, new tab |
+| C114 | Privacy Policy | `src/lib/copy/en.ts:281` | link to /privacy, new tab |
 
 ## 2. Privacy page (peso.credit/privacy)
 
@@ -230,69 +230,69 @@ Marked DRAFT for lawyer review (N17). `[FILL IN: …]` blanks are shown highligh
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P01 | Back to the calculator | `src/lib/copy/en.ts:279` | link back to / |
-| P02 | Privacy Policy | `src/lib/copy/en.ts:53` | page title |
-| P03 | DRAFT, for a lawyer to review. This is not final and is not yet our official policy. | `src/lib/copy/en.ts:278` | banner, only while PRIVACY_STATUS is draft |
+| P01 | Back to the calculator | `src/lib/copy/en.ts:280` | link back to / |
+| P02 | Privacy Policy | `src/lib/copy/en.ts:54` | page title |
+| P03 | DRAFT, for a lawyer to review. This is not final and is not yet our official policy. | `src/lib/copy/en.ts:279` | banner, only while PRIVACY_STATUS is draft |
 
 ### 2.2 What we collect
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P04 | What we collect | `src/lib/copy/en.ts:283` | section heading |
-| P05 | Your email address and the time you agreed. You give these only in the optional form on the calculator, and we collect them only if you agree (the consent box is ticked). That's all. | `src/lib/copy/en.ts:285` | paragraph |
+| P04 | What we collect | `src/lib/copy/en.ts:284` | section heading |
+| P05 | Your email address and the time you agreed. You give these only in the optional form on the calculator, and we collect them only if you agree (the consent box is ticked). That's all. | `src/lib/copy/en.ts:286` | paragraph |
 
 ### 2.3 What we don't collect
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P06 | What we don't collect | `src/lib/copy/en.ts:289` | section heading |
-| P07 | We don't save or send the numbers you enter. The calculation happens on your device, and those numbers are never included in the email form. | `src/lib/copy/en.ts:291` | paragraph |
-| P08 | We have no accounts, and no analytics or tracking on this site. The site itself sets no cookies, and our fonts come from our own site, not from other websites. | `src/lib/copy/en.ts:292` | paragraph |
-| P09 | If you tap the link to the SEC (sec.gov.ph), you leave this site, and the SEC's website handles your visit. | `src/lib/copy/en.ts:293` | paragraph |
+| P06 | What we don't collect | `src/lib/copy/en.ts:290` | section heading |
+| P07 | We don't save or send the numbers you enter. The calculation happens on your device, and those numbers are never included in the email form. | `src/lib/copy/en.ts:292` | paragraph |
+| P08 | We have no accounts, and no analytics or tracking on this site. The site itself sets no cookies, and our fonts come from our own site, not from other websites. | `src/lib/copy/en.ts:293` | paragraph |
+| P09 | If you tap the link to the SEC (sec.gov.ph), you leave this site, and the SEC's website handles your visit. | `src/lib/copy/en.ts:294` | paragraph |
 
 ### 2.4 Why we collect it
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P10 | Why we collect it | `src/lib/copy/en.ts:297` | section heading |
-| P11 | To send you the free checklist and the updates about new rules that you asked for, and to keep a record that you agreed. | `src/lib/copy/en.ts:299` | paragraph |
+| P10 | Why we collect it | `src/lib/copy/en.ts:298` | section heading |
+| P11 | To send you the free checklist and the updates about new rules that you asked for, and to keep a record that you agreed. | `src/lib/copy/en.ts:300` | paragraph |
 
 ### 2.5 Who receives your email address
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P12 | Who receives your email address | `src/lib/copy/en.ts:303` | section heading |
-| P13 | When you send the form, our email service provider, Resend, emails your address and the time you agreed to the site's operator. The operator then adds your address to our mailing list, which is also kept with Resend, and Resend sends our emails. Only your email address and the time you agreed are sent. | `src/lib/copy/en.ts:305` | paragraph |
-| P14 | This site is hosted by Netlify. [FILL IN: for the lawyer: describe what technical details of a visit, such as the IP address, the hosting provider may record] | `src/lib/copy/en.ts:306` | paragraph |
+| P12 | Who receives your email address | `src/lib/copy/en.ts:304` | section heading |
+| P13 | When you send the form, our email service provider, Resend, emails your address and the time you agreed to the site's operator. The operator then adds your address to our mailing list, which is also kept with Resend, and Resend sends our emails. Only your email address and the time you agreed are sent. | `src/lib/copy/en.ts:306` | paragraph |
+| P14 | This site is hosted by Netlify. [FILL IN: for the lawyer: describe what technical details of a visit, such as the IP address, the hosting provider may record] | `src/lib/copy/en.ts:307` | paragraph |
 
 ### 2.6 How long we keep it
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P15 | How long we keep it | `src/lib/copy/en.ts:310` | section heading |
-| P16 | [FILL IN: how long the email address and consent time are kept] | `src/lib/copy/en.ts:311` | paragraph |
+| P15 | How long we keep it | `src/lib/copy/en.ts:311` | section heading |
+| P16 | [FILL IN: how long the email address and consent time are kept] | `src/lib/copy/en.ts:312` | paragraph |
 
 ### 2.7 How to unsubscribe or have your email address deleted
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P17 | How to unsubscribe or have your email address deleted | `src/lib/copy/en.ts:314` | section heading |
-| P18 | Use the unsubscribe link in every email you receive. [FILL IN: confirm that emails sent through Resend include an unsubscribe link] | `src/lib/copy/en.ts:316` | paragraph |
-| P19 | You can also write to [FILL IN: email address for requests] to ask us to delete your email address. | `src/lib/copy/en.ts:317` | paragraph |
+| P17 | How to unsubscribe or have your email address deleted | `src/lib/copy/en.ts:315` | section heading |
+| P18 | Use the unsubscribe link in every email you receive. [FILL IN: confirm that emails sent through Resend include an unsubscribe link] | `src/lib/copy/en.ts:317` | paragraph |
+| P19 | You can also write to [FILL IN: email address for requests] to ask us to delete your email address. | `src/lib/copy/en.ts:318` | paragraph |
 
 ### 2.8 Your rights
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P20 | Your rights | `src/lib/copy/en.ts:321` | section heading |
-| P21 | [FILL IN: for the lawyer: the user's rights under the law, and how to use them] | `src/lib/copy/en.ts:322` | paragraph |
+| P20 | Your rights | `src/lib/copy/en.ts:322` | section heading |
+| P21 | [FILL IN: for the lawyer: the user's rights under the law, and how to use them] | `src/lib/copy/en.ts:323` | paragraph |
 
 ### 2.9 Contact
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| P22 | Contact | `src/lib/copy/en.ts:325` | section heading |
-| P23 | [FILL IN: name of the site operator] · [FILL IN: contact email address] | `src/lib/copy/en.ts:327` | paragraph |
+| P22 | Contact | `src/lib/copy/en.ts:326` | section heading |
+| P23 | [FILL IN: name of the site operator] · [FILL IN: contact email address] | `src/lib/copy/en.ts:328` | paragraph |
 
 ## 3. Browser tab and search results
 
@@ -302,10 +302,10 @@ Text that appears outside the page body.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| T01 | Tunay na Interes · The true cost of your loan | `src/lib/copy/en.ts:84` | tab title, calculator page |
-| T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines. | `src/lib/copy/en.ts:86` | search-result description |
-| T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:331` | tab title, privacy page while draft |
-| T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:332` | tab title, privacy page once final |
+| T01 | Tunay na Interes · Check your loan against the SEC limit | `src/lib/copy/en.ts:85` | tab title, calculator page |
+| T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines. | `src/lib/copy/en.ts:87` | search-result description |
+| T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:332` | tab title, privacy page while draft |
+| T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:333` | tab title, privacy page once final |
 
 ## 4. Error page
 
@@ -315,8 +315,8 @@ Shown only if the app fails.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| E01 | Something went wrong | `src/lib/copy/en.ts:334` | heading |
-| E02 | An unexpected error occurred. Try reloading the page. | `src/lib/copy/en.ts:335` | message when the error has no text of its own; otherwise the error's own message is shown |
+| E01 | Something went wrong | `src/lib/copy/en.ts:335` | heading |
+| E02 | An unexpected error occurred. Try reloading the page. | `src/lib/copy/en.ts:336` | message when the error has no text of its own; otherwise the error's own message is shown |
 
 ## Not on screen
 

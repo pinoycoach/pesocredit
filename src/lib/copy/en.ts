@@ -1,5 +1,6 @@
 /**
- * The English copy, on screen first (DECISIONS N34), as approved in docs/COPY-EN-PROPOSAL.md.
+ * The English copy, on screen first (DECISIONS N34), as approved in docs/COPY-EN-PROPOSAL.md
+ * and then changed by the independent review (N32).
  * Written first for people already struggling with online-lending-app debt (N36): calm, plain,
  * short sentences; no shame or blame; no false hope; no advice; no accusation. Every legal
  * number is built from rules.ts, never typed here.
@@ -81,13 +82,13 @@ export const en: Copy = {
   htmlLang: "en",
   formatDate,
 
-  documentTitle: "Tunay na Interes · The true cost of your loan",
+  documentTitle: "Tunay na Interes · Check your loan against the SEC limit",
   metaDescription:
     "Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limit in the Philippines.",
   eyebrow: `Philippines · ${SOURCE.id}`,
   pageTitle: "Tunay na Interes",
   pageIntro:
-    "Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool works out the effective interest rate (EIR) and checks whether the published SEC limit covers your loan. It names no lender and gives no advice on how to pay.",
+    "Enter what you borrowed, each payment, and how many payments. 7-day loans work too. This tool estimates the effective interest rate (EIR) from your numbers, and checks whether the published SEC limit applies to your loan and how your numbers compare with it. It names no lender and gives no advice on how to pay.",
 
   inputsTitle: "Your loan numbers",
   inputsDescription:
@@ -122,7 +123,7 @@ export const en: Copy = {
   ],
   followUpLabel: "Note: first follow-up",
   followUpHint:
-    "Optional. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan. This is not interest, and it does not accuse anyone.",
+    "Optional, and not part of the calculation. The day you were first called or messaged about paying. For example, day 4 of a 7-day loan.",
   followUpDayLabel: "Day of the first follow-up",
   coverageHeading: "Does the limit apply?",
   lenderToggle: "Lending or financing company (not a bank)",
@@ -132,36 +133,36 @@ export const en: Copy = {
   noStorageNote: NO_STORAGE_NOTE,
 
   cannotCompute: {
-    invalid_input: "Enter the amount borrowed and a payment to see the true cost.",
+    invalid_input: "Enter the amount borrowed and a payment to see the cost.",
     invalid_date: "Enter the contract date to see the result.",
     fee_not_less_than_principal:
-      "We can't calculate this: the deducted fees can't be equal to or more than the amount borrowed. Please check the numbers.",
+      "This tool can't calculate a rate when the deducted fees are equal to or more than the amount borrowed. Please check the numbers.",
     payments_below_principal:
       "We can't calculate this: your payments add up to less than what you received. Please check the numbers.",
     no_solution: "We can't work out a rate from these numbers. Please check them.",
   },
   headline: (n) =>
-    `Your true cost: ${formatPct(n.eirPerMonthSimple)} a month. By day ${n.tenorDays}, you pay ${formatPeso(n.totalPayments)} in total.`,
+    `Estimated cost: ${formatPct(n.eirPerMonthSimple)} a month (daily rate × ${DAYS_PER_MONTH}). Total payments by day ${n.tenorDays}: ${formatPeso(n.totalPayments)}.`,
   headlineMethodNote: `This is the daily rate × ${DAYS_PER_MONTH}. The compounded version is under “How we calculated this”.`,
-  oldLoanNotice: `This tool is for loans from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
+  oldLoanNotice: `The limit comparison is for loans from ${formatDate(COVERAGE.appliesToLoansFrom)}.`,
   comparisonTitle: "Compared with the published limit",
   basisLead: "Based on",
   basisAsOf: `as of ${RULES_AS_OF}`,
   coverageText: {
-    COVERED: "The limit applies to this loan.",
+    COVERED: "Based on your answers, the limit applies to this loan.",
     MAYBE: "The limit may apply to this loan.",
-    NOT_COVERED: "The limit does not apply to this loan.",
+    NOT_COVERED: "Based on your answers, the limit does not apply to this loan.",
   },
   coverageReason,
   ceilingLabel: {
-    eir: "Effective interest rate (EIR) per month",
-    nominal: "Nominal interest per month",
+    eir: `EIR per month (daily rate × ${DAYS_PER_MONTH}; the compounded rate is checked too)`,
+    nominal: "Nominal interest per month (from your payments)",
     totalCost: "Total cost compared with the amount borrowed",
   },
   stateText: {
-    WITHIN: "Within the limit",
-    GRAY: "Close to the limit",
-    OVER: "Above the limit",
+    WITHIN: "Your number is under the limit",
+    GRAY: "Your number is close to the limit",
+    OVER: "Your number is over the limit",
   },
   unsureCoverageBadge: "Not sure the limit applies",
   rowNumberLabel: "Your number:",
@@ -176,7 +177,7 @@ export const en: Copy = {
   unsureCoverageText:
     "Your number may be above the limit, but it is not certain that the limit applies to this loan.",
   comparisonNote:
-    "This compares your numbers with a published limit. It does not tell you what you owe or what happens next.",
+    "This compares your numbers with a published limit. It does not tell you whether the loan or lender is safe, what you owe, or what happens next.",
   disclaimer:
     "An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender.",
 
@@ -194,7 +195,7 @@ export const en: Copy = {
       `Per month, compounded ((1 + daily rate) ^ ${DAYS_PER_MONTH} − 1)`,
       formatPct(n.eirPerMonthCompounded),
     ],
-    ["Nominal interest per month", formatPct(n.nominalPerMonth)],
+    ["Nominal interest per month (from your payments)", formatPct(n.nominalPerMonth)],
   ],
   howMethodText: `The EIR is the daily rate that balances what you received with everything you pay, not counting late penalties. The circular does not say how to turn the daily rate into a monthly one, ×${DAYS_PER_MONTH} or compounded, so we show both.`,
 
@@ -212,7 +213,7 @@ export const en: Copy = {
   timelineCellFollowUp: "Follow-up",
   timelineLegend: "Day 0 = the day you got the money. Due = a payment day, as you entered it.",
   timelineLegendFollowUp: (day) =>
-    ` Follow-up = day ${day} (your optional note: not a charge, and not a judgment of the lender).`,
+    ` Follow-up = day ${day} (your optional note)`,
   scheduleTitle: "Schedule",
   scheduleDay: "Day",
   schedulePayment: "Payment",

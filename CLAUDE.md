@@ -40,13 +40,13 @@ Two points matter more here than they did on fengshui.mom, because peso.credit i
 
 A free calculator, in English first (N34; the Filipino copy is kept, unused, for a later
 Tagalog version). A borrower enters the numbers from their own loan;
-the app shows the true cost: **"Your true cost: X% a month. By day Z, you pay ₱Y in total."**
+the app shows the estimated cost: **"Estimated cost: X% a month (daily rate × 30). Total payments by day Z: ₱Y."**
 The comparison to the published SEC limit (the circular calls it a ceiling) appears underneath,
 as a fact with its source.
 
 ## Non-negotiable principles
 1. **Inform, never accuse.** Never name a lender. Never say "ilegal", "scam", "illegal", "fraud", "loan shark". State the number next to the published rule.
-2. **Accuracy over confidence.** Where the law is ambiguous, show GRAY ("Close to the limit"), never OVER. See `src/lib/rules.ts`.
+2. **Accuracy over confidence.** Where the law is ambiguous, show GRAY ("Your number is close to the limit"), never OVER. See `src/lib/rules.ts`.
 3. **Nothing the borrower types leaves their phone.** All loan math runs client-side. No loan numbers are stored or sent, ever.
 4. **Email capture is optional, separate, and never gates a result.** Email is never sent together with loan numbers.
 5. **Not legal advice.** Describe rules and where to file; never tell someone what they should do or promise an outcome.
@@ -146,10 +146,11 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 
 Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B,
 C, E (Netlify + Resend) and F (English first, N34: F1 the approved English, F2 every word moved
-into `src/lib/copy/`, F3 English on screen) are complete (2026-09-23); stopped for review. Still
-Napoleon's: independent content review of the English (N32), the privacy blanks with the lawyer
-(N17) and the mobile re-check on the English UI (N31); then step group D, the live proof of the
-/api/subscribe limit (N18). Every step group stops for review.
+into `src/lib/copy/`, F3 English on screen) are complete, and the independent review of the
+English (N32) is applied (2026-09-23); stopped for review. Still Napoleon's: the headline's total
+when a late penalty is entered (N41), the fact checks before cap-values is signed (N42), the
+privacy blanks with the lawyer (N17) and the mobile re-check on the English UI (N31); then step
+group D, the live proof of the /api/subscribe limit (N18). Every step group stops for review.
 
 ## Lessons
 
