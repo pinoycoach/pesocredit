@@ -174,7 +174,7 @@ describe("en: the comparison with the published limit", () => {
   it("explains GRAY with the approved sentence (C69)", () => {
     assert.equal(
       en.grayEirText,
-      "Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use.",
+      "Close to the limit. Worked out one way, your number is lower than the limit. Worked out the other way, it is just higher. The circular does not say which way to use.",
     );
   });
 

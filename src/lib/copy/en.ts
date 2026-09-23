@@ -174,7 +174,7 @@ export const en: Copy = {
     totalCost: [cap(TOTAL_COST_CAP_TEXT)],
   },
   grayEirText:
-    "Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use.",
+    "Close to the limit. Worked out one way, your number is lower than the limit. Worked out the other way, it is just higher. The circular does not say which way to use.",
   unsureCoverageText:
     "Your number may be higher than the limit, but it is not certain that the SEC limits apply to this loan.",
   nominalNote:

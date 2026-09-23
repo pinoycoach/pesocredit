@@ -134,7 +134,7 @@ Shown in place of the whole result.
 | C66 | <u>12% a month</u> | `src/lib/copy/en.ts:172` | cap in the eir row (links to the circular) |
 | C67 | <u>6% a month</u> | `src/lib/copy/en.ts:173` | cap in the nominal row (links to the circular) |
 | C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:174` | cap in the totalCost row (links to the circular) |
-| C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:177` | under the EIR row when the EIR is GRAY |
+| C69 | Close to the limit. Worked out one way, your number is lower than the limit. Worked out the other way, it is just higher. The circular does not say which way to use. | `src/lib/copy/en.ts:177` | under the EIR row when the EIR is GRAY |
 | C70 | Your number may be higher than the limit, but it is not certain that the SEC limits apply to this loan. | `src/lib/copy/en.ts:179` | under a row that is over while coverage is uncertain |
 | C118 | The nominal-interest limit applies to the interest rate written in your contract. Your number is worked out from your payments, so it can include fees added to them. | `src/lib/copy/en.ts:181` | under the nominal row, always; that row shows no verdict (N42) |
 | C115 | This compares your numbers with published limits. It does not tell you whether the loan or lender is safe, what you owe, or what happens next. | `src/lib/copy/en.ts:183` | directly under the rows, whenever they are shown, in normal-size text (added in step F3) |
