@@ -22,7 +22,6 @@ worth reconsidering if circumstances named here change).
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
 - N22 — Point 10: privacy.test.ts:34, :74 and :81 assert the page's current DRAFT state, so they break the day N17 succeeds (DRAFT removed, contact email filled in) — OPEN — Group C step C4
-- N23 — Point 10: no SIGNOFF record for the privacy page, the verdict wording and the cap values in rules.ts (signer, date, hash of the exact content; fails if signed content changes) — OPEN — Group C step C3, design first
 - N24 — Point 6: a duplicate G-id in GOLDEN-CASES.md silently overwrites a real row in the golden-case test (loan-math.test.ts:102-104); an unexpected id already fails — OPEN — Group C step C5
 - N25 — package.json lists test files by hand, so a new *.test.ts would silently not run — OPEN — Group C step C6: keep the list, add a test that fails if any test file under src/ is missing from it
 - N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — OPEN — Group C step C7
@@ -51,6 +50,7 @@ worth reconsidering if circumstances named here change).
 - N12 — Original points 1–7 missing from docs/BUILD-STANDARD.md — RESOLVED — full text of 1–7 added above 8–17 (2026-09-23)
 - N19 — Merge these planning files into the repo: its existing CLAUDE.md (from Phase 1) and existing single rules-constants file (from Phase 3) are kept and extended, not overwritten — RESOLVED — Phase 4 step group A: planning files added (f6bd87e), CLAUDE.md merged (e451c8b), RULES.md points to src/lib/rules.ts with no overlap (e1ff0fb), GOLDEN-CASES.md records each case's independent check with tools/golden/oracle.py (2026-09-23)
 - N30 — Point 15: HANDOVER.md step group D asks for a send-only email key, but /api/subscribe only adds a contact — RESOLVED — HANDOVER.md step group D now asks for a key scoped to "create one contact in one list"; the provider question moved into N13 (2026-09-23)
+- N23 — Point 10: no SIGNOFF record for the privacy page, the verdict wording and the cap values in rules.ts (signer, date, hash of the exact content; fails if signed content changes) — RESOLVED — SIGNOFF.json + src/lib/signoff.ts: signer (always Napoleon), date, sha256 of the exact content, optional reviewedBy; covers the privacy page, the verdict wording, and every exported value of rules.ts (examples from the circular included); signoff.test.ts checks structure and fails on changed signed content; npm run launch-check fails while anything is unsigned and gates production (2026-09-23)
 
 ## Revisit
 

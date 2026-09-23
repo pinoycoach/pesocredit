@@ -62,6 +62,9 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
 - `src/lib/rules.ts` — every legal number, with its source section. The ONLY place legal constants may exist.
 - `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`.
 - `GOLDEN-CASES.md` — hand-verified cases. Tests must reproduce them exactly.
+- `SIGNOFF.json` — Napoleon's sign-off on the privacy page, the verdict wording and every value in
+  `rules.ts`, each with a hash of the exact content signed (`src/lib/signoff.ts`, point 10).
+  `npm run signoff:hashes` shows what each covers; `npm run launch-check` must pass before production.
 - `RULES.md` — points to `rules.ts` for legal numbers; holds lender-specific facts (empty until N8).
 - `DECISIONS.md` — open, blocking, and resolved decisions (point 16).
 - `docs/BUILD-STANDARD.md` — the build standard, points 1–17.
@@ -95,12 +98,13 @@ No integrations are defined yet.
 
 ## Working rules for Claude
 - Plan first; wait for approval before code. One commit per step.
+- Claude never writes a signature in `SIGNOFF.json`. Only Napoleon signs.
 - Cite file:line for findings. Mark anything unverified as UNVERIFIED. Never invent a regulatory fact.
 - When you make a mistake the user corrects, add the lesson to this file.
 
 ## Current phase
 
-Phase 0 done. Now: Phase 4, step group B in HANDOVER.md (bring the calculator up to v2, then
+Phase 0 done. Now: Phase 4, step group C in HANDOVER.md (bring the calculator up to v2, then
 deploy). Every step group stops for review.
 
 ## Lessons

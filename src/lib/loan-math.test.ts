@@ -9,26 +9,7 @@ import {
   type LoanInput,
 } from "./loan-math.ts";
 import { COVERAGE, DAYS_PER_MONTH, type Verdict } from "./rules.ts";
-
-const base = (over: Partial<LoanInput> = {}): LoanInput => ({
-  principal: 5_000,
-  upfrontFee: 0,
-  payment: 5_300,
-  paymentCount: 1,
-  frequency: "monthly",
-  firstDueDays: 30,
-  penalty: 0,
-  unsecured: true,
-  generalPurpose: true,
-  lenderKind: "lending_or_financing",
-  bookedOn: "2026-09-18",
-  followUpDay: null,
-  ...over,
-});
-
-/** A single payment due on `days`, whatever the frequency label. */
-const single = (days: number, over: Partial<LoanInput> = {}) =>
-  base({ frequency: "daily", paymentCount: 1, firstDueDays: days, ...over });
+import { base, GOLDEN_INPUTS, single } from "./test-utils/loan-fixtures.ts";
 
 function expectOk(input: LoanInput) {
   const analysis = analyzeLoan(input);
@@ -52,48 +33,8 @@ function seeded(seed: number) {
 
 // ---------------------------------------------------------------------------
 // Golden cases: the table in GOLDEN-CASES.md is read and reproduced at the
-// precision it prints. Only the loan inputs are written out here.
+// precision it prints. The loan inputs are in test-utils/loan-fixtures.ts.
 // ---------------------------------------------------------------------------
-
-const GOLDEN_INPUTS: Record<string, LoanInput> = {
-  G1: base({ principal: 5_000, payment: 5_300, frequency: "monthly", firstDueDays: 30 }),
-  G2: base({ principal: 5_000, payment: 6_500, frequency: "weekly", firstDueDays: 7 }),
-  G3: base({
-    principal: 5_000,
-    upfrontFee: 65,
-    payment: 5_070,
-    frequency: "weekly",
-    firstDueDays: 7,
-  }),
-  G4: base({
-    principal: 5_000,
-    upfrontFee: 800,
-    payment: 5_500,
-    frequency: "weekly",
-    firstDueDays: 7,
-  }),
-  G5: base({
-    principal: 3_000,
-    upfrontFee: 450,
-    payment: 3_000,
-    frequency: "biweekly",
-    firstDueDays: 14,
-  }),
-  G6: base({
-    principal: 10_000,
-    payment: 2_560,
-    paymentCount: 4,
-    frequency: "weekly",
-    firstDueDays: 7,
-  }),
-  G7: base({
-    principal: 3_000,
-    payment: 3_150,
-    penalty: 2_900,
-    frequency: "monthly",
-    firstDueDays: 30,
-  }),
-};
 
 function goldenTable(): Map<string, string[]> {
   const text = readFileSync(new URL("../../GOLDEN-CASES.md", import.meta.url), "utf8");
