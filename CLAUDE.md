@@ -53,13 +53,16 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
 
 - **No content naming a specific lender goes live until DECISIONS.md N8 (legal review) is
   RESOLVED.**
-- Every factual claim about a real company traces to a sourced entry in `RULES.md`
-  (point 1: facts in one sourced file).
+- Every factual claim about a real company traces to a sourced entry in `RULES.md` →
+  "Lender-specific facts", which stays empty until N8 is RESOLVED. Legal numbers and caps live
+  only in `src/lib/rules.ts`; `RULES.md` points to it and never repeats them (point 1: each fact
+  in exactly one sourced place).
 
 ## Where things live
 - `src/lib/rules.ts` — every legal number, with its source section. The ONLY place legal constants may exist.
 - `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`.
 - `GOLDEN-CASES.md` — hand-verified cases. Tests must reproduce them exactly.
+- `RULES.md` — points to `rules.ts` for legal numbers; holds lender-specific facts (empty until N8).
 - `DECISIONS.md` — open, blocking, and resolved decisions (point 16).
 - `docs/BUILD-STANDARD.md` — the build standard, points 1–17.
 - `HANDOVER.md` — phases and their stops (point 2).
@@ -97,8 +100,8 @@ No integrations are defined yet.
 
 ## Current phase
 
-Phase 0 done. Next: Phase 4 in HANDOVER.md (bring the calculator up to v2, then deploy).
-Nothing moves until Phase 4 is approved.
+Phase 0 done. Now: Phase 4, step group A in HANDOVER.md (bring the calculator up to v2, then
+deploy). Every step group stops for review.
 
 ## Lessons
 
