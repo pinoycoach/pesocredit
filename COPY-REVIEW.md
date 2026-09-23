@@ -64,7 +64,7 @@ The page a borrower lands on. Top to bottom.
 | C14 | Amount borrowed (principal) | `src/lib/copy/en.ts:102` | field label |
 | C15 | The amount on your contract, not what you received if something was deducted. | `src/lib/copy/en.ts:103` | field hint |
 | C16 | Fees deducted from what you received | `src/lib/copy/en.ts:104` | field label |
-| C17 | For example: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee. Enter the total of everything deducted. Enter 0 if you received the full amount. Included in the EIR. | `src/lib/copy/en.ts:105` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
+| C17 | For example: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee, handling fee, verification fee. Enter the total of everything deducted. Enter 0 if you received the full amount. Included in the EIR. | `src/lib/copy/en.ts:105` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
 | C18 | Amount of each payment | `src/lib/copy/en.ts:106` | field label |
 | C19 | As written on your schedule. Just one number if you pay once at the end. | `src/lib/copy/en.ts:107` | field hint |
 | C20 | Number of payments | `src/lib/copy/en.ts:108` | field label |
@@ -327,7 +327,7 @@ For completeness: text in the source that a visitor never sees.
 
 | Text | Where | Why it is not shown |
 |---|---|---|
-| restructuring, repackaging, splitting of loan amounts, recharacterization of fees, shifting of loan tenor, simulated collateral, sham guaranty arrangements, disguised charges | `src/lib/rules.ts:71` | Kept from the circular for later explainer content; nothing renders it. |
+| restructuring, repackaging, splitting of loan amounts, recharacterization of fees, shifting of loan tenor, simulated collateral, sham guaranty arrangements, disguised charges | `src/lib/rules.ts:79` | Kept from the circular for later explainer content; nothing renders it. |
 | Error codes in /api/subscribe responses ("invalid", "forbidden", …) | `src/lib/subscribe.ts:120` | The form shows only the messages in 1.10. |
 | Subject: New peso.credit subscriber. Body: Email: {subscriber's address} / Consented at: {consent time} | `src/lib/subscribe.ts:69` | The email each new subscription sends to the owner's inbox through Resend (DECISIONS N13); only the owner reads it. |
 | Every word of the Filipino copy | `src/lib/copy/fil.ts` | Kept, unused, for a later Filipino version (DECISIONS N34); `src/lib/copy.ts` shows one language. |

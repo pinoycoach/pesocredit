@@ -247,6 +247,18 @@ describe("en: the rest of the page", () => {
   });
 
   it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
+    // Sec. 2(h)'s seven, in its order, then the two Sec. 3(2) adds (checked against the circular).
+    assert.deepEqual(OTHER_FEES_EXAMPLES, [
+      "processing fee",
+      "service fee",
+      "notarial fee",
+      "origination fee",
+      "transfer charge",
+      "documentary stamp tax",
+      "disbursement fee",
+      "handling fee",
+      "verification fee",
+    ]);
     for (const fee of OTHER_FEES_EXAMPLES) assert.ok(en.feeHint.includes(fee), fee);
   });
 

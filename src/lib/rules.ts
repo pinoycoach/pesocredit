@@ -56,8 +56,13 @@ export const CEILINGS = {
  */
 export const DAYS_PER_MONTH = 30;
 
-/** Sec. 2(h): fee names to prompt for, so borrowers recognize them. */
+/**
+ * Fee names to prompt for, so borrowers recognize them. The first seven are Sec. 2(h)'s examples
+ * of other fees and charges, in its order; the last two are what Sec. 3(2) adds in its list of
+ * fees the EIR includes. Both lists end "among others".
+ */
 export const OTHER_FEES_EXAMPLES = [
+  // Sec. 2(h)
   "processing fee",
   "service fee",
   "notarial fee",
@@ -65,6 +70,9 @@ export const OTHER_FEES_EXAMPLES = [
   "transfer charge",
   "documentary stamp tax",
   "disbursement fee",
+  // Sec. 3(2)
+  "handling fee",
+  "verification fee",
 ] as const;
 
 /** Sec. 5: anti-circumvention — for explainer content only, never for accusations. */
