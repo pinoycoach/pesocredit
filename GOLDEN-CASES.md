@@ -40,7 +40,7 @@ the rows G1–G7 with 7 cells each. Record checks here, never as a new table col
 
 | Cases | Values checked | Independent check | Where it runs |
 |---|---|---|---|
-| All seven | every column, including Nominal/mo and total cost | Independent Python implementation (bisection), [`tools/golden/oracle.py`](tools/golden/oracle.py): written 19 Sep 2026, recovered from the Day 1 chat 23 Sep 2026 | By hand: `python tools/golden/oracle.py`. Re-run 23 Sep 2026 (Python 3.14.0, Windows): all 49 cells match this table at the precision it prints. Not run by `npm test` or CI |
+| All seven | every column, including Nominal/mo and total cost | Independent Python implementation (bisection), [`tools/golden/oracle.py`](tools/golden/oracle.py): written 19 Sep 2026, recovered from the Day 1 chat 23 Sep 2026 | CI, every push: `python tools/golden/check.py` runs the oracle and compares all 49 cells with this table, and the oracle's own caps with `rules.ts`. First re-run 23 Sep 2026 (Python 3.14.0, Windows): all match |
 | G1–G5, G7 | daily EIR | Spreadsheet formula `(payment / (principal − fee))^(1/days) − 1`, written out in the test, not taken from `loan-math.ts` | `loan-math.test.ts`, "single-payment cases match the spreadsheet formula", every `npm test` |
 | G6 only | daily EIR | Annuity rate found by bisection (the `RATE` check), then converted to daily; written in the test, not taken from `loan-math.ts` | `loan-math.test.ts`, `annuityDailyRate` + "G6 matches the annuity rate", every `npm test` |
 | G3 only | EIR verdict GRAY | Simple month under the cap, compounded month over it | `loan-math.test.ts`, "G3 is GRAY, never OVER", every `npm test` |

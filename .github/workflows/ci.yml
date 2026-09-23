@@ -32,6 +32,11 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Independent oracle agrees with GOLDEN-CASES.md, and its caps with rules.ts
+        run: python tools/golden/check.py
       - run: npm run build
       - name: npm run dev starts, serves the page, and listens on loopback only
         run: node .github/scripts/dev-smoke.mjs

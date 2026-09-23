@@ -3,6 +3,12 @@
 # GOLDEN-CASES.md G1–G7. Includes the one edit made that day: G7 penalty
 # changed from 2000 to 2900. Output format may differ from the current
 # GOLDEN-CASES.md table; reconcile values, don't assume they match.
+#
+# THE ONE DOCUMENTED EXCEPTION to "rules.ts is the only place legal constants live"
+# (RULES.md; DECISIONS N28). The caps written out below (EIR 0.12, nominal 0.06, total
+# cost 1) are this oracle's own copy, on purpose: it shares nothing with the app, so one
+# wrong cap cannot pass both sides. tools/golden/check.py, run by CI, keeps them equal to
+# rules.ts CEILINGS and keeps this script's output equal to GOLDEN-CASES.md.
 def irr_daily(flows):
     f=lambda r: sum(a/(1+r)**d for d,a in flows)
     lo,hi=-0.5,5.0

@@ -59,7 +59,8 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
   in exactly one sourced place).
 
 ## Where things live
-- `src/lib/rules.ts` — every legal number, with its source section. The ONLY place legal constants may exist.
+- `src/lib/rules.ts` — every legal number, with its source section. The ONLY place legal constants may exist
+  (one documented exception, the independent oracle: see `RULES.md`).
 - `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`.
 - `GOLDEN-CASES.md` — hand-verified cases. Tests must reproduce them exactly.
 - `SIGNOFF.json` — Napoleon's sign-off on the privacy page, the verdict wording and every value in
@@ -95,6 +96,8 @@ No integrations are defined yet.
 - Property checks: a bigger deducted fee always raises the EIR; total cost is never negative.
 - Banned-phrase test: fails if any on-screen string contains a banned word (list above) or any lender name.
 - `npm run typecheck`, `npm run lint`, `npm run build` all pass.
+- `python tools/golden/check.py` passes: the independent oracle agrees with GOLDEN-CASES.md, and its
+  own caps with `rules.ts` (CI runs it).
 
 ## Working rules for Claude
 - Plan first; wait for approval before code. One commit per step.
