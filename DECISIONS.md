@@ -19,7 +19,6 @@ worth reconsidering if circumstances named here change).
 - N13 — Email provider for /api/subscribe, and whether it expects JSON or form-encoded — OPEN — resolve from the provider's live dashboard/docs (point 12)
 - N14 — Payment link for the ₱99 guide — OPEN — needed before the guide sells, not before the calculator launches
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
-- N19 — Merge these planning files into the repo: its existing CLAUDE.md (from Phase 1) and existing single rules-constants file (from Phase 3) are kept and extended, not overwritten — OPEN — first step of Phase 4
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
 
@@ -40,6 +39,7 @@ worth reconsidering if circumstances named here change).
 - N11 — Reuse the SuperGrok OLA codebase or start clean? — RESOLVED — reused and reworked: yarrow-gem-garden-rose audited, then Phases 1 (cleanup), 2 (correctness), 3 (trust) approved and pushed (2026-09-22)
 - N7 — Is the peso.credit calculator Tunay na Interes or a new one, and where does it go live? — RESOLVED — Tunay na Interes IS peso.credit's first product and goes live at peso.credit; repo is now pinoycoach/pesocredit (moved from yarrow-gem-garden-rose, N20) (2026-09-23)
 - N12 — Original points 1–7 missing from docs/BUILD-STANDARD.md — RESOLVED — full text of 1–7 added above 8–17 (2026-09-23)
+- N19 — Merge these planning files into the repo: its existing CLAUDE.md (from Phase 1) and existing single rules-constants file (from Phase 3) are kept and extended, not overwritten — RESOLVED — Phase 4 step group A: planning files added (f6bd87e), CLAUDE.md merged (e451c8b), RULES.md points to src/lib/rules.ts with no overlap (e1ff0fb), GOLDEN-CASES.md records each case's independent check with tools/golden/oracle.py (2026-09-23)
 
 ## Revisit
 
