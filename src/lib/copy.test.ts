@@ -1,20 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  BASIS_TEXT,
-  CANNOT_COMPUTE_TEXT,
-  CEILING_CAP_TEXT,
-  FEE_HINT,
-  formatDateFil,
-  GRAY_EIR_TEXT,
-  headline,
-  howComputedRows,
-  LEGAL_FOOT,
-  NO_STORAGE_NOTE,
-  OLD_LOAN_NOTICE,
-  PENALTY_HINT,
-  STATE_TEXT,
-} from "./copy.ts";
+/** The Filipino copy, kept for the Tagalog version (DECISIONS N34): its wording is pinned here. */
+import { fil } from "./copy/fil.ts";
 import { analyzeLoan, type CannotComputeReason, type LoanInput } from "./loan-math.ts";
 import { OTHER_FEES_EXAMPLES, RULES_AS_OF, SOURCE } from "./rules.ts";
 import { plainText, type Segments } from "./segments.ts";
@@ -44,13 +31,13 @@ function numbersFor(input: LoanInput) {
 
 describe("copy", () => {
   it("shows the exact notice for loans dated before the circular takes effect", () => {
-    assert.equal(OLD_LOAN_NOTICE, "Ang tool na ito ay para sa loans simula 1 Abril 2026.");
+    assert.equal(fil.oldLoanNotice, "Ang tool na ito ay para sa loans simula 1 Abril 2026.");
   });
 
   it("formats dates in Filipino month names", () => {
-    assert.equal(formatDateFil("2026-04-01"), "1 Abril 2026");
-    assert.equal(formatDateFil("2026-12-25"), "25 Disyembre 2026");
-    assert.equal(formatDateFil("2027-01-09"), "9 Enero 2027");
+    assert.equal(fil.formatDate("2026-04-01"), "1 Abril 2026");
+    assert.equal(fil.formatDate("2026-12-25"), "25 Disyembre 2026");
+    assert.equal(fil.formatDate("2027-01-09"), "9 Enero 2027");
   });
 
   it("has a message for every reason a loan cannot be computed", () => {
@@ -61,15 +48,15 @@ describe("copy", () => {
       "payments_below_principal",
       "no_solution",
     ];
-    assert.deepEqual(Object.keys(CANNOT_COMPUTE_TEXT).sort(), [...reasons].sort());
-    for (const reason of reasons) assert.ok(CANNOT_COMPUTE_TEXT[reason].length > 10, reason);
+    assert.deepEqual(Object.keys(fil.cannotCompute).sort(), [...reasons].sort());
+    for (const reason of reasons) assert.ok(fil.cannotCompute[reason].length > 10, reason);
   });
 });
 
 describe("headline", () => {
   it("states the true monthly cost, the day, and the total to pay (G2)", () => {
     assert.equal(
-      headline(numbersFor(base())),
+      fil.headline(numbersFor(base())),
       "Ang totoong gastos mo: 114.58% kada buwan. Sa araw 7, ₱6,500.00 ang kabuuang babayaran mo.",
     );
   });
@@ -77,7 +64,7 @@ describe("headline", () => {
   it("uses the last payment day and the total of every payment, penalty included (G6, G7)", () => {
     const g6 = base({ principal: 10_000, payment: 2_560, paymentCount: 4 });
     assert.equal(
-      headline(numbersFor(g6)),
+      fil.headline(numbersFor(g6)),
       "Ang totoong gastos mo: 4.08% kada buwan. Sa araw 28, ₱10,240.00 ang kabuuang babayaran mo.",
     );
     const g7 = base({
@@ -88,21 +75,21 @@ describe("headline", () => {
       firstDueDays: 30,
     });
     assert.equal(
-      headline(numbersFor(g7)),
+      fil.headline(numbersFor(g7)),
       "Ang totoong gastos mo: 4.88% kada buwan. Sa araw 30, ₱6,050.00 ang kabuuang babayaran mo.",
     );
   });
 
   it("leads with the simple monthly figure, not the compounded one (G3)", () => {
     const g3 = numbersFor(base({ upfrontFee: 65, payment: 5_070 }));
-    assert.match(headline(g3), /^Ang totoong gastos mo: 11\.59% kada buwan\./);
-    assert.ok(!headline(g3).includes("12.26"));
+    assert.match(fil.headline(g3), /^Ang totoong gastos mo: 11\.59% kada buwan\./);
+    assert.ok(!fil.headline(g3).includes("12.26"));
   });
 });
 
 describe("Paano kinuwenta rows", () => {
   it("shows both monthly figures and the daily rate (G3)", () => {
-    const rows = new Map(howComputedRows(numbersFor(base({ upfrontFee: 65, payment: 5_070 }))));
+    const rows = new Map(fil.howComputedRows(numbersFor(base({ upfrontFee: 65, payment: 5_070 }))));
     const values = [...rows.values()];
     assert.ok(values.includes("0.3863%"), "daily rate");
     assert.ok(values.includes("11.59%"), "simple");
@@ -117,7 +104,7 @@ describe("every cap and limit on screen is a cap segment (so it links to the sou
     segments.filter((s) => typeof s !== "string").map((s) => plainText([s]));
 
   it("the Batayan text marks all four ceilings and both coverage limits", () => {
-    const caps = LEGAL_FOOT.flatMap((paragraph) => capsIn(paragraph.segments));
+    const caps = fil.legalFoot.flatMap((paragraph) => capsIn(paragraph.segments));
     assert.deepEqual(caps, [
       "₱10,000",
       "4 na buwan",
@@ -129,34 +116,34 @@ describe("every cap and limit on screen is a cap segment (so it links to the sou
   });
 
   it("the circular itself is the link in the first Batayan paragraph", () => {
-    assert.equal(LEGAL_FOOT[0].term, SOURCE.id);
-    assert.equal(LEGAL_FOOT[0].termIsSource, true);
-    assert.ok(LEGAL_FOOT.slice(1).every((p) => !p.termIsSource));
+    assert.equal(fil.legalFoot[0].term, SOURCE.id);
+    assert.equal(fil.legalFoot[0].termIsSource, true);
+    assert.ok(fil.legalFoot.slice(1).every((p) => !p.termIsSource));
   });
 
   it("the penalty hint marks its 100% cap", () => {
-    assert.deepEqual(capsIn(PENALTY_HINT), ["100%"]);
+    assert.deepEqual(capsIn(fil.penaltyHint), ["100%"]);
   });
 
   it("coverage reasons mark the peso and tenor limits they mention", () => {
     const big = analyzeLoan(base({ principal: 10_001, payment: 10_500 }));
     assert.equal(big.status, "ok");
     if (big.status !== "ok") return;
-    assert.deepEqual(capsIn(big.coverage.reasons[0]), ["₱10,000"]);
-    assert.equal(plainText(big.coverage.reasons[0]), "Ang principal na ₱10,001 ay lampas sa ₱10,000 na saklaw.");
+    assert.deepEqual(capsIn(fil.coverageReason(big.coverage.reasons[0])), ["₱10,000"]);
+    assert.equal(plainText(fil.coverageReason(big.coverage.reasons[0])), "Ang principal na ₱10,001 ay lampas sa ₱10,000 na saklaw.");
 
     const long = analyzeLoan(base({ frequency: "daily", firstDueDays: 124, payment: 12_000 }));
     assert.equal(long.status, "ok");
     if (long.status !== "ok") return;
-    assert.equal(plainText(long.coverage.reasons[0]), "Ang tenor na 124 araw ay lampas sa 4 na buwan.");
-    assert.deepEqual(capsIn(long.coverage.reasons[0]), ["4 na buwan"]);
+    assert.equal(plainText(fil.coverageReason(long.coverage.reasons[0])), "Ang tenor na 124 araw ay lampas sa 4 na buwan.");
+    assert.deepEqual(capsIn(fil.coverageReason(long.coverage.reasons[0])), ["4 na buwan"]);
   });
 });
 
 describe("the privacy promise under the calculator", () => {
   it("says, exactly, that the numbers are neither saved nor sent", () => {
     assert.equal(
-      NO_STORAGE_NOTE,
+      fil.noStorageNote,
       "Hindi namin sine-save o ipinapadala ang mga numerong inilagay mo.",
     );
   });
@@ -165,7 +152,7 @@ describe("the privacy promise under the calculator", () => {
 describe("fee field", () => {
   it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
     assert.ok(OTHER_FEES_EXAMPLES.length > 0);
-    for (const fee of OTHER_FEES_EXAMPLES) assert.ok(FEE_HINT.includes(fee), fee);
+    for (const fee of OTHER_FEES_EXAMPLES) assert.ok(fil.feeHint.includes(fee), fee);
   });
 });
 
@@ -173,28 +160,29 @@ describe("ceiling wording", () => {
   it("builds the cap text from rules.ts", () => {
     assert.deepEqual(
       {
-        eir: plainText(CEILING_CAP_TEXT.eir),
-        nominal: plainText(CEILING_CAP_TEXT.nominal),
-        totalCost: plainText(CEILING_CAP_TEXT.totalCost),
+        eir: plainText(fil.ceilingCapText.eir),
+        nominal: plainText(fil.ceilingCapText.nominal),
+        totalCost: plainText(fil.ceilingCapText.totalCost),
       },
       { eir: "12% kada buwan", nominal: "6% kada buwan", totalCost: "100% ng inutang" },
     );
   });
 
   it("shows the basis line exactly as specified", () => {
-    assert.equal(BASIS_TEXT, `Batay sa ${SOURCE.id} · as of ${RULES_AS_OF}`);
-    assert.equal(BASIS_TEXT, "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19");
+    const basis = `${fil.basisLead} ${SOURCE.id} · ${fil.basisAsOf}`;
+    assert.equal(basis, `Batay sa ${SOURCE.id} · as of ${RULES_AS_OF}`);
+    assert.equal(basis, "Batay sa SEC MC No. 14, s. 2025 · as of 2026-09-19");
   });
 
   it("uses the exact GRAY sentence for the effective rate", () => {
     assert.equal(
-      GRAY_EIR_TEXT,
+      fil.grayEirText,
       "Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular.",
     );
   });
 
   it("says a loan is over a ceiling only as a plain statement about the number", () => {
-    assert.deepEqual(STATE_TEXT, {
+    assert.deepEqual(fil.stateText, {
       WITHIN: "Nasa loob ng ceiling",
       GRAY: "Malapit sa ceiling",
       OVER: "Lampas sa ceiling",

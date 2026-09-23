@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
-import { NO_STORAGE_NOTE } from "./copy.ts";
+import { copy } from "./copy.ts";
 import {
   CONTACT_EMAIL,
   DRAFT_BANNER,
@@ -90,7 +90,7 @@ describe("privacy page (DRAFT)", () => {
   });
 
   it("says the calculator's numbers are neither saved nor sent, in the same words as the calculator", () => {
-    assert.ok(textOf(section(/hindi namin kinokolekta/i)).includes(NO_STORAGE_NOTE));
+    assert.ok(textOf(section(/hindi namin kinokolekta/i)).includes(copy.noStorageNote));
   });
 
   it("discloses exactly what the server forwards: no more, no less", async () => {
@@ -138,9 +138,14 @@ describe("privacy page (DRAFT)", () => {
     const shown = [...new Set(text.match(new RegExp(EMAIL.source, "g")) ?? [])];
     assert.deepEqual(shown, CONTACT_EMAIL === "" ? [] : [CONTACT_EMAIL], "an address outside CONTACT_EMAIL");
     // Nowhere else in the source either: only the CONTACT_EMAIL declaration may hold one.
-    const literals = literalsIn("lib/privacy-copy.ts", read("lib/privacy-copy.ts")).filter(
-      (l) => l.kind === "string" && EMAIL.test(l.text),
-    );
+    // The page's words live in the language files, so those are read too.
+    const languageFiles = readdirSync(join(root, "lib/copy"))
+      .filter((f) => f.endsWith(".ts"))
+      .map((f) => `lib/copy/${f}`);
+    assert.ok(languageFiles.includes("lib/copy/fil.ts"), "the language files are not being read");
+    const literals = ["lib/privacy-copy.ts", ...languageFiles]
+      .flatMap((file) => literalsIn(file, read(file)))
+      .filter((l) => l.kind === "string" && EMAIL.test(l.text));
     assert.ok(literals.length <= 1 && literals.every((l) => l.text === CONTACT_EMAIL), JSON.stringify(literals));
   });
 

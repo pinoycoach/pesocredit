@@ -1,6 +1,6 @@
 import { EmailCapture } from "@/components/email-capture";
 import { Card, CardContent } from "@/components/ui/card";
-import { GUIDE_LINK_LABEL, GUIDE_TITLE } from "@/lib/copy";
+import { copy } from "@/lib/copy";
 import type { PublicConfig } from "@/lib/public-config";
 
 /**
@@ -16,14 +16,14 @@ export function OptionalExtras({ config }: { config: PublicConfig }) {
       {config.guideUrl ? (
         <Card>
           <CardContent className="flex flex-wrap items-center justify-between gap-3">
-            <p className="font-display text-lg tracking-tight">{GUIDE_TITLE}</p>
+            <p className="font-display text-lg tracking-tight">{copy.guideTitle}</p>
             <a
               href={config.guideUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium underline underline-offset-2"
             >
-              {GUIDE_LINK_LABEL}
+              {copy.guideLinkLabel}
             </a>
           </CardContent>
         </Card>

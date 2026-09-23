@@ -11,9 +11,10 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { findBanned, LENDER_NAMES } from "./banned.ts";
-import * as copy from "./copy.ts";
-import { analyzeLoan, FREQUENCY_LABEL, PRESETS, type LoanInput } from "./loan-math.ts";
+import { copy, type Copy } from "./copy.ts";
+import { analyzeLoan, type CoverageReason, type LoanInput } from "./loan-math.ts";
 import * as rules from "./rules.ts";
+import { plainText } from "./segments.ts";
 import {
   isTestOrGenerated,
   literalsIn,
@@ -38,6 +39,41 @@ function seeded(seed: number) {
     let t = Math.imul(s ^ (s >>> 15), 1 | s);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** The name of every template (a function) in the copy. */
+type TemplateKey = {
+  [K in keyof Copy]: Copy[K] extends (...args: never[]) => unknown ? K : never;
+}[keyof Copy];
+
+/**
+ * One output of every template, with sample arguments. The type lists every template, so a
+ * new one fails typecheck until it is added here. headline, howComputedRows and
+ * coverageReason are also run on every loan below.
+ */
+function templateSamples(): Record<TemplateKey, unknown> {
+  const analysis = analyzeLoan(base());
+  if (analysis.status !== "ok") throw new Error("the base loan must compute");
+  const reasons: CoverageReason[] = [
+    { kind: "lender" },
+    { kind: "secured" },
+    { kind: "purpose" },
+    { kind: "principal", principal: 12_000 },
+    { kind: "tenorOver", tenorDays: 130 },
+    { kind: "tenorMaybe", tenorDays: 121 },
+  ];
+  return {
+    formatDate: copy.formatDate("2026-04-01"),
+    coverageReason: reasons.map((reason) => plainText(copy.coverageReason(reason))),
+    headline: copy.headline(analysis.numbers),
+    howComputedRows: copy.howComputedRows(analysis.numbers),
+    calendarSubtitle: [copy.calendarSubtitle(7, 1), copy.calendarSubtitle(28, 4)],
+    timelineReceived: copy.timelineReceived("₱5,000.00"),
+    timelineDay: copy.timelineDay(7),
+    timelinePayment: copy.timelinePayment(1, "₱6,500.00"),
+    timelineLegendFollowUp: copy.timelineLegendFollowUp(4),
+    privacySections: [copy.privacySections(""), copy.privacySections("contact@example.com")],
   };
 }
 
@@ -68,6 +104,7 @@ describe("banned phrases: source", () => {
     for (const expected of [
       "lib/loan-math.ts",
       "lib/copy.ts",
+      "lib/copy/fil.ts",
       "lib/rules.ts",
       "components/calculator.tsx",
       "components/result.tsx",
@@ -124,10 +161,9 @@ describe("banned phrases: what the calculator produces", () => {
     }
 
     const shown: string[] = [
-      ...stringsIn(Object.values(copy).filter((v) => typeof v !== "function")),
+      ...stringsIn(copy),
+      ...stringsIn(templateSamples()),
       ...stringsIn(Object.values(rules)),
-      ...stringsIn(FREQUENCY_LABEL),
-      ...stringsIn(PRESETS),
     ];
     for (const input of inputs) {
       const analysis = analyzeLoan(input);
@@ -135,6 +171,9 @@ describe("banned phrases: what the calculator produces", () => {
       if (analysis.status !== "cannot_compute") {
         shown.push(copy.headline(analysis.numbers));
         shown.push(...stringsIn(copy.howComputedRows(analysis.numbers)));
+      }
+      if (analysis.status === "ok") {
+        shown.push(...analysis.coverage.reasons.map((r) => plainText(copy.coverageReason(r))));
       }
     }
 
@@ -173,9 +212,9 @@ describe("the matcher itself", () => {
 
   it("does not flag ordinary wording, including what the app already says", () => {
     for (const text of [
-      copy.GRAY_EIR_TEXT,
-      copy.DISCLAIMER,
-      copy.OLD_LOAN_NOTICE,
+      copy.grayEirText,
+      copy.disclaimer,
+      copy.oldLoanNotice,
       "Hindi nagnangalan ng lender, hindi nagpapayo kung paano magbayad.",
       "Lampas sa ceiling",
       "the loan and the shark tank",

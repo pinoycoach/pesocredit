@@ -1,25 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  CEILING_CAP_TEXT,
-  CEILING_LABEL,
-  COMPARISON_TITLE,
-  COVERAGE_TEXT,
-  DISCLAIMER,
-  GRAY_EIR_TEXT,
-  HEADLINE_METHOD_NOTE,
-  headline,
-  HOW_METHOD_TEXT,
-  HOW_TITLE,
-  howComputedRows,
-  OLD_LOAN_NOTICE,
-  ROW_CEILING_LABEL,
-  ROW_NUMBER_LABEL,
-  STATE_TEXT,
-  UNSURE_COVERAGE_BADGE,
-  UNSURE_COVERAGE_TEXT,
-} from "@/lib/copy";
+import { copy } from "@/lib/copy";
 import { BasisLine, CapSegments } from "@/components/source-link";
 import type { CheckId, LoanAnalysis } from "@/lib/loan-math";
 import { plainText } from "@/lib/segments";
@@ -36,9 +18,9 @@ export function Headline({ analysis }: { analysis: Computed }) {
     <Card>
       <CardContent className="grid gap-2 p-5 sm:p-6">
         <h2 className="font-display text-2xl leading-snug text-balance sm:text-3xl">
-          {headline(analysis.numbers)}
+          {copy.headline(analysis.numbers)}
         </h2>
-        <p className="text-sm text-muted-foreground text-pretty">{HEADLINE_METHOD_NOTE}</p>
+        <p className="text-sm text-muted-foreground text-pretty">{copy.headlineMethodNote}</p>
       </CardContent>
     </Card>
   );
@@ -49,7 +31,7 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
     return (
       <Card>
         <CardContent className="p-5">
-          <p className="text-base leading-relaxed text-pretty">{OLD_LOAN_NOTICE}</p>
+          <p className="text-base leading-relaxed text-pretty">{copy.oldLoanNotice}</p>
         </CardContent>
       </Card>
     );
@@ -59,7 +41,7 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{COMPARISON_TITLE}</CardTitle>
+        <CardTitle>{copy.comparisonTitle}</CardTitle>
         <CardDescription>
           <BasisLine />
         </CardDescription>
@@ -68,14 +50,14 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
         <div className="grid gap-2">
           <div>
             <Badge variant={coverage.state === "COVERED" ? "outline" : "warn"}>
-              {COVERAGE_TEXT[coverage.state]}
+              {copy.coverageText[coverage.state]}
             </Badge>
           </div>
           {coverage.reasons.length > 0 ? (
             <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-              {coverage.reasons.map((reason) => (
-                <li key={plainText(reason)}>
-                  <CapSegments segments={reason} />
+              {coverage.reasons.map((reason) => copy.coverageReason(reason)).map((segments) => (
+                <li key={plainText(segments)}>
+                  <CapSegments segments={segments} />
                 </li>
               ))}
             </ul>
@@ -91,9 +73,9 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
               const softened = check.state === "GRAY" && check.raw === "OVER";
               const note =
                 id === "eir" && check.raw === "GRAY"
-                  ? GRAY_EIR_TEXT
+                  ? copy.grayEirText
                   : softened
-                    ? UNSURE_COVERAGE_TEXT
+                    ? copy.unsureCoverageText
                     : null;
               return (
                 <li
@@ -101,19 +83,19 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
                   className="grid gap-1.5 rounded-lg border border-border bg-surface-2 p-3"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-2">
-                    <p className="text-sm font-medium">{CEILING_LABEL[id]}</p>
+                    <p className="text-sm font-medium">{copy.ceilingLabel[id]}</p>
                     {check.state ? (
                       <Badge variant={BADGE[check.state]}>
-                        {softened ? UNSURE_COVERAGE_BADGE : STATE_TEXT[check.state]}
+                        {softened ? copy.unsureCoverageBadge : copy.stateText[check.state]}
                       </Badge>
                     ) : null}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {ROW_NUMBER_LABEL}{" "}
+                    {copy.rowNumberLabel}{" "}
                     <span className="font-display text-base tabular-nums text-foreground">
                       {formatPct(check.actual)}
                     </span>{" "}
-                    · {ROW_CEILING_LABEL} <CapSegments segments={CEILING_CAP_TEXT[id]} />
+                    · {copy.rowCeilingLabel} <CapSegments segments={copy.ceilingCapText[id]} />
                   </p>
                   {note ? <p className="text-sm text-pretty">{note}</p> : null}
                 </li>
@@ -122,7 +104,7 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
           </ul>
         ) : null}
 
-        <p className="text-xs text-muted-foreground text-pretty">{DISCLAIMER}</p>
+        <p className="text-xs text-muted-foreground text-pretty">{copy.disclaimer}</p>
       </CardContent>
     </Card>
   );
@@ -132,7 +114,7 @@ export function HowComputed({ analysis }: { analysis: Computed }) {
   return (
     <details className="group rounded-xl border border-border bg-surface">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-4 font-medium [&::-webkit-details-marker]:hidden">
-        {HOW_TITLE}
+        {copy.howTitle}
         <ChevronDown
           className="size-4 text-muted-foreground transition-transform group-open:rotate-180"
           strokeWidth={1.75}
@@ -140,7 +122,7 @@ export function HowComputed({ analysis }: { analysis: Computed }) {
       </summary>
       <div className="grid gap-4 border-t border-border p-4">
         <dl className="grid gap-2 text-sm">
-          {howComputedRows(analysis.numbers).map(([label, value]) => (
+          {copy.howComputedRows(analysis.numbers).map(([label, value]) => (
             <div key={label} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5">
               <dt className="text-muted-foreground">{label}</dt>
               <dd className="tabular-nums">{value}</dd>
@@ -148,7 +130,7 @@ export function HowComputed({ analysis }: { analysis: Computed }) {
           ))}
         </dl>
         <p className="text-sm leading-relaxed text-muted-foreground text-pretty">
-          {HOW_METHOD_TEXT}
+          {copy.howMethodText}
         </p>
       </div>
     </details>

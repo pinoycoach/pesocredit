@@ -11,24 +11,7 @@
  * Used only by tests and tools/signoff.ts. Nothing here reaches the site.
  */
 import { createHash } from "node:crypto";
-import {
-  BASIS_TEXT,
-  CANNOT_COMPUTE_TEXT,
-  CEILING_CAP_TEXT,
-  CEILING_LABEL,
-  COMPARISON_TITLE,
-  COVERAGE_TEXT,
-  DISCLAIMER,
-  GRAY_EIR_TEXT,
-  headline,
-  HEADLINE_METHOD_NOTE,
-  OLD_LOAN_NOTICE,
-  ROW_CEILING_LABEL,
-  ROW_NUMBER_LABEL,
-  STATE_TEXT,
-  UNSURE_COVERAGE_BADGE,
-  UNSURE_COVERAGE_TEXT,
-} from "./copy.ts";
+import { copy } from "./copy.ts";
 import { analyzeLoan, type LoanInput } from "./loan-math.ts";
 import {
   BACK_TO_CALCULATOR,
@@ -74,6 +57,7 @@ function capValues() {
 /** The privacy page as a reader sees it. The DRAFT banner is not signed: signing removes it. */
 function privacyPage() {
   return {
+    lang: copy.htmlLang,
     title: PRIVACY_TITLE,
     backToCalculator: BACK_TO_CALCULATOR,
     linkLabel: PRIVACY_LINK_LABEL,
@@ -81,13 +65,16 @@ function privacyPage() {
   };
 }
 
-/** What a result says about one loan: the headline and the coverage wording. */
+/** What a result says about one loan: the headline and the coverage wording, as sentences. */
 function loanWording(input: LoanInput) {
   const a = analyzeLoan(input);
   if (a.status === "ok") {
-    return { headline: headline(a.numbers), coverage: a.coverage };
+    return {
+      headline: copy.headline(a.numbers),
+      coverage: { state: a.coverage.state, reasons: a.coverage.reasons.map(copy.coverageReason) },
+    };
   }
-  if (a.status === "before_effective_date") return { headline: headline(a.numbers) };
+  if (a.status === "before_effective_date") return { headline: copy.headline(a.numbers) };
   return { cannotCompute: a.reason };
 }
 
@@ -95,22 +82,24 @@ function loanWording(input: LoanInput) {
 function verdictWording() {
   const loans = { ...GOLDEN_INPUTS, ...COVERAGE_INPUTS };
   return {
+    // The language is part of what is signed: switching it needs a new signature.
+    lang: copy.htmlLang,
     text: {
-      OLD_LOAN_NOTICE,
-      CANNOT_COMPUTE_TEXT,
-      HEADLINE_METHOD_NOTE,
-      GRAY_EIR_TEXT,
-      UNSURE_COVERAGE_TEXT,
-      UNSURE_COVERAGE_BADGE,
-      COMPARISON_TITLE,
-      BASIS_TEXT,
-      COVERAGE_TEXT,
-      STATE_TEXT,
-      CEILING_LABEL,
-      CEILING_CAP_TEXT,
-      ROW_NUMBER_LABEL,
-      ROW_CEILING_LABEL,
-      DISCLAIMER,
+      oldLoanNotice: copy.oldLoanNotice,
+      cannotCompute: copy.cannotCompute,
+      headlineMethodNote: copy.headlineMethodNote,
+      grayEirText: copy.grayEirText,
+      unsureCoverageText: copy.unsureCoverageText,
+      unsureCoverageBadge: copy.unsureCoverageBadge,
+      comparisonTitle: copy.comparisonTitle,
+      basis: `${copy.basisLead} ${rules.SOURCE.id} · ${copy.basisAsOf}`,
+      coverageText: copy.coverageText,
+      stateText: copy.stateText,
+      ceilingLabel: copy.ceilingLabel,
+      ceilingCapText: copy.ceilingCapText,
+      rowNumberLabel: copy.rowNumberLabel,
+      rowCeilingLabel: copy.rowCeilingLabel,
+      disclaimer: copy.disclaimer,
     },
     loans: Object.fromEntries(
       Object.entries(loans).map(([name, input]) => [name, loanWording(input)]),

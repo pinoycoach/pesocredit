@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { BASIS_LEAD, BASIS_AS_OF } from "@/lib/copy";
+import { copy } from "@/lib/copy";
 import { SOURCE } from "@/lib/rules";
 import type { Segments } from "@/lib/segments";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export function CapSegments({ segments }: { segments: Segments }) {
 export function BasisLine() {
   return (
     <>
-      {BASIS_LEAD} <SourceLink>{SOURCE.id}</SourceLink> · {BASIS_AS_OF}
+      {copy.basisLead} <SourceLink>{SOURCE.id}</SourceLink> · {copy.basisAsOf}
     </>
   );
 }

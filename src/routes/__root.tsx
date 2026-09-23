@@ -1,19 +1,14 @@
 import { createRootRoute, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import { copy } from "@/lib/copy";
 import appCss from "../styles.css?url";
-
-const APP_NAME = "Tunay na Interes";
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: APP_NAME },
-      {
-        name: "description",
-        content:
-          "Libre. Ilagay ang loan amount, hulog, at bilang ng bayad. Tingnan ang EIR laban sa naka-publish na ceiling sa Pilipinas.",
-      },
+      { title: copy.documentTitle },
+      { name: "description", content: copy.metaDescription },
       { name: "theme-color", content: "#1e4d3c" },
     ],
     links: [
@@ -22,7 +17,7 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <html lang="fil" suppressHydrationWarning className="antialiased">
+    <html lang={copy.htmlLang} suppressHydrationWarning className="antialiased">
       <head>
         <HeadContent />
       </head>

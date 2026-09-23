@@ -3,17 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  CONSENT_AFTER,
-  CONSENT_BEFORE,
-  EMAIL_DONE,
-  EMAIL_FAILED,
-  EMAIL_HEADING,
-  EMAIL_LABEL,
-  EMAIL_NOTE,
-  EMAIL_SENDING,
-  EMAIL_SUBMIT,
-} from "@/lib/copy";
+import { copy } from "@/lib/copy";
 import { PRIVACY_LINK_LABEL } from "@/lib/privacy-copy";
 import { submitEmail } from "@/lib/subscribe-client";
 
@@ -42,18 +32,18 @@ export function EmailCapture() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{EMAIL_HEADING}</CardTitle>
-        <CardDescription>{EMAIL_NOTE}</CardDescription>
+        <CardTitle>{copy.emailHeading}</CardTitle>
+        <CardDescription>{copy.emailNote}</CardDescription>
       </CardHeader>
       <CardContent>
         {status === "done" ? (
           <p role="status" className="text-sm font-medium text-ok">
-            {EMAIL_DONE}
+            {copy.emailDone}
           </p>
         ) : (
           <form method="post" onSubmit={onSubmit} className="grid gap-4">
             <div className="grid gap-1.5">
-              <Label htmlFor="subscribe-email">{EMAIL_LABEL}</Label>
+              <Label htmlFor="subscribe-email">{copy.emailLabel}</Label>
               <Input
                 id="subscribe-email"
                 name="email"
@@ -74,7 +64,7 @@ export function EmailCapture() {
                 className="mt-1 size-4 shrink-0 accent-primary"
               />
               <label htmlFor="subscribe-consent" className="text-sm leading-snug text-pretty">
-                {CONSENT_BEFORE}
+                {copy.consentBefore}
                 {/* A new tab, so the numbers typed in the calculator are still here afterwards. */}
                 <a
                   href="/privacy"
@@ -84,16 +74,16 @@ export function EmailCapture() {
                 >
                   {PRIVACY_LINK_LABEL}
                 </a>
-                {CONSENT_AFTER}
+                {copy.consentAfter}
               </label>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               <Button type="submit" disabled={!ready || !consent || status === "sending"}>
-                {status === "sending" ? EMAIL_SENDING : EMAIL_SUBMIT}
+                {status === "sending" ? copy.emailSending : copy.emailSubmit}
               </Button>
               {status === "failed" ? (
                 <p role="alert" className="text-sm text-danger">
-                  {EMAIL_FAILED}
+                  {copy.emailFailed}
                 </p>
               ) : null}
             </div>

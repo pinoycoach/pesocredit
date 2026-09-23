@@ -8,7 +8,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import ts from "typescript";
-import { EMAIL_HEADING } from "./copy.ts";
+import { copy } from "./copy.ts";
 import { handleSubscribe, parseSubscribeBody } from "./subscribe.ts";
 import { buildSubscribeBody, submitEmail, SUBSCRIBE_PATH } from "./subscribe-client.ts";
 import { srcRoot } from "./test-utils/source-strings.ts";
@@ -242,6 +242,6 @@ describe("placement: below the result, never before it, never required", () => {
 
 describe("wording", () => {
   it("asks exactly the specified question", () => {
-    assert.equal(EMAIL_HEADING, "Gusto mo ng libreng checklist at abiso kapag may bagong rules?");
+    assert.equal(copy.emailHeading, "Gusto mo ng libreng checklist at abiso kapag may bagong rules?");
   });
 });

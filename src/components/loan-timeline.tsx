@@ -1,3 +1,4 @@
+import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import type { LoanInput, LoanNumbers } from "@/lib/loan-math";
 
@@ -14,24 +15,22 @@ export function LoanTimeline({
     return (
       <ol className="grid gap-2 text-sm">
         <li className="flex justify-between gap-4 border-b border-border py-2">
-          <span className="text-muted-foreground">Araw 0</span>
-          <span>Natanggap · {peso(numbers.netProceeds)}</span>
+          <span className="text-muted-foreground">{copy.timelineDay0}</span>
+          <span>{copy.timelineReceived(peso(numbers.netProceeds))}</span>
         </li>
         {numbers.schedule.map((p) => (
           <li
             key={p.n}
             className="flex justify-between gap-4 border-b border-border py-2 last:border-0"
           >
-            <span className="text-muted-foreground">Araw {p.day}</span>
-            <span>
-              Hulog {p.n} · {peso(p.amount)}
-            </span>
+            <span className="text-muted-foreground">{copy.timelineDay(p.day)}</span>
+            <span>{copy.timelinePayment(p.n, peso(p.amount))}</span>
           </li>
         ))}
         {input.followUpDay != null && input.followUpDay > 0 ? (
           <li className="flex justify-between gap-4 py-2 text-muted-foreground">
-            <span>Araw {input.followUpDay}</span>
-            <span>Unang follow-up (tala mo)</span>
+            <span>{copy.timelineDay(input.followUpDay)}</span>
+            <span>{copy.timelineFollowUp}</span>
           </li>
         ) : null}
       </ol>
@@ -63,25 +62,25 @@ export function LoanTimeline({
             )}
           >
             <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              Araw
+              {copy.timelineDayCell}
             </span>
             <span className="font-display text-lg tabular-nums leading-none">{c.day}</span>
             <span className="mt-1 line-clamp-2 text-[10px] leading-tight text-muted-foreground">
               {c.isStart
-                ? "Pera"
+                ? copy.timelineCellReceived
                 : c.due.length
-                  ? "Due"
+                  ? copy.timelineCellDue
                   : c.follow
-                    ? "Follow-up"
+                    ? copy.timelineCellFollowUp
                     : "—"}
             </span>
           </div>
         ))}
       </div>
       <p className="text-xs leading-relaxed text-muted-foreground text-pretty">
-        Araw 0 = natanggap ang pera. Due = araw ng hulog ayon sa inilagay mo.
+        {copy.timelineLegend}
         {input.followUpDay != null && input.followUpDay > 0
-          ? ` Follow-up = araw ${input.followUpDay} (opsyonal na tala — hindi charge, hindi hatol sa lender).`
+          ? copy.timelineLegendFollowUp(input.followUpDay)
           : null}
       </p>
     </div>

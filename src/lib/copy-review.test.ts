@@ -6,7 +6,13 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { buildCopyReview, COPY_REVIEW_PATH } from "../../tools/copy-review.ts";
+import {
+  buildCopyReview,
+  COPY_REVIEW_PATH,
+  wordLiterals,
+  wordsInComponents,
+  WORDS_OUTSIDE_COPY,
+} from "../../tools/copy-review.ts";
 
 describe("COPY-REVIEW.md", () => {
   const built = buildCopyReview();
@@ -29,5 +35,19 @@ describe("COPY-REVIEW.md", () => {
 
   it("lists something, not an empty document", () => {
     assert.ok(built.entries > 100, `only ${built.entries} entries`);
+  });
+});
+
+describe("every on-screen word lives in src/lib/copy/ (N34), so switching language misses nothing", () => {
+  it("no words anywhere else, except the circular's own terms and the owner's email", () => {
+    const outside = wordLiterals()
+      .filter((l) => !l.file.startsWith("lib/copy/") && !(l.file in WORDS_OUTSIDE_COPY))
+      .map((l) => `${l.file}:${l.line} ${JSON.stringify(l.text)}`);
+    assert.deepEqual(outside, [], `move these into the language files:\n${outside.join("\n")}`);
+  });
+
+  it("no component writes a word itself, not even a single one", () => {
+    const found = wordsInComponents();
+    assert.deepEqual(found, [], `read these from copy instead:\n${found.join("\n")}`);
   });
 });

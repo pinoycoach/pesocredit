@@ -12,7 +12,6 @@ import { CeilingComparison, Headline, HowComputed } from "@/components/result";
 import { BasisLine, CapSegments, SourceLink } from "@/components/source-link";
 import {
   analyzeLoan,
-  FREQUENCY_LABEL,
   INTERVAL_DAYS,
   PRESETS,
   type Frequency,
@@ -20,16 +19,7 @@ import {
   type LoanInput,
   type PresetId,
 } from "@/lib/loan-math";
-import {
-  CANNOT_COMPUTE_TEXT,
-  DATE_HINT,
-  FEE_HINT,
-  FEE_LABEL,
-  LEGAL_FOOT,
-  LEGAL_FOOT_TITLE,
-  NO_STORAGE_NOTE,
-  PENALTY_HINT,
-} from "@/lib/copy";
+import { copy } from "@/lib/copy";
 import type { PublicConfig } from "@/lib/public-config";
 import { cn, formatPeso } from "@/lib/utils";
 
@@ -116,10 +106,8 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
       <div className="grid gap-3 lg:sticky lg:top-6">
         <Card>
           <CardHeader>
-            <CardTitle>Mga numero ng loan mo</CardTitle>
-            <CardDescription>
-              Kunin sa disclosure statement, resibo, o app screen — hindi sa advertisement.
-            </CardDescription>
+            <CardTitle>{copy.inputsTitle}</CardTitle>
+            <CardDescription>{copy.inputsDescription}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-5">
             <div className="grid grid-cols-2 gap-2">
@@ -132,14 +120,14 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
                   className="h-auto min-h-11 flex-col items-start gap-0.5 py-2 text-left"
                   onClick={() => applyPreset(p.id)}
                 >
-                  <span>{p.label}</span>
+                  <span>{copy.presets[p.id].label}</span>
                   <span
                     className={cn(
                       "text-[11px] font-normal",
                       preset === p.id ? "text-primary-foreground/80" : "text-muted-foreground",
                     )}
                   >
-                    {p.hint}
+                    {copy.presets[p.id].hint}
                   </span>
                 </Button>
               ))}
@@ -147,22 +135,22 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
 
             <MoneyField
               id="principal"
-              label="Inutang (principal)"
-              hint="Face amount sa kontrata — hindi ang natanggap kung may binawas."
+              label={copy.principalLabel}
+              hint={copy.principalHint}
               value={principal}
               onChange={setPrincipal}
             />
             <MoneyField
               id="fee"
-              label={FEE_LABEL}
-              hint={FEE_HINT}
+              label={copy.feeLabel}
+              hint={copy.feeHint}
               value={upfrontFee}
               onChange={setUpfrontFee}
             />
             <MoneyField
               id="payment"
-              label="Hulog bawat bayad"
-              hint="Ang sinusulat sa schedule — isang numero lang kung isang bayad sa dulo."
+              label={copy.paymentLabel}
+              hint={copy.paymentHint}
               value={payment}
               onChange={setPayment}
             />
@@ -170,15 +158,15 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
             <div className="grid grid-cols-2 gap-3">
               <NumberField
                 id="count"
-                label="Ilang hulog"
+                label={copy.countLabel}
                 value={paymentCount}
                 onChange={setPaymentCount}
                 min={1}
               />
               <NumberField
                 id="first"
-                label="Unang due (araw)"
-                hint="7 = due sa ika-7 araw"
+                label={copy.firstDueLabel}
+                hint={copy.firstDueHint}
                 value={firstDueDays}
                 onChange={setFirstDueDays}
                 min={1}
@@ -186,9 +174,9 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
             </div>
 
             <div className="grid gap-2">
-              <Label>Dalas ng hulog</Label>
+              <Label>{copy.frequencyHeading}</Label>
               <div className="grid grid-cols-2 gap-2">
-                {(Object.keys(FREQUENCY_LABEL) as Frequency[]).map((f) => (
+                {(Object.keys(copy.frequency) as Frequency[]).map((f) => (
                   <Button
                     key={f}
                     type="button"
@@ -203,7 +191,7 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
                       );
                     }}
                   >
-                    {FREQUENCY_LABEL[f]}
+                    {copy.frequency[f]}
                   </Button>
                 ))}
               </div>
@@ -211,8 +199,8 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
 
             <MoneyField
               id="penalty"
-              label="Late penalty na siningil (kung meron)"
-              hint={<CapSegments segments={PENALTY_HINT} />}
+              label={copy.penaltyLabel}
+              hint={<CapSegments segments={copy.penaltyHint} />}
               value={penalty}
               onChange={setPenalty}
             />
@@ -220,10 +208,9 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
             <div className="grid gap-3 rounded-lg bg-surface-2 p-3">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <Label htmlFor="follow">Tala: unang follow-up</Label>
+                  <Label htmlFor="follow">{copy.followUpLabel}</Label>
                   <p className="mt-1 text-xs text-muted-foreground text-pretty">
-                    Opsyonal. Ilagay kung kailan unang tumawag o nag-message — hal. araw 4 sa 7-araw
-                    na loan. Hindi ito interes at hindi paratang sa sinuman.
+                    {copy.followUpHint}
                   </p>
                 </div>
                 <Switch id="follow-on" checked={useFollowUp} onCheckedChange={setUseFollowUp} />
@@ -231,7 +218,7 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
               {useFollowUp ? (
                 <NumberField
                   id="follow"
-                  label="Araw ng unang follow-up"
+                  label={copy.followUpDayLabel}
                   value={followUp}
                   onChange={setFollowUp}
                   min={1}
@@ -243,17 +230,17 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
 
             <div className="grid gap-3">
               <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                Saklaw ng ceiling
+                {copy.coverageHeading}
               </p>
               <ToggleRow
                 id="lender"
-                label="Lending / financing company (hindi bangko)"
+                label={copy.lenderToggle}
                 checked={lenderKind === "lending_or_financing"}
                 onCheckedChange={(v) => setLenderKind(v ? "lending_or_financing" : "bank")}
               />
               <ToggleRow
                 id="unsecured"
-                label="Unsecured, general-purpose"
+                label={copy.unsecuredToggle}
                 checked={unsecured && generalPurpose}
                 onCheckedChange={(v) => {
                   setUnsecured(v);
@@ -261,7 +248,7 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
                 }}
               />
               <div className="grid gap-1.5">
-                <Label htmlFor="booked">Petsa ng kontrata / renewal</Label>
+                <Label htmlFor="booked">{copy.dateLabel}</Label>
                 <input
                   id="booked"
                   type="date"
@@ -269,14 +256,14 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
                   onChange={(e) => setBookedOn(e.target.value)}
                   className="h-11 rounded-md border border-border bg-surface px-3 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
-                <p className="text-xs text-muted-foreground">{DATE_HINT}</p>
+                <p className="text-xs text-muted-foreground">{copy.dateHint}</p>
               </div>
             </div>
           </CardContent>
         </Card>
         <p className="flex items-start gap-2 px-1 text-xs leading-relaxed text-muted-foreground">
           <ShieldCheck className="mt-0.5 size-4 shrink-0 text-ok" strokeWidth={1.75} />
-          {NO_STORAGE_NOTE}
+          {copy.noStorageNote}
         </p>
       </div>
 
@@ -284,7 +271,7 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
         {analysis.status === "cannot_compute" ? (
           <Card>
             <CardContent className="py-12 text-center text-sm text-muted-foreground">
-              {CANNOT_COMPUTE_TEXT[analysis.reason]}
+              {copy.cannotCompute[analysis.reason]}
             </CardContent>
           </Card>
         ) : (
@@ -294,10 +281,9 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
             <HowComputed analysis={analysis} />
             <Card>
               <CardHeader>
-                <CardTitle>Kalendaryo ng loan</CardTitle>
+                <CardTitle>{copy.calendarTitle}</CardTitle>
                 <CardDescription>
-                  {analysis.numbers.tenorDays}-araw na tenor · {analysis.numbers.schedule.length}{" "}
-                  hulog
+                  {copy.calendarSubtitle(analysis.numbers.tenorDays, analysis.numbers.schedule.length)}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -306,21 +292,21 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Iskedyul</CardTitle>
+                <CardTitle>{copy.scheduleTitle}</CardTitle>
               </CardHeader>
               <CardContent className="overflow-x-auto p-0">
                 <table className="w-full text-sm">
                   <thead className="text-left text-xs uppercase tracking-wider text-muted-foreground">
                     <tr className="border-b border-border">
                       <th className="px-5 py-2 font-medium">#</th>
-                      <th className="px-5 py-2 font-medium">Araw</th>
-                      <th className="px-5 py-2 font-medium">Bayad</th>
+                      <th className="px-5 py-2 font-medium">{copy.scheduleDay}</th>
+                      <th className="px-5 py-2 font-medium">{copy.schedulePayment}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="border-b border-border">
                       <td className="px-5 py-2.5 text-muted-foreground">0</td>
-                      <td className="px-5 py-2.5">Release</td>
+                      <td className="px-5 py-2.5">{copy.scheduleRelease}</td>
                       <td className="px-5 py-2.5 tabular-nums">
                         {formatPeso(analysis.numbers.netProceeds)}
                       </td>
@@ -373,11 +359,11 @@ function LegalFoot() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <Info className="size-4" strokeWidth={1.75} />
-          {LEGAL_FOOT_TITLE}
+          {copy.legalFootTitle}
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-3 text-sm leading-relaxed text-muted-foreground text-pretty">
-        {LEGAL_FOOT.map(({ term, termIsSource, segments }) => (
+        {copy.legalFoot.map(({ term, termIsSource, segments }) => (
           <p key={term}>
             <span className="font-medium text-foreground">
               {termIsSource ? <SourceLink>{term}</SourceLink> : term}

@@ -62,7 +62,14 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
 ## Where things live
 - `src/lib/rules.ts` — every legal number, with its source section. The ONLY place legal constants may exist
   (one documented exception, the independent oracle: see `RULES.md`).
-- `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`.
+- `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`. It holds no words:
+  results are data, and the copy turns them into sentences.
+- `src/lib/copy/` — every word on screen, one typed `Copy` object per language (`types.ts`, then
+  `fil.ts`, …). `src/lib/copy.ts` is the one line that picks the live language (N34). No
+  component writes a word itself: `npm test` fails if one does, or if words live anywhere but
+  here (the circular's own terms stay in `rules.ts`).
+- `tools/render-snapshot.mjs` — renders every on-screen part to static HTML. Two runs compared
+  with `cmp` prove a refactor changed nothing a visitor sees.
 - `GOLDEN-CASES.md` — hand-verified cases. Tests must reproduce them exactly.
 - `SIGNOFF.json` — Napoleon's sign-off on the privacy page, the verdict wording and every value in
   `rules.ts`, each with a hash of the exact content signed (`src/lib/signoff.ts`, point 10).
@@ -132,10 +139,12 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 
 ## Current phase
 
-Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B
-and C are complete (2026-09-23). Next steps are Napoleon's: independent content review (N32), the
-privacy blanks and lawyer review (N17), the email provider (N13) and hosting (N9); then step group
-D. Every step group stops for review.
+Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B,
+C and E (Netlify + Resend) are complete. In step group F (English first, N34), F1 (the English
+copy, approved) and F2 (every word moved into `src/lib/copy/`) are done (2026-09-23); F3 switches
+the site to English, then stops for review. Still Napoleon's: independent content review (N32) and
+the privacy blanks with the lawyer (N17); then step group D, the live proof of the /api/subscribe
+limit (N18). Every step group stops for review.
 
 ## Lessons
 

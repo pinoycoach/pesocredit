@@ -6,10 +6,10 @@
  * proceeds equal the payments. A daily rate becomes a monthly one by x30 or by
  * compounding, and rules.ts records that the circular does not say which, so the
  * effective-rate verdict is three-state (see eirVerdict).
+ *
+ * No words live here: results are data, and src/lib/copy/ turns them into sentences.
  */
-import { PRINCIPAL_LIMIT_TEXT, pesoWhole, TENOR_LIMIT_TEXT } from "./limits.ts";
 import { CEILINGS, COVERAGE, DAYS_PER_MONTH, eirVerdict, type Verdict } from "./rules.ts";
-import { cap, type Segments } from "./segments.ts";
 
 export type Frequency = "daily" | "weekly" | "biweekly" | "monthly";
 
@@ -18,13 +18,6 @@ export const INTERVAL_DAYS: Record<Frequency, number> = {
   weekly: 7,
   biweekly: 14,
   monthly: DAYS_PER_MONTH,
-};
-
-export const FREQUENCY_LABEL: Record<Frequency, string> = {
-  daily: "Araw-araw",
-  weekly: "Bawat 7 araw",
-  biweekly: "Bawat 14 araw",
-  monthly: `Buwanan (~${DAYS_PER_MONTH} araw)`,
 };
 
 /**
@@ -54,6 +47,15 @@ export type LoanInput = {
 export type Cashflow = { day: number; amount: number; label: string };
 
 export type Coverage = "COVERED" | "MAYBE" | "NOT_COVERED";
+
+/** Why the ceilings do not (or may not) apply to a loan. copy.coverageReason words it. */
+export type CoverageReason =
+  | { kind: "lender" }
+  | { kind: "secured" }
+  | { kind: "purpose" }
+  | { kind: "principal"; principal: number }
+  | { kind: "tenorOver"; tenorDays: number }
+  | { kind: "tenorMaybe"; tenorDays: number };
 
 export type CheckId = "nominal" | "eir" | "totalCost";
 
@@ -101,7 +103,7 @@ export type LoanAnalysis =
   | {
       status: "ok";
       numbers: LoanNumbers;
-      coverage: { state: Coverage; reasons: Segments[] };
+      coverage: { state: Coverage; reasons: CoverageReason[] };
       checks: Record<CheckId, Check>;
       /** The most serious state among the checks; null when the ceilings do not apply. */
       overall: Verdict | null;
@@ -174,40 +176,19 @@ function isIsoDate(s: string): boolean {
 function assessCoverage(
   input: LoanInput,
   tenorDays: number,
-): { state: Coverage; reasons: Segments[] } {
-  const reasons: Segments[] = [];
-  if (input.lenderKind !== "lending_or_financing") {
-    reasons.push(["Ang ceiling ay para sa lending at financing companies — hindi sa bangko."]);
-  }
-  if (COVERAGE.unsecured && !input.unsecured) {
-    reasons.push(["Ang ceiling ay para sa unsecured loans."]);
-  }
-  if (COVERAGE.generalPurpose && !input.generalPurpose) {
-    reasons.push(["Ang ceiling ay para sa general-purpose loans."]);
-  }
+): { state: Coverage; reasons: CoverageReason[] } {
+  const reasons: CoverageReason[] = [];
+  if (input.lenderKind !== "lending_or_financing") reasons.push({ kind: "lender" });
+  if (COVERAGE.unsecured && !input.unsecured) reasons.push({ kind: "secured" });
+  if (COVERAGE.generalPurpose && !input.generalPurpose) reasons.push({ kind: "purpose" });
   if (input.principal > COVERAGE.principalMax) {
-    reasons.push([
-      `Ang principal na ${pesoWhole(input.principal)} ay lampas sa `,
-      cap(PRINCIPAL_LIMIT_TEXT),
-      " na saklaw.",
-    ]);
+    reasons.push({ kind: "principal", principal: input.principal });
   }
-  if (tenorDays > COVERAGE.tenorDaysMaybeCovered) {
-    reasons.push([`Ang tenor na ${tenorDays} araw ay lampas sa `, cap(TENOR_LIMIT_TEXT), "."]);
-  }
+  if (tenorDays > COVERAGE.tenorDaysMaybeCovered) reasons.push({ kind: "tenorOver", tenorDays });
   if (reasons.length > 0) return { state: "NOT_COVERED", reasons };
 
   if (tenorDays > COVERAGE.tenorDaysSurelyCovered) {
-    return {
-      state: "MAYBE",
-      reasons: [
-        [
-          `Ang tenor na ${tenorDays} araw ay maaaring pasok pa sa `,
-          cap(TENOR_LIMIT_TEXT),
-          ", depende sa kalendaryo. Maaaring sakop.",
-        ],
-      ],
-    };
+    return { state: "MAYBE", reasons: [{ kind: "tenorMaybe", tenorDays }] };
   }
   return { state: "COVERED", reasons: [] };
 }
@@ -249,8 +230,8 @@ export function analyzeLoan(input: LoanInput): LoanAnalysis {
 
   // EIR excludes late penalties; they count only toward total cost.
   const rDay = irrDaily([
-    { day: 0, amount: netProceeds, label: "Natanggap" },
-    ...schedule.map((p) => ({ day: p.day, amount: -p.amount, label: `Hulog ${p.n}` })),
+    { day: 0, amount: netProceeds, label: "received" },
+    ...schedule.map((p) => ({ day: p.day, amount: -p.amount, label: `payment ${p.n}` })),
   ]);
   if (rDay === null || !Number.isFinite(rDay)) {
     return { status: "cannot_compute", reason: "no_solution" };
@@ -323,16 +304,13 @@ export function analyzeLoan(input: LoanInput): LoanAnalysis {
 
 export type PresetId = "7d" | "14d" | "30d" | "4w";
 
+/** The quick-fill buttons. Their words are copy.presets. */
 export const PRESETS: {
   id: PresetId;
-  label: string;
-  hint: string;
   patch: Partial<LoanInput>;
 }[] = [
   {
     id: "7d",
-    label: "7 araw",
-    hint: "Isang bayad sa ika-7 araw",
     patch: {
       frequency: "weekly",
       paymentCount: 1,
@@ -342,8 +320,6 @@ export const PRESETS: {
   },
   {
     id: "14d",
-    label: "14 araw",
-    hint: "Isang bayad sa ika-14",
     patch: {
       frequency: "biweekly",
       paymentCount: 1,
@@ -353,8 +329,6 @@ export const PRESETS: {
   },
   {
     id: "30d",
-    label: "30 araw · 1 bayad",
-    hint: "Isang bayad sa dulo ng buwan",
     patch: {
       frequency: "monthly",
       paymentCount: 1,
@@ -364,8 +338,6 @@ export const PRESETS: {
   },
   {
     id: "4w",
-    label: "4 na hulog",
-    hint: "Lingguhan, apat na bayad",
     patch: {
       frequency: "weekly",
       paymentCount: 4,
