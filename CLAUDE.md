@@ -121,3 +121,8 @@ here during the final retro phase — point 17.)
 
 - SEC circular numbers restart every year: MC 14 s. 2025 (lending caps) ≠ MC 14 s. 2026 (umbrella funds). Always cite number AND series.
 - "Up to four months" ≠ 120 days.
+- When breaking something on purpose to prove a guard (point 6), back up every file the injection
+  touches, tracked or not, and restore from that backup, never with `git checkout`. Git cannot
+  restore an untracked file (injected test signatures stayed in the not-yet-tracked SIGNOFF.json),
+  and it silently discards uncommitted work in a tracked one (step C4's edits to privacy-copy.ts
+  were wiped). Byte-compare each file against its backup before moving on.
