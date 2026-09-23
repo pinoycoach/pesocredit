@@ -21,7 +21,6 @@ worth reconsidering if circumstances named here change).
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
-- N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — OPEN — Group C step C7
 - N27 — Points 1 and 9: tools/golden/oracle.py is not run by CI, so the independent check of G1–G7 can go stale — OPEN — Group C step C8
 - N28 — Point 1: oracle.py hardcodes its own caps, outside rules.ts — OPEN — keep them as the one documented exception (importing rules.ts would let one wrong cap pass both sides); say so in RULES.md and at the top of oracle.py; the C8 drift check keeps the two copies in agreement — Group C step C8
 - N29 — Point 11: the bundle secret scan was done by hand (b0a9bdb, 6e975d1) and is not in CI — OPEN — Group C step C9: fresh build with a dummy secret, fail if it appears in client output
@@ -51,6 +50,7 @@ worth reconsidering if circumstances named here change).
 - N22 — Point 10: privacy.test.ts:34, :74 and :81 assert the page's current DRAFT state, so they break the day N17 succeeds (DRAFT removed, contact email filled in) — RESOLVED — privacy-copy.ts PRIVACY_STATUS decides the DRAFT banner and the head tags (draft: banner, "(DRAFT)" title, noindex; final: none); the test requires "final" exactly when SIGNOFF signs the page with no blanks left, and tests the final state today; an email address may appear only through CONTACT_EMAIL, which fills both address blanks (2026-09-23)
 - N24 — Point 6: a duplicate G-id in GOLDEN-CASES.md silently overwrites a real row in the golden-case test (loan-math.test.ts:102-104); an unexpected id already fails — RESOLVED — the golden-case test lists every G row in file order and fails, naming the line, on a duplicate id, a colliding label or an unexpected id; each G case also asserts it has exactly one row (2026-09-23)
 - N25 — package.json lists test files by hand, so a new *.test.ts would silently not run — RESOLVED — the explicit list in package.json stays; loan-math.test.ts (the test file CLAUDE.md names) fails if any *.test.ts under src/ is missing from it, or if it lists a file that does not exist (2026-09-23)
+- N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — RESOLVED — the NUL in the test string is written as the escape \u0000 (same runtime string); the file has no NUL byte, so git diffs it as text (2026-09-23)
 
 ## Revisit
 
