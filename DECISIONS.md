@@ -21,7 +21,6 @@ worth reconsidering if circumstances named here change).
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
-- N24 — Point 6: a duplicate G-id in GOLDEN-CASES.md silently overwrites a real row in the golden-case test (loan-math.test.ts:102-104); an unexpected id already fails — OPEN — Group C step C5
 - N25 — package.json lists test files by hand, so a new *.test.ts would silently not run — OPEN — Group C step C6: keep the list, add a test that fails if any test file under src/ is missing from it
 - N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — OPEN — Group C step C7
 - N27 — Points 1 and 9: tools/golden/oracle.py is not run by CI, so the independent check of G1–G7 can go stale — OPEN — Group C step C8
@@ -51,6 +50,7 @@ worth reconsidering if circumstances named here change).
 - N30 — Point 15: HANDOVER.md step group D asks for a send-only email key, but /api/subscribe only adds a contact — RESOLVED — HANDOVER.md step group D now asks for a key scoped to "create one contact in one list"; the provider question moved into N13 (2026-09-23)
 - N23 — Point 10: no SIGNOFF record for the privacy page, the verdict wording and the cap values in rules.ts (signer, date, hash of the exact content; fails if signed content changes) — RESOLVED — SIGNOFF.json + src/lib/signoff.ts: signer (always Napoleon), date, sha256 of the exact content, optional reviewedBy; covers the privacy page, the verdict wording, and every exported value of rules.ts (examples from the circular included); signoff.test.ts checks structure and fails on changed signed content; npm run launch-check fails while anything is unsigned and gates production (2026-09-23)
 - N22 — Point 10: privacy.test.ts:34, :74 and :81 assert the page's current DRAFT state, so they break the day N17 succeeds (DRAFT removed, contact email filled in) — RESOLVED — privacy-copy.ts PRIVACY_STATUS decides the DRAFT banner and the head tags (draft: banner, "(DRAFT)" title, noindex; final: none); the test requires "final" exactly when SIGNOFF signs the page with no blanks left, and tests the final state today; an email address may appear only through CONTACT_EMAIL, which fills both address blanks (2026-09-23)
+- N24 — Point 6: a duplicate G-id in GOLDEN-CASES.md silently overwrites a real row in the golden-case test (loan-math.test.ts:102-104); an unexpected id already fails — RESOLVED — the golden-case test lists every G row in file order and fails, naming the line, on a duplicate id, a colliding label or an unexpected id; each G case also asserts it has exactly one row (2026-09-23)
 
 ## Revisit
 

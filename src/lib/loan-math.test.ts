@@ -36,18 +36,21 @@ function seeded(seed: number) {
 // precision it prints. The loan inputs are in test-utils/loan-fixtures.ts.
 // ---------------------------------------------------------------------------
 
-function goldenTable(): Map<string, string[]> {
+/**
+ * The G rows of GOLDEN-CASES.md. `found` lists every row in file order, so a second row
+ * with the same id (which would otherwise silently replace the first) fails loudly.
+ */
+function goldenTable(): { rows: Map<string, string[]>; found: { id: string; line: number }[] } {
   const text = readFileSync(new URL("../../GOLDEN-CASES.md", import.meta.url), "utf8");
   const rows = new Map<string, string[]>();
-  for (const line of text.split(/\r?\n/)) {
+  const found: { id: string; line: number }[] = [];
+  text.split(/\r?\n/).forEach((line, index) => {
     const m = /^\|\s*(G\d+)\s*\|(.*)\|\s*$/.exec(line);
-    if (m)
-      rows.set(
-        m[1],
-        m[2].split("|").map((cell) => cell.trim()),
-      );
-  }
-  return rows;
+    if (!m) return;
+    found.push({ id: m[1], line: index + 1 });
+    if (!rows.has(m[1])) rows.set(m[1], m[2].split("|").map((cell) => cell.trim()));
+  });
+  return { rows, found };
 }
 
 /** "0.1944%" -> { text: "0.1944", digits: 4 } */
@@ -74,15 +77,27 @@ function annuityDailyRate(principal: number, payment: number, count: number, int
 }
 
 describe("golden cases (GOLDEN-CASES.md)", () => {
-  const table = goldenTable();
+  const { rows: table, found } = goldenTable();
 
-  it("the table has G1 to G7", () => {
-    assert.deepEqual([...table.keys()], ["G1", "G2", "G3", "G4", "G5", "G6", "G7"]);
+  it("the table has G1 to G7, each exactly once", () => {
+    const duplicates = found.filter((row, i) => found.findIndex((r) => r.id === row.id) !== i);
+    assert.deepEqual(
+      duplicates,
+      [],
+      `GOLDEN-CASES.md has more than one row for ${duplicates
+        .map((d) => `${d.id} (again at line ${d.line})`)
+        .join(", ")}: any table row whose first cell is a G-id is read as a golden case`,
+    );
+    assert.deepEqual(
+      found.map((row) => row.id),
+      ["G1", "G2", "G3", "G4", "G5", "G6", "G7"],
+    );
     assert.deepEqual(Object.keys(GOLDEN_INPUTS), [...table.keys()]);
   });
 
   for (const [id, input] of Object.entries(GOLDEN_INPUTS)) {
     it(`${id} reproduces every printed value`, () => {
+      assert.equal(found.filter((row) => row.id === id).length, 1, `${id} must have exactly one row`);
       const cells = table.get(id);
       assert.ok(cells && cells.length === 7, `${id}: expected 7 cells`);
       const [, daily, simple, compounded, nominal, totalCost, verdictText] = cells;
