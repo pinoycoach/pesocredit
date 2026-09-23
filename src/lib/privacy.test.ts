@@ -94,12 +94,12 @@ describe("privacy page (DRAFT)", () => {
   });
 
   it("discloses exactly what the server forwards: no more, no less", async () => {
-    // What the copy says is collected, keyed by the field the server forwards.
+    // What the copy says is collected, keyed by the field in the email the server sends.
     const disclosed: Record<string, string> = {
-      email: "email address",
-      consentedAt: "oras ng pagpayag",
+      Email: "email address",
+      "Consented at": "oras ng pagpayag",
     };
-    let sent: Record<string, unknown> = {};
+    let sent: Record<string, string> = {};
     const capture = (async (_url: string | URL | Request, init?: RequestInit) => {
       sent = JSON.parse(String(init?.body));
       return new Response("ok");
@@ -110,12 +110,22 @@ describe("privacy page (DRAFT)", () => {
         headers: { "content-type": "application/json", origin: "http://app.test" },
         body: JSON.stringify({ email: "ana@example.com", consent: true }),
       }),
-      { captureUrl: "https://capture.example/hook", fetchImpl: capture },
+      {
+        env: {
+          RESEND_API_KEY: "re_test_key",
+          SUBSCRIBE_NOTIFY_TO: "owner@inbox.example",
+          SUBSCRIBE_FROM: "subscribe@peso.credit",
+        },
+        fetchImpl: capture,
+      },
     );
     assert.equal(response.status, 200);
 
-    assert.deepEqual(Object.keys(sent).sort(), Object.keys(disclosed).sort(),
-      "a field is forwarded that the privacy copy does not disclose (or the reverse)");
+    // The email's other parts are the owner's settings and a fixed subject, not the visitor's data.
+    assert.deepEqual(Object.keys(sent).sort(), ["from", "subject", "text", "to"]);
+    const fields = sent.text.trim().split("\n").map((line) => line.split(": ")[0]);
+    assert.deepEqual(fields.sort(), Object.keys(disclosed).sort(),
+      "a field is sent that the privacy copy does not disclose (or the reverse)");
     const collected = textOf(section(/^Ano ang kinokolekta/i));
     for (const phrase of Object.values(disclosed)) {
       assert.ok(collected.includes(phrase), `the page does not mention: ${phrase}`);

@@ -5,8 +5,12 @@
  * CLAUDE.md principle 4: email is optional, separate, and never sent together with loan
  * numbers. The strongest place to enforce that is here: the browser may send exactly
  * { email, consent: true } and nothing else, so a stray field (a loan number, say) is
- * refused, not forwarded. Only { email, consentedAt } goes on to the capture service,
- * with the time stamped by this server.
+ * refused, not forwarded. Only the address and the consent time, stamped by this server,
+ * go on: in one email to the owner's inbox, sent through Resend (DECISIONS N13).
+ *
+ * The Resend key has Sending access only, restricted to the peso.credit domain: it can
+ * send that one email and nothing else (point 15). Contacts are added to the Resend list
+ * by hand, with a separate Full-access key that never enters this code.
  *
  * Nothing about a request (the email, the body, the address) is logged.
  */
@@ -15,32 +19,60 @@ export const MAX_BODY_BYTES = 2_048;
 export const FORWARD_TIMEOUT_MS = 8_000;
 const MAX_EMAIL_LENGTH = 254;
 
+/** Resend's send-email endpoint: the one web address this server contacts. */
+export const RESEND_EMAILS_URL = "https://api.resend.com/emails";
+export const NOTIFY_SUBJECT = "New peso.credit subscriber";
+
+/** The environment variables that switch the email form on. All three, or it is off. */
+export type SubscribeEnv = {
+  /** A Resend Sending-access key, restricted to the peso.credit domain. Secret. */
+  RESEND_API_KEY?: string;
+  /** The owner's inbox, where each new subscriber's address is sent. */
+  SUBSCRIBE_NOTIFY_TO?: string;
+  /** The sender, on the verified domain: "peso.credit <subscribe@peso.credit>" or an address. */
+  SUBSCRIBE_FROM?: string;
+};
+
+export type ResendSettings = { apiKey: string; notifyTo: string; from: string };
+
 export type SubscribeDeps = {
-  /** EMAIL_CAPTURE_URL as set in the environment (may be missing or unusable). */
-  captureUrl: string | undefined;
+  /** The environment (process.env in production). */
+  env: SubscribeEnv;
   /** For tests. Defaults to the global fetch. */
   fetchImpl?: typeof fetch;
   /** For tests. Defaults to the current time. */
   now?: () => Date;
 };
 
-const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+/** "Name <address>" or a bare address, with a valid address and no line breaks. */
+function isValidSender(value: string): boolean {
+  if (hasControl(value)) return false;
+  const named = /^([^<>@]+?)\s*<([^<>]+)>$/.exec(value);
+  if (named) return isValidEmail(named[2]);
+  return !/[<>]/.test(value) && isValidEmail(value);
+}
 
 /**
- * The capture URL if it is safe to send email to: https, or http only for this machine.
- * Anything else (unset, empty, garbage, plain http to the internet) is treated as unset.
+ * The Resend settings if all three are usable; null otherwise, which switches the form off.
+ * A key must look like a Resend key ("re_…", no spaces), so a stray value is not sent.
  */
-export function normalizeCaptureUrl(raw: string | undefined): string | null {
-  const text = raw?.trim();
-  if (!text) return null;
-  try {
-    const url = new URL(text);
-    if (url.protocol === "https:") return url.href;
-    if (url.protocol === "http:" && LOCAL_HOSTS.has(url.hostname)) return url.href;
-    return null;
-  } catch {
-    return null;
-  }
+export function readResendSettings(env: SubscribeEnv): ResendSettings | null {
+  const apiKey = env.RESEND_API_KEY?.trim() ?? "";
+  const notifyTo = env.SUBSCRIBE_NOTIFY_TO?.trim() ?? "";
+  const from = env.SUBSCRIBE_FROM?.trim() ?? "";
+  if (!/^re_\S+$/.test(apiKey)) return null;
+  if (!isValidEmail(notifyTo) || !isValidSender(from)) return null;
+  return { apiKey, notifyTo, from };
+}
+
+/** The one email sent per subscriber: to the owner, carrying only the address and the time. */
+export function notifyEmail(settings: ResendSettings, email: string, consentedAt: string) {
+  return {
+    from: settings.from,
+    to: [settings.notifyTo],
+    subject: NOTIFY_SUBJECT,
+    text: `Email: ${email}\nConsented at: ${consentedAt}\n`,
+  };
 }
 
 /** Whitespace and control characters never belong in an address. */
@@ -48,6 +80,15 @@ function hasWhitespaceOrControl(value: string): boolean {
   for (const character of value) {
     const code = character.charCodeAt(0);
     if (code <= 0x1f || code === 0x7f || /\s/.test(character)) return true;
+  }
+  return false;
+}
+
+/** Control characters (line breaks included) never belong in a header value. */
+function hasControl(value: string): boolean {
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+    if (code <= 0x1f || code === 0x7f) return true;
   }
   return false;
 }
@@ -92,8 +133,8 @@ function isSameOrigin(request: Request): boolean {
 }
 
 export async function handleSubscribe(request: Request, deps: SubscribeDeps): Promise<Response> {
-  const captureUrl = normalizeCaptureUrl(deps.captureUrl);
-  if (!captureUrl) return reply(404, { ok: false, error: "unavailable" });
+  const settings = readResendSettings(deps.env);
+  if (!settings) return reply(404, { ok: false, error: "unavailable" });
   if (request.method !== "POST") return reply(405, { ok: false, error: "method" });
   if (!isSameOrigin(request)) return reply(403, { ok: false, error: "forbidden" });
   if (!(request.headers.get("content-type") ?? "").toLowerCase().includes("application/json")) {
@@ -118,10 +159,14 @@ export async function handleSubscribe(request: Request, deps: SubscribeDeps): Pr
   const now = deps.now ?? (() => new Date());
   const send = deps.fetchImpl ?? fetch;
   try {
-    const response = await send(captureUrl, {
+    const response = await send(RESEND_EMAILS_URL, {
       method: "POST",
-      headers: { "content-type": "application/json", accept: "application/json" },
-      body: JSON.stringify({ email: parsed.email, consentedAt: now().toISOString() }),
+      headers: {
+        authorization: `Bearer ${settings.apiKey}`,
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify(notifyEmail(settings, parsed.email, now().toISOString())),
       redirect: "error",
       signal: AbortSignal.timeout(FORWARD_TIMEOUT_MS),
     });

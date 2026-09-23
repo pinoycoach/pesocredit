@@ -25,15 +25,23 @@ const HOST_FUNCTIONS = "../netlify/functions";
 const ALLOWED: Record<string, { files: string[]; why: string }> = {
   fetch: {
     files: ["lib/subscribe.ts", "lib/subscribe-client.ts"],
-    why: "subscribe.ts (server): forwards the optional email form, email + consent time only, to the capture service. subscribe-client.ts (browser): posts only the typed email to this site's own /api/subscribe; it imports nothing, so it cannot reach the loan numbers",
+    why: "subscribe.ts (server): emails the owner's inbox through Resend, the subscriber's address + consent time only. subscribe-client.ts (browser): posts only the typed email to this site's own /api/subscribe; it imports nothing, so it cannot reach the loan numbers",
   },
   "process.env": {
     files: [`${HOST_FUNCTIONS}/subscribe.mts`, "lib/get-public-config.ts"],
-    why: "server side: the /api/subscribe function reads EMAIL_CAPTURE_URL; the page's config reads EMAIL_CAPTURE_URL, GUIDE_URL and NETLIFY_DEV. The capture address never reaches the browser",
+    why: "server side: the /api/subscribe function reads the Resend settings (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); the page's config reads them, GUIDE_URL and NETLIFY_DEV. The key and the inbox never reach the browser",
   },
   "import.meta.env": {
     files: ["lib/get-public-config.ts"],
     why: "server side: import.meta.env.DEV tells the page's config whether it runs under a dev server, where /api/subscribe exists only under netlify dev; a boolean, no data",
+  },
+};
+
+/** File -> the only web addresses it may write, and why. */
+const ALLOWED_ADDRESSES: Record<string, { addresses: string[]; why: string }> = {
+  "lib/subscribe.ts": {
+    addresses: ["https://api.resend.com/emails"],
+    why: "server side: Resend's send-email endpoint, the one service /api/subscribe contacts (DECISIONS N13)",
   },
 };
 
@@ -148,11 +156,22 @@ describe("nothing leaves the phone: the app cannot send or keep data", () => {
     }
   });
 
-  it("no source file writes a web address (rules.ts holds the one link to the circular)", () => {
+  it("no source file writes a web address, except those on the allowed list (rules.ts holds the one link to the circular)", () => {
     const found = files.flatMap((file) =>
-      webAddresses(file, read(file)).map((a) => `${file}:${a.line} "${a.text}"`),
+      webAddresses(file, read(file))
+        .filter((a) => !ALLOWED_ADDRESSES[file]?.addresses.includes(a.text))
+        .map((a) => `${file}:${a.line} "${a.text}"`),
     );
     assert.deepEqual(found, [], found.join("\n"));
+  });
+
+  it("the allowed addresses are really written in their files", () => {
+    for (const [file, { addresses }] of Object.entries(ALLOWED_ADDRESSES)) {
+      const written = webAddresses(file, read(file)).map((a) => a.text);
+      for (const address of addresses) {
+        assert.ok(written.includes(address), `${file} no longer writes ${address}; remove it from the list`);
+      }
+    }
   });
 });
 

@@ -24,15 +24,16 @@ describe("the /api/subscribe Netlify function", () => {
     });
   });
 
-  it("only connects handleSubscribe: with no capture address it answers like the handler, 404", async () => {
-    const saved = process.env.EMAIL_CAPTURE_URL;
-    delete process.env.EMAIL_CAPTURE_URL;
+  it("only connects handleSubscribe: without the Resend settings it answers like the handler, 404", async () => {
+    const names = ["RESEND_API_KEY", "SUBSCRIBE_NOTIFY_TO", "SUBSCRIBE_FROM"];
+    const saved = Object.fromEntries(names.map((name) => [name, process.env[name]]));
+    for (const name of names) delete process.env[name];
     try {
       const response = await subscribeFunction(new Request(`https://peso.credit${SUBSCRIBE_PATH}`));
       assert.equal(response.status, 404);
       assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
     } finally {
-      if (saved !== undefined) process.env.EMAIL_CAPTURE_URL = saved;
+      for (const [name, value] of Object.entries(saved)) if (value !== undefined) process.env[name] = value;
     }
   });
 

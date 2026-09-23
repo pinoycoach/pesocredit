@@ -16,6 +16,7 @@ import * as copy from "../src/lib/copy.ts";
 import { analyzeLoan, FREQUENCY_LABEL, PRESETS, type LoanInput } from "../src/lib/loan-math.ts";
 import * as privacy from "../src/lib/privacy-copy.ts";
 import { CIRCUMVENTION_EXAMPLES, DAYS_PER_MONTH, SOURCE } from "../src/lib/rules.ts";
+import { notifyEmail } from "../src/lib/subscribe.ts";
 import type { Segments } from "../src/lib/segments.ts";
 import { COVERAGE_INPUTS, GOLDEN_INPUTS } from "../src/lib/test-utils/loan-fixtures.ts";
 import {
@@ -288,7 +289,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     add(`**${term}** ${render(item.segments)}`, C, footLoc[i], "paragraph");
   });
 
-  newSection("1.10 Email form", "Only when EMAIL_CAPTURE_URL is set; always below the whole result.");
+  newSection("1.10 Email form", "Only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.");
   add(copy.EMAIL_HEADING, C, "export const EMAIL_HEADING", "card title");
   add(copy.EMAIL_NOTE, C, "export const EMAIL_NOTE", "card description");
   add(copy.EMAIL_LABEL, C, "export const EMAIL_LABEL", "field label");
@@ -345,10 +346,22 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   lit("src/lib/error-component.tsx", '"An unexpected error occurred', "message when the error has no text of its own; otherwise the error's own message is shown");
 
   // -------------------------------------------------------------------------
+  // The email /api/subscribe sends to the owner's inbox: never shown to a visitor.
+  const ownerEmail = notifyEmail(
+    { apiKey: "", notifyTo: "", from: "" },
+    "{subscriber's address}",
+    "{consent time}",
+  );
+
   // Completeness: every on-screen literal in the app source must be inside some entry.
   const esc = (s: string) => s.replace(/\s+/g, " ").trim();
   const covered = esc(
-    [...all.map((e) => e.text.replace(/<\/?u>|\*\*/g, "")), ...CIRCUMVENTION_EXAMPLES].join(" \n "),
+    [
+      ...all.map((e) => e.text.replace(/<\/?u>|\*\*/g, "")),
+      ...CIRCUMVENTION_EXAMPLES,
+      ownerEmail.subject,
+      ownerEmail.text,
+    ].join(" \n "),
   );
   const root = srcRoot();
   const files = sourceFiles(root, (p) => isTestOrGenerated(p) || ["lib/banned.ts", "lib/signoff.ts"].includes(p));
@@ -416,6 +429,7 @@ For completeness: text in the source that a visitor never sees.
 |---|---|---|
 | ${cell(CIRCUMVENTION_EXAMPLES.join(", "))} | \`src/lib/rules.ts:${lineOf("src/lib/rules.ts", "export const CIRCUMVENTION_EXAMPLES")}\` | Kept from the circular for later explainer content; nothing renders it. |
 | Error codes in /api/subscribe responses ("invalid", "forbidden", …) | \`src/lib/subscribe.ts:${lineOf("src/lib/subscribe.ts", "function reply(")}\` | The form shows only the messages in 1.10. |
+| Subject: ${cell(ownerEmail.subject)}. Body: ${cell(ownerEmail.text.trim().replace(/\n/g, " / "))} | \`src/lib/subscribe.ts:${lineOf("src/lib/subscribe.ts", "export function notifyEmail(")}\` | The email each new subscription sends to the owner's inbox through Resend (DECISIONS N13); only the owner reads it. |
 `;
   return { markdown: md, leftovers, entries: all.length };
 }

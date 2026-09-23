@@ -4,7 +4,7 @@ import { GUIDE_LINK_LABEL, GUIDE_TITLE } from "@/lib/copy";
 import type { PublicConfig } from "@/lib/public-config";
 
 /**
- * Everything optional that sits below the result: the email form when a capture address is
+ * Everything optional that sits below the result: the email form when the Resend settings are
  * configured, then the guide link when a guide address is. Each hides itself when its
  * setting is empty, independently of the other, and neither ever affects the result above.
  */

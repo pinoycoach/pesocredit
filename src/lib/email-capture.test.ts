@@ -85,12 +85,17 @@ describe("the browser and the server agree on the message", () => {
     assert.equal(await submitEmail("ana@example.com", offline), "failed");
   });
 
-  it("the real client talks to the real server and the capture service gets only two fields", async () => {
-    let forwarded: Record<string, unknown> = {};
+  it("the real client talks to the real server, and the owner's email carries only two fields", async () => {
+    let forwarded: Record<string, string> = {};
     const capture = (async (_url: string | URL | Request, init?: RequestInit) => {
       forwarded = JSON.parse(String(init?.body));
       return new Response("ok");
     }) as typeof fetch;
+    const env = {
+      RESEND_API_KEY: "re_test_key",
+      SUBSCRIBE_NOTIFY_TO: "owner@inbox.example",
+      SUBSCRIBE_FROM: "subscribe@peso.credit",
+    };
     // The client's fetch is wired straight to the server handler, as the browser would be.
     const wire = (async (_path: string | URL | Request, init?: RequestInit) =>
       handleSubscribe(
@@ -99,11 +104,13 @@ describe("the browser and the server agree on the message", () => {
           headers: { ...(init?.headers as Record<string, string>), origin: "http://app.test" },
           body: init?.body as string,
         }),
-        { captureUrl: "https://capture.example/hook", fetchImpl: capture },
+        { env, fetchImpl: capture },
       )) as typeof fetch;
 
     assert.equal(await submitEmail("ana@example.com", wire), "ok");
-    assert.deepEqual(Object.keys(forwarded).sort(), ["consentedAt", "email"]);
+    assert.deepEqual(Object.keys(forwarded).sort(), ["from", "subject", "text", "to"]);
+    const fields = forwarded.text.trim().split("\n").map((line) => line.split(": ")[0]);
+    assert.deepEqual(fields, ["Email", "Consented at"]);
   });
 });
 

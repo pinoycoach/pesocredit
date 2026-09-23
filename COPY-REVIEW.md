@@ -189,7 +189,7 @@ Terms in bold; linked text underlined.
 
 ### 1.10 Email form
 
-Only when EMAIL_CAPTURE_URL is set; always below the whole result.
+Only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
@@ -320,4 +320,5 @@ For completeness: text in the source that a visitor never sees.
 | Text | Where | Why it is not shown |
 |---|---|---|
 | restructuring, repackaging, splitting of loan amounts, recharacterization of fees, shifting of loan tenor, simulated collateral, sham guaranty arrangements, disguised charges | `src/lib/rules.ts:69` | Kept from the circular for later explainer content; nothing renders it. |
-| Error codes in /api/subscribe responses ("invalid", "forbidden", …) | `src/lib/subscribe.ts:79` | The form shows only the messages in 1.10. |
+| Error codes in /api/subscribe responses ("invalid", "forbidden", …) | `src/lib/subscribe.ts:120` | The form shows only the messages in 1.10. |
+| Subject: New peso.credit subscriber. Body: Email: {subscriber's address} / Consented at: {consent time} | `src/lib/subscribe.ts:69` | The email each new subscription sends to the owner's inbox through Resend (DECISIONS N13); only the owner reads it. |

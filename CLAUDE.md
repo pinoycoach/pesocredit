@@ -119,8 +119,8 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 - `npm run typecheck`, `npm run lint`, `npm run build` all pass.
 - `python tools/golden/check.py` passes: the independent oracle agrees with GOLDEN-CASES.md, and its
   own caps with `rules.ts` (CI runs it).
-- `node .github/scripts/bundle-secret-scan.mjs` passes: a fresh build with a dummy `EMAIL_CAPTURE_URL`
-  leaks no secret to the client (CI runs it).
+- `node .github/scripts/bundle-secret-scan.mjs` passes: a fresh build with dummy Resend settings leaks
+  neither the key nor the inbox to the client (CI runs it).
 
 ## Working rules for Claude
 - Plan first; wait for approval before code. One commit per step.

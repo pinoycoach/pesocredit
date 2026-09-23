@@ -11,7 +11,7 @@
 import { handleSubscribe } from "../../src/lib/subscribe.ts";
 
 export default (request: Request): Promise<Response> =>
-  handleSubscribe(request, { captureUrl: process.env.EMAIL_CAPTURE_URL });
+  handleSubscribe(request, { env: process.env });
 
 export const config = {
   path: "/api/subscribe",

@@ -5,11 +5,18 @@ import {
   handleSubscribe,
   isValidEmail,
   MAX_BODY_BYTES,
-  normalizeCaptureUrl,
+  NOTIFY_SUBJECT,
   parseSubscribeBody,
+  readResendSettings,
+  RESEND_EMAILS_URL,
+  type SubscribeEnv,
 } from "./subscribe.ts";
 
-const CAPTURE = "https://capture.example/hook?key=secret-123";
+const ENV: SubscribeEnv = {
+  RESEND_API_KEY: "re_test_secret-123",
+  SUBSCRIBE_NOTIFY_TO: "owner@inbox.example",
+  SUBSCRIBE_FROM: "peso.credit <subscribe@peso.credit>",
+};
 const NOW = new Date("2026-09-19T08:30:00.000Z");
 
 type Call = { url: string; init: RequestInit };
@@ -37,28 +44,36 @@ function post(body: unknown, headers: Record<string, string> = {}, raw?: string)
 
 const good = { email: "ana@example.com", consent: true };
 
-async function run(request: Request, over: { captureUrl?: string | undefined } = {}) {
+async function run(request: Request, env: SubscribeEnv = ENV) {
   const f = fakeFetch();
-  const response = await handleSubscribe(request, {
-    captureUrl: "captureUrl" in over ? over.captureUrl : CAPTURE,
-    fetchImpl: f.impl,
-    now: () => NOW,
-  });
+  const response = await handleSubscribe(request, { env, fetchImpl: f.impl, now: () => NOW });
   return { response, calls: f.calls, text: await response.clone().text() };
 }
 
-describe("the capture URL", () => {
-  it("accepts https, and http only for this machine", () => {
-    assert.equal(normalizeCaptureUrl("https://capture.example/hook"), "https://capture.example/hook");
-    assert.equal(normalizeCaptureUrl("  https://capture.example/hook  "), "https://capture.example/hook");
-    for (const local of ["http://localhost:9000/x", "http://127.0.0.1:9000/x", "http://[::1]:9000/x"]) {
-      assert.ok(normalizeCaptureUrl(local), local);
-    }
+describe("the Resend settings", () => {
+  it("are usable with a Resend key, an inbox and a sender on the domain", () => {
+    assert.deepEqual(readResendSettings(ENV), {
+      apiKey: "re_test_secret-123",
+      notifyTo: "owner@inbox.example",
+      from: "peso.credit <subscribe@peso.credit>",
+    });
+    assert.ok(readResendSettings({ ...ENV, SUBSCRIBE_FROM: " subscribe@peso.credit " }), "a bare sender address");
   });
 
-  it("treats anything else as not set", () => {
-    for (const bad of [undefined, "", "   ", "not a url", "ftp://x.example", "http://capture.example/hook", "javascript:alert(1)", "//capture.example"]) {
-      assert.equal(normalizeCaptureUrl(bad), null, String(bad));
+  it("switch the form off unless all three are usable", () => {
+    for (const over of [
+      { RESEND_API_KEY: undefined },
+      { RESEND_API_KEY: "" },
+      { RESEND_API_KEY: "sk_live_123" },
+      { RESEND_API_KEY: "re_ has space" },
+      { SUBSCRIBE_NOTIFY_TO: undefined },
+      { SUBSCRIBE_NOTIFY_TO: "not an address" },
+      { SUBSCRIBE_FROM: undefined },
+      { SUBSCRIBE_FROM: "peso.credit" },
+      { SUBSCRIBE_FROM: "peso.credit <subscribe@peso.credit>\nBcc: x@evil.example" },
+      { SUBSCRIBE_FROM: "<subscribe@peso.credit" },
+    ]) {
+      assert.equal(readResendSettings({ ...ENV, ...over }), null, JSON.stringify(over));
     }
   });
 });
@@ -127,21 +142,30 @@ describe("POST /api/subscribe", () => {
   });
   afterEach(() => Object.assign(console, original));
 
-  it("forwards exactly { email, consentedAt }, stamped by the server, and nothing else", async () => {
+  it("emails the owner's inbox through Resend: the address and the server's time, nothing else", async () => {
     const { response, calls, text } = await run(post(good));
     assert.equal(response.status, 200);
     assert.deepEqual(JSON.parse(text), { ok: true });
 
     assert.equal(calls.length, 1);
     const [call] = calls;
-    assert.equal(call.url, CAPTURE);
+    assert.equal(call.url, RESEND_EMAILS_URL);
+    assert.equal(RESEND_EMAILS_URL, "https://api.resend.com/emails");
     assert.equal(call.init.method, "POST");
     assert.equal(call.init.redirect, "error");
     assert.ok(call.init.signal, "a timeout is set");
     assert.equal(FORWARD_TIMEOUT_MS, 8_000);
+    const headers = call.init.headers as Record<string, string>;
+    assert.equal(headers.authorization, "Bearer re_test_secret-123");
+    assert.equal(headers["content-type"], "application/json");
+
     const sent = JSON.parse(String(call.init.body));
-    assert.deepEqual(Object.keys(sent).sort(), ["consentedAt", "email"]);
-    assert.deepEqual(sent, { email: "ana@example.com", consentedAt: "2026-09-19T08:30:00.000Z" });
+    assert.deepEqual(sent, {
+      from: "peso.credit <subscribe@peso.credit>",
+      to: ["owner@inbox.example"],
+      subject: NOTIFY_SUBJECT,
+      text: "Email: ana@example.com\nConsented at: 2026-09-19T08:30:00.000Z\n",
+    });
   });
 
   it("refuses a body with a loan number in it, and forwards nothing", async () => {
@@ -200,39 +224,40 @@ describe("POST /api/subscribe", () => {
     assert.equal((await run(noHeaders)).response.status, 403, "neither Origin nor Sec-Fetch-Site");
   });
 
-  it("does not exist when the capture URL is not set or not usable", async () => {
-    for (const captureUrl of [undefined, "", "not a url", "http://capture.example/hook"]) {
-      const { response, calls } = await run(post(good), { captureUrl });
-      assert.equal(response.status, 404, String(captureUrl));
+  it("does not exist when the Resend settings are missing or not usable", async () => {
+    for (const env of [{}, { ...ENV, RESEND_API_KEY: "" }, { ...ENV, SUBSCRIBE_NOTIFY_TO: "nope" }, { ...ENV, SUBSCRIBE_FROM: undefined }]) {
+      const { response, calls } = await run(post(good), env);
+      assert.equal(response.status, 404, JSON.stringify(env));
       assert.equal(calls.length, 0);
     }
   });
 
-  it("answers 502, with no detail, when the capture service fails", async () => {
-    for (const respond of [() => new Response("boom", { status: 500 }), () => new Response("no", { status: 404 })]) {
+  it("answers 502, with no detail, when Resend fails", async () => {
+    for (const respond of [() => new Response("boom", { status: 500 }), () => new Response("no", { status: 403 })]) {
       const f = fakeFetch(respond);
-      const response = await handleSubscribe(post(good), { captureUrl: CAPTURE, fetchImpl: f.impl, now: () => NOW });
+      const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: f.impl, now: () => NOW });
       assert.equal(response.status, 502);
       assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
     }
     const throwing = (async () => {
-      throw new Error("connect ECONNREFUSED capture.example");
+      throw new Error("connect ECONNREFUSED api.resend.com");
     }) as typeof fetch;
-    const response = await handleSubscribe(post(good), { captureUrl: CAPTURE, fetchImpl: throwing });
+    const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: throwing });
     assert.equal(response.status, 502);
     assert.ok(!(await response.text()).includes("ECONNREFUSED"));
   });
 
-  it("never puts the email or the capture URL in a response, and logs nothing", async () => {
+  it("never puts the email, the key or the inbox in a response, and logs nothing", async () => {
     const outcomes = [
       await run(post(good)),
       await run(post({ ...good, principal: 1 })),
       await run(post(good, { origin: "http://evil.example" })),
-      await run(post(good), { captureUrl: undefined }),
+      await run(post(good), {}),
     ];
     for (const { text } of outcomes) {
       assert.ok(!text.includes("ana@example.com"), text);
       assert.ok(!text.includes("secret-123"), text);
+      assert.ok(!text.includes("owner@inbox.example"), text);
     }
     assert.deepEqual(logged, [], "nothing about a request may be logged");
   });

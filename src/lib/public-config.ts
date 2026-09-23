@@ -1,11 +1,11 @@
 /**
- * What the page is told about the server's environment. The capture URL itself is never
- * part of this: it may carry a secret, so the browser only learns whether the form is on.
+ * What the page is told about the server's environment. The Resend key and the owner's inbox are
+ * never part of this: the browser only learns whether the form is on.
  */
-import { normalizeCaptureUrl } from "./subscribe.ts";
+import { readResendSettings } from "./subscribe.ts";
 
 export type PublicConfig = {
-  /** EMAIL_CAPTURE_URL is set to a usable address, so the form may be shown. */
+  /** The Resend settings (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM) are usable. */
   emailCaptureEnabled: boolean;
   /** GUIDE_URL when it is a web address; the guide link is hidden when null. */
   guideUrl: string | null;
@@ -34,7 +34,7 @@ export function readPublicConfig(
 ): PublicConfig {
   const endpointServed = !devServer || env.NETLIFY_DEV === "true";
   return {
-    emailCaptureEnabled: endpointServed && normalizeCaptureUrl(env.EMAIL_CAPTURE_URL) !== null,
+    emailCaptureEnabled: endpointServed && readResendSettings(env) !== null,
     guideUrl: normalizeGuideUrl(env.GUIDE_URL),
   };
 }

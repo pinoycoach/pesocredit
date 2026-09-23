@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * CI: EMAIL_CAPTURE_URL never reaches the browser (DECISIONS N29, BUILD-STANDARD points
- * 9 and 11). This deletes the build output, builds fresh with a dummy capture URL that
- * carries a random secret, then fails if any client file contains the secret, the
- * capture address or the variable's name, or if the server bundle has the value baked
- * in (it must read it at request time). It builds itself, so it can never scan a stale
- * build. Written to run the same way on Windows, macOS and Linux.
+ * CI: the Resend settings never reach the browser (DECISIONS N13, N29; BUILD-STANDARD points
+ * 9 and 11). This deletes the build output, builds fresh with dummy values for
+ * RESEND_API_KEY (a random secret), SUBSCRIBE_NOTIFY_TO (a random inbox) and SUBSCRIBE_FROM,
+ * then fails if any client file contains the key, the inbox or any of the variable names,
+ * or if the server bundle has the key or the inbox baked in (they must be read at request
+ * time). It builds itself, so it can never scan a stale build. Written to run the same way
+ * on Windows, macOS and Linux.
  */
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
@@ -18,9 +19,15 @@ import { join } from "node:path";
 const CLIENT = "dist";
 const SERVER = join(".netlify", "functions-internal");
 
-const secret = `ci-dummy-secret-${randomUUID()}`;
-const captureHost = `capture-${randomUUID().slice(0, 8)}.invalid`;
-const captureUrl = `https://${captureHost}/hook?key=${secret}`;
+const secret = `re_ci_dummy_${randomUUID()}`;
+const inbox = `inbox-${randomUUID().slice(0, 8)}@ci-dummy.invalid`;
+const NAMES = ["RESEND_API_KEY", "SUBSCRIBE_NOTIFY_TO", "SUBSCRIBE_FROM"];
+const env = {
+  ...process.env,
+  RESEND_API_KEY: secret,
+  SUBSCRIBE_NOTIFY_TO: inbox,
+  SUBSCRIBE_FROM: "peso.credit <subscribe@peso.credit>",
+};
 
 /** Every file under `dir`, recursively. */
 function filesIn(dir) {
@@ -44,32 +51,28 @@ function fail(message) {
   process.exit(1);
 }
 
-// The scanner itself: it must find a planted secret (point 6).
+// The scanner itself: it must find a planted secret and inbox (point 6).
 const planted = mkdtempSync(join(tmpdir(), "secret-scan-"));
-writeFileSync(join(planted, "chunk.js"), `const u = "${captureUrl}";`);
-if (scan(planted, [secret]).length !== 1) fail("the scanner did not find a planted secret");
+writeFileSync(join(planted, "chunk.js"), `const k = "${secret}", to = "${inbox}";`);
+if (scan(planted, [secret, inbox]).length !== 2) fail("the scanner did not find a planted secret");
 rmSync(planted, { recursive: true, force: true });
 
-// A fresh build with the dummy secret set.
+// A fresh build with the dummy settings.
 for (const dir of [CLIENT, SERVER]) rmSync(dir, { recursive: true, force: true });
-const build = spawnSync("npm run build", {
-  shell: true,
-  stdio: "inherit",
-  env: { ...process.env, EMAIL_CAPTURE_URL: captureUrl },
-});
+const build = spawnSync("npm run build", { shell: true, stdio: "inherit", env });
 if (build.status !== 0) fail(`npm run build exited with ${build.status}`);
 if (!existsSync(CLIENT) || !existsSync(SERVER)) fail(`no build output in ${CLIENT} and ${SERVER}`);
 
 const clientFiles = filesIn(CLIENT);
 if (!clientFiles.some((f) => f.endsWith(".js"))) fail(`no client JavaScript in ${CLIENT}`);
 
-const clientHits = scan(CLIENT, [secret, captureHost, "EMAIL_CAPTURE_URL"]);
+const clientHits = scan(CLIENT, [secret, inbox, ...NAMES]);
 if (clientHits.length > 0) fail(`found in client output:\n- ${clientHits.join("\n- ")}`);
 
-const serverHits = scan(SERVER, [secret, captureHost]);
+const serverHits = scan(SERVER, [secret, inbox]);
 if (serverHits.length > 0) fail(`baked into the server bundle:\n- ${serverHits.join("\n- ")}`);
 
 console.log(
-  `bundle secret scan passed: fresh build with a dummy EMAIL_CAPTURE_URL; ${clientFiles.length} client files ` +
-    "contain neither the secret, the capture address nor the variable name, and the server bundle does not bake the value in.",
+  `bundle secret scan passed: fresh build with dummy Resend settings; ${clientFiles.length} client files ` +
+    "contain neither the key, the inbox nor the variable names, and the server bundle does not bake them in.",
 );
