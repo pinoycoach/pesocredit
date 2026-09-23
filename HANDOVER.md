@@ -70,7 +70,8 @@ checklist from what I show you on screen, point 12)
 - Vercel project, peso.credit domain + DNS
 - Rate limiting on /api/subscribe (DECISIONS N18)
 - Privacy placeholders filled + lawyer-reviewed (N17)
-- Email provider send-only key (N13, point 15)
+- Email provider key for /api/subscribe, scoped to "create one contact in one
+  list" only, not send-only (N13, point 15)
 Nothing deploys until N17 and N18 are RESOLVED in DECISIONS.md.
 ```
 

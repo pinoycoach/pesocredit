@@ -16,7 +16,7 @@ worth reconsidering if circumstances named here change).
 
 - N9 — Hosting and environment (point 8). Builder: Napoleon's Windows machine. Build target already set to Vercel (Nitro "vercel" preset, kept in Phase 1); Vercel builds on Linux. Recommendation on record: Vercel over Railway (static pages + one serverless function, no DB). — OPEN — awaiting Napoleon's confirmation
 - N10 — Affiliate programs/partners and disclosure wording — OPEN — needed before any monetized page goes live; not needed for the calculator launch
-- N13 — Email provider for /api/subscribe, and whether it expects JSON or form-encoded — OPEN — resolve from the provider's live dashboard/docs (point 12)
+- N13 — Email provider for /api/subscribe, and whether it expects JSON or form-encoded — OPEN — resolve from the provider's live dashboard/docs (point 12). The key must be scoped to "create one contact in one list" (point 15): the provider must accept this; URL secret vs header key decides whether subscribe.ts changes. No code change until N13 is resolved.
 - N14 — Payment link for the ₱99 guide — OPEN — needed before the guide sells, not before the calculator launches
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
@@ -29,7 +29,6 @@ worth reconsidering if circumstances named here change).
 - N27 — Points 1 and 9: tools/golden/oracle.py is not run by CI, so the independent check of G1–G7 can go stale — OPEN — Group C step C8
 - N28 — Point 1: oracle.py hardcodes its own caps, outside rules.ts — OPEN — keep them as the one documented exception (importing rules.ts would let one wrong cap pass both sides); say so in RULES.md and at the top of oracle.py; the C8 drift check keeps the two copies in agreement — Group C step C8
 - N29 — Point 11: the bundle secret scan was done by hand (b0a9bdb, 6e975d1) and is not in CI — OPEN — Group C step C9: fresh build with a dummy secret, fail if it appears in client output
-- N30 — Point 15: HANDOVER.md step group D asks for a send-only email key, but /api/subscribe only adds a contact — OPEN — Group C step C2
 - N31 — Point 11: mobile layout last checked at 1e9c32e; seven UI commits since, and /privacy has never had a recorded mobile check — OPEN — re-run on the current UI before launch. ("UI hash" was the one-time Phase 1 SHA-256 before/after check that cleanup changed no pixels; not a standing check, nothing to re-run.)
 
 ## Blocking
@@ -51,6 +50,7 @@ worth reconsidering if circumstances named here change).
 - N7 — Is the peso.credit calculator Tunay na Interes or a new one, and where does it go live? — RESOLVED — Tunay na Interes IS peso.credit's first product and goes live at peso.credit; repo is now pinoycoach/pesocredit (moved from yarrow-gem-garden-rose, N20) (2026-09-23)
 - N12 — Original points 1–7 missing from docs/BUILD-STANDARD.md — RESOLVED — full text of 1–7 added above 8–17 (2026-09-23)
 - N19 — Merge these planning files into the repo: its existing CLAUDE.md (from Phase 1) and existing single rules-constants file (from Phase 3) are kept and extended, not overwritten — RESOLVED — Phase 4 step group A: planning files added (f6bd87e), CLAUDE.md merged (e451c8b), RULES.md points to src/lib/rules.ts with no overlap (e1ff0fb), GOLDEN-CASES.md records each case's independent check with tools/golden/oracle.py (2026-09-23)
+- N30 — Point 15: HANDOVER.md step group D asks for a send-only email key, but /api/subscribe only adds a contact — RESOLVED — HANDOVER.md step group D now asks for a key scoped to "create one contact in one list"; the provider question moved into N13 (2026-09-23)
 
 ## Revisit
 
