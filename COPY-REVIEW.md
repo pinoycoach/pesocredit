@@ -3,8 +3,9 @@
 Every string a visitor can see, verbatim, grouped by screen, for independent content review
 (BUILD-STANDARD point 14; DECISIONS N32). Reviewers need nothing else to read it cold.
 
-- **Snapshot of commit `d66146c`.** Text is taken from the app's own values or straight from
-  the source, never retyped; line numbers are looked up. If the copy changes, this file is stale.
+- **Generated from the source by `tools/copy-review.ts`.** Text is taken from the app's own
+  values or straight from the source, never retyped; line numbers are looked up. `npm test`
+  fails if this file is out of date or leaves out an on-screen string.
 - **Nothing here is a proposal.** No copy was rewritten for this document.
 - `{…}` marks a part that varies (a number, a date, the borrower's own figure). Where it helps,
   an example follows in the "Shown when" column.
