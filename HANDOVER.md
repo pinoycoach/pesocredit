@@ -67,11 +67,17 @@ STEP GROUP C — Fixes I approve from B, one commit each.
 
 STEP GROUP D — Deploy prep (I do the dashboard steps; you write the
 checklist from what I show you on screen, point 12)
-- Vercel project, peso.credit domain + DNS
-- Rate limiting on /api/subscribe (DECISIONS N18)
-- Privacy placeholders filled + lawyer-reviewed (N17)
-- Email provider key for /api/subscribe, scoped to "create one contact in one
-  list" only, not send-only (N13, point 15)
+- Netlify site, peso.credit domain + DNS (N9)
+- Rate limiting on /api/subscribe: a limit of its own, proven on the
+  live site by sending requests until it answers 429 (N18, point 12)
+- Resend: peso.credit sending domain verified, DNS records copied from
+  the live Resend screen (point 12); a Sending-access key restricted to
+  that domain, set only in Netlify's environment; the Full-access key
+  stays with Napoleon, never in the code or on Netlify (N13, point 15)
+- English copy written and independently reviewed (N34, N32)
+- Privacy page in English, placeholders filled, Resend flow disclosed,
+  lawyer-reviewed (N17)
+- Mobile layout re-checked on the English UI (N31)
 - Production deploy requires `npm run launch-check` to pass (SIGNOFF.json)
 Nothing deploys until N17 and N18 are RESOLVED in DECISIONS.md.
 ```

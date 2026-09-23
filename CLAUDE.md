@@ -38,7 +38,8 @@ Two points matter more here than they did on fengshui.mom, because peso.credit i
 
 ## First product: Tunay na Interes calculator
 
-A free, Filipino-language calculator. A borrower enters the numbers from their own loan;
+A free calculator, in English first (N34; the Filipino copy is kept, unused, for a later
+Tagalog version). A borrower enters the numbers from their own loan;
 the app shows the true cost: **"Ang totoong gastos mo: X% kada buwan. Sa araw Z, ₱Y ang kabuuang babayaran mo."**
 The comparison to the published SEC ceiling appears underneath, as a fact with its source.
 
@@ -73,13 +74,13 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
 - `docs/BUILD-STANDARD.md` — the build standard, points 1–17.
 - `HANDOVER.md` — phases and their stops (point 2).
 
-## Environment (point 8) — INCOMPLETE, see DECISIONS.md N9
+## Environment (point 8) — INCOMPLETE (test runner unconfirmed), see DECISIONS.md N9
 
 | Role          | OS / platform |
 |---------------|---------------|
 | Builder       | Napoleon's Windows machine, PowerShell (confirmed 2026-09-23) |
 | Runner (tests)| Napoleon: Windows (per BUILD-STANDARD point 8) — confirm |
-| Deploy target | Vercel (Linux) — recommended, build preset already "vercel"; awaiting confirmation (N9) |
+| Deploy target | Netlify (Linux), for cost (N9, REVISIT: migrate to Vercel if cost, limits or /api/subscribe rate limiting become a problem) |
 
 Until this table is filled in, nothing is "done." If builder and runner differ, nothing is done
 until it has run on both. Known Windows traps from fengshui.mom: CRLF churn, `\` vs `/` paths,
@@ -89,7 +90,10 @@ until it has run on both. Known Windows traps from fengshui.mom: CRLF churn, `\`
 
 Decide scopes before writing any integration. The key in the live request path gets the
 narrowest scope possible; broader keys are separate and used rarely, ideally by a human.
-No integrations are defined yet.
+- `/api/subscribe` holds a Resend **Sending-access** key restricted to the peso.credit domain; it
+  only emails each new subscriber's address to Napoleon's inbox (N13).
+- The Resend **Full-access** key (to add contacts to the list) is used by Napoleon by hand. It
+  never enters the code, the repo, or the host's environment.
 
 ## Testing standard (all must pass before any commit)
 - `npm test` runs ALL tests, including `src/lib/loan-math.test.ts`.
