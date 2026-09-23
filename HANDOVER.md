@@ -76,6 +76,7 @@ checklist from what I show you on screen, point 12)
   the live Resend screen (point 12); a Sending-access key restricted to
   that domain, set only in Netlify's environment; the Full-access key
   stays with Napoleon, never in the code or on Netlify (N13, point 15)
+- Do not set GUIDE_URL in Netlify until N14 and N15 are RESOLVED.
 - English copy written and independently reviewed (N34, N32)
 - Privacy page in English, placeholders filled, Resend flow disclosed,
   lawyer-reviewed (N17)

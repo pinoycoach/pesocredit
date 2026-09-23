@@ -440,7 +440,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   add(copy.grayEirText, at("grayEirText"), "under the EIR row when the EIR is GRAY");
   add(copy.unsureCoverageText, at("unsureCoverageText"), "under a row that is over while coverage is uncertain");
   if (copy.comparisonNote !== null) {
-    add(copy.comparisonNote, at("comparisonNote"), "directly under the rows, whenever they are shown (added in step F3)", "C115");
+    add(copy.comparisonNote, at("comparisonNote"), "directly under the rows, whenever they are shown, in small text (added in step F3)", "C115");
   }
   add(copy.disclaimer, at("disclaimer"), "always, bottom of the card");
 

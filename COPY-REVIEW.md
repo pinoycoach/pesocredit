@@ -135,7 +135,7 @@ Shown in place of the whole result.
 | C68 | <u>100% of the amount borrowed</u> | `src/lib/copy/en.ts:172` | cap in the totalCost row (links to the circular) |
 | C69 | Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use. | `src/lib/copy/en.ts:175` | under the EIR row when the EIR is GRAY |
 | C70 | Your number may be above the limit, but it is not certain that the limit applies to this loan. | `src/lib/copy/en.ts:177` | under a row that is over while coverage is uncertain |
-| C115 | This compares your numbers with a published limit. It does not tell you what you owe or what happens next. | `src/lib/copy/en.ts:179` | directly under the rows, whenever they are shown (added in step F3) |
+| C115 | This compares your numbers with a published limit. It does not tell you what you owe or what happens next. | `src/lib/copy/en.ts:179` | directly under the rows, whenever they are shown, in small text (added in step F3) |
 | C71 | An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender. | `src/lib/copy/en.ts:181` | always, bottom of the card |
 
 ### 1.6 How we calculated this (expander)
