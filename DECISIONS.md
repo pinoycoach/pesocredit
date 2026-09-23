@@ -21,12 +21,23 @@ worth reconsidering if circumstances named here change).
 - N15 — The ₱99 guide itself (content, shape) — OPEN — content; goes through independent content review (point 14) before sale
 - N20 — Move to pinoycoach/pesocredit — OPEN — pushed and verified 2026-09-23: 23 commits, HEAD 6e975d1; CI #1 green on all 6 jobs (ubuntu, macOS, Windows × Node 22, 24). Remaining only: archive yarrow-gem-garden-rose. Local copy: C:\Users\PhiKi\Downloads\peso-credit-day1\peso-credit
 - N16 — Lender names list in the calculator — OPEN — intentionally empty; fine to launch empty
+- N22 — Point 10: privacy.test.ts:34, :74 and :81 assert the page's current DRAFT state, so they break the day N17 succeeds (DRAFT removed, contact email filled in) — OPEN — Group C step C4
+- N23 — Point 10: no SIGNOFF record for the privacy page, the verdict wording and the cap values in rules.ts (signer, date, hash of the exact content; fails if signed content changes) — OPEN — Group C step C3, design first
+- N24 — Point 6: a duplicate G-id in GOLDEN-CASES.md silently overwrites a real row in the golden-case test (loan-math.test.ts:102-104); an unexpected id already fails — OPEN — Group C step C5
+- N25 — package.json lists test files by hand, so a new *.test.ts would silently not run — OPEN — Group C step C6: keep the list, add a test that fails if any test file under src/ is missing from it
+- N26 — subscribe.test.ts:75 holds a literal NUL byte, so git treats the file as binary and hides its diffs from review — OPEN — Group C step C7
+- N27 — Points 1 and 9: tools/golden/oracle.py is not run by CI, so the independent check of G1–G7 can go stale — OPEN — Group C step C8
+- N28 — Point 1: oracle.py hardcodes its own caps, outside rules.ts — OPEN — keep them as the one documented exception (importing rules.ts would let one wrong cap pass both sides); say so in RULES.md and at the top of oracle.py; the C8 drift check keeps the two copies in agreement — Group C step C8
+- N29 — Point 11: the bundle secret scan was done by hand (b0a9bdb, 6e975d1) and is not in CI — OPEN — Group C step C9: fresh build with a dummy secret, fail if it appears in client output
+- N30 — Point 15: HANDOVER.md step group D asks for a send-only email key, but /api/subscribe only adds a contact — OPEN — Group C step C2
+- N31 — Point 11: mobile layout last checked at 1e9c32e; seven UI commits since, and /privacy has never had a recorded mobile check — OPEN — re-run on the current UI before launch. ("UI hash" was the one-time Phase 1 SHA-256 before/after check that cleanup changed no pixels; not a standing check, nothing to re-run.)
 
 ## Blocking
 
 - N8 — Legal review for factual claims about real lending companies: needed, and when? — BLOCKING — gate: no content naming a specific lender goes live until resolved. (Tunay na Interes names no lender, so this does not gate the calculator.)
 - N17 — Nine privacy-policy placeholders filled, then reviewed in the hour with Napoleon's lawyer — BLOCKING — gate: the calculator does not go live with email capture until done (Data Privacy Act)
 - N18 — Rate limiting on /api/subscribe via hosting firewall or email provider limits (same-origin check alone is not enough) — BLOCKING — gate: deploy
+- N32 — Point 14: independent content review of all public-facing copy (Filipino and English) — BLOCKING — gate: launch (HANDOVER pre-launch gates); COPY-REVIEW.md is produced after Group C step C9 so reviewers can read every on-screen string cold
 
 ## Resolved
 
@@ -44,6 +55,7 @@ worth reconsidering if circumstances named here change).
 ## Revisit
 
 - N21 — Principle 1 "Never name a lender" and the banned-phrase test apply project-wide — REVISIT — kept as-is for launch (2026-09-23); scope both to the calculator before any lender-naming content is written, which can only happen after N8 is RESOLVED
+- N33 — Point 9: guard proofs ("N deliberate breakages were all caught") were done by hand and live only in commit messages — REVISIT — hand-done guard proofs become one re-runnable build-then-test script; after launch
 
 ---
 
