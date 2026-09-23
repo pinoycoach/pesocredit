@@ -491,7 +491,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     add(`**${term}** ${render(item.segments)}`, at("legalFoot", i, "term"), "paragraph");
   });
 
-  newSection("1.10 Email form", "Only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.");
+  newSection("1.10 Email form", "Only once the privacy page is final (PRIVACY_STATUS) and the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.");
   add(copy.emailHeading, at("emailHeading"), "card title");
   add(copy.emailNote, at("emailNote"), "card description");
   add(copy.emailLabel, at("emailLabel"), "field label");

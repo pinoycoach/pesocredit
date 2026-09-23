@@ -194,7 +194,7 @@ Terms in bold; linked text underlined.
 
 ### 1.10 Email form
 
-Only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.
+Only once the privacy page is final (PRIVACY_STATUS) and the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|

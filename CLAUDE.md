@@ -96,7 +96,8 @@ logic (`src/lib/subscribe.ts`) stays host-agnostic.
   step E2 removed the TanStack route `src/routes/api/subscribe.ts`, and the limit must come from
   the new host.
 - `src/lib/public-config.ts` — under a dev server the form shows only when `NETLIFY_DEV` is set,
-  because `/api/subscribe` exists only under `netlify dev`.
+  because `/api/subscribe` exists only under `netlify dev`. (Not host-specific: on any host the
+  form also waits until the privacy page is final, `PRIVACY_STATUS`; N32, C107.)
 - `tools/prove-rate-limit.mjs` — the live proof that `/api/subscribe` is rate limited; it also
   checks Netlify's default function address `/.netlify/functions/subscribe`.
 

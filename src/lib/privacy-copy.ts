@@ -9,7 +9,8 @@
  *
  * PRIVACY_STATUS is "draft" until Napoleon signs the page in SIGNOFF.json with no blanks
  * left; then it must be "final" (privacy.test.ts enforces both directions). A draft shows
- * the DRAFT banner and is hidden from search; a final page is neither.
+ * the DRAFT banner and is hidden from search; a final page is neither. The email form asks
+ * visitors to agree to this page, so it also waits for "final" (public-config.ts, C107).
  */
 import { copy, type PrivacySection } from "./copy.ts";
 
