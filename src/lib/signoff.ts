@@ -23,6 +23,8 @@ import {
   headline,
   HEADLINE_METHOD_NOTE,
   OLD_LOAN_NOTICE,
+  ROW_CEILING_LABEL,
+  ROW_NUMBER_LABEL,
   STATE_TEXT,
   UNSURE_COVERAGE_BADGE,
   UNSURE_COVERAGE_TEXT,
@@ -106,6 +108,8 @@ function verdictWording() {
       STATE_TEXT,
       CEILING_LABEL,
       CEILING_CAP_TEXT,
+      ROW_NUMBER_LABEL,
+      ROW_CEILING_LABEL,
       DISCLAIMER,
     },
     loans: Object.fromEntries(

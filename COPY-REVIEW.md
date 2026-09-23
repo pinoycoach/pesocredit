@@ -27,9 +27,9 @@ illegal, scam, fraud or loan shark; where the law is unclear, say so (GRAY), nev
 legal advice.
 
 This review is what Napoleon signs on (SIGNOFF.json, `reviewedBy`). What each signature covers:
-`verdict-wording` is sections 1.3–1.5 except C65; `privacy-page` is section 2 except P03 (the
-DRAFT banner goes when the page is signed); `cap-values` is the numbers inside the underlined
-caps, checked against the circular itself rather than in this review.
+`verdict-wording` is sections 1.3–1.5; `privacy-page` is section 2 except P03 (the DRAFT banner
+goes when the page is signed); `cap-values` is the numbers inside the underlined caps, checked
+against the circular itself rather than in this review.
 
 ## 1. Calculator page (peso.credit/)
 
@@ -39,7 +39,7 @@ The page a borrower lands on. Top to bottom.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C01 | Philippines · SEC MC No. 14, s. 2025 | `src/lib/copy.ts:153` | always (small caps above the title) |
+| C01 | Philippines · SEC MC No. 14, s. 2025 | `src/lib/copy.ts:157` | always (small caps above the title) |
 | C02 | Tunay na Interes | `src/routes/index.tsx:23` | always (page title) |
 | C03 | Ilagay ang inutang, ang hulog, at ilang beses magbabayad. Kasama ang 7-araw na loan. Ang tool ay nagkukuwenta ng effective interest (EIR) at tinitingnan kung sakop ka ng naka-publish na ceiling — hindi nagnangalan ng lender, hindi nagpapayo kung paano magbayad. | `src/routes/index.tsx:26` | always |
 
@@ -59,8 +59,8 @@ The page a borrower lands on. Top to bottom.
 | C13 | Lingguhan, apat na bayad | `src/lib/loan-math.ts:368` | quick-fill button, second line |
 | C14 | Inutang (principal) | `src/components/calculator.tsx:150` | field label |
 | C15 | Face amount sa kontrata — hindi ang natanggap kung may binawas. | `src/components/calculator.tsx:151` | field hint |
-| C16 | Mga fee na binawas sa natanggap | `src/lib/copy.ts:111` | field label |
-| C17 | Halimbawa: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee. Ilagay ang kabuuan ng lahat ng binawas. 0 kung buo ang natanggap. Kasama sa EIR. | `src/lib/copy.ts:114` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
+| C16 | Mga fee na binawas sa natanggap | `src/lib/copy.ts:115` | field label |
+| C17 | Halimbawa: processing fee, service fee, notarial fee, origination fee, transfer charge, documentary stamp tax, disbursement fee. Ilagay ang kabuuan ng lahat ng binawas. 0 kung buo ang natanggap. Kasama sa EIR. | `src/lib/copy.ts:118` | field hint (fee names come from rules.ts OTHER_FEES_EXAMPLES) |
 | C18 | Hulog bawat bayad | `src/components/calculator.tsx:164` | field label |
 | C19 | Ang sinusulat sa schedule — isang numero lang kung isang bayad sa dulo. | `src/components/calculator.tsx:165` | field hint |
 | C20 | Ilang hulog | `src/components/calculator.tsx:173` | field label |
@@ -72,7 +72,7 @@ The page a borrower lands on. Top to bottom.
 | C26 | Bawat 14 araw | `src/lib/loan-math.ts:26` | frequency button |
 | C27 | Buwanan (~30 araw) | `src/lib/loan-math.ts:27` | frequency button |
 | C28 | Late penalty na siningil (kung meron) | `src/components/calculator.tsx:214` | field label |
-| C29 | Hindi kasama sa EIR; kasama sa <u>100%</u> total-cost cap. | `src/lib/copy.ts:158` | field hint |
+| C29 | Hindi kasama sa EIR; kasama sa <u>100%</u> total-cost cap. | `src/lib/copy.ts:162` | field hint |
 | C30 | Tala: unang follow-up | `src/components/calculator.tsx:223` | switch label (optional note) |
 | C31 | Opsyonal. Ilagay kung kailan unang tumawag o nag-message — hal. araw 4 sa 7-araw na loan. Hindi ito interes at hindi paratang sa sinuman. | `src/components/calculator.tsx:225` | switch hint |
 | C32 | Araw ng unang follow-up | `src/components/calculator.tsx:234` | field label, only when the switch is on |
@@ -80,8 +80,8 @@ The page a borrower lands on. Top to bottom.
 | C34 | Lending / financing company (hindi bangko) | `src/components/calculator.tsx:250` | switch |
 | C35 | Unsecured, general-purpose | `src/components/calculator.tsx:256` | switch |
 | C36 | Petsa ng kontrata / renewal | `src/components/calculator.tsx:264` | date field label |
-| C37 | Para sa loans na pinasok, inayos o na-renew simula 1 Abril 2026. | `src/lib/copy.ts:164` | date field hint |
-| C38 | Hindi namin sine-save o ipinapadala ang mga numerong inilagay mo. | `src/lib/copy.ts:156` | always, directly under the inputs card |
+| C37 | Para sa loans na pinasok, inayos o na-renew simula 1 Abril 2026. | `src/lib/copy.ts:168` | date field hint |
+| C38 | Hindi namin sine-save o ipinapadala ang mga numerong inilagay mo. | `src/lib/copy.ts:160` | always, directly under the inputs card |
 
 ### 1.3 When the numbers cannot be used
 
@@ -118,35 +118,35 @@ Shown in place of the whole result.
 | C55 | Ang principal na ₱10,001 ay lampas sa <u>₱10,000</u> na saklaw. | `src/lib/loan-math.ts:190` | reason under the coverage badge (example: the number varies) |
 | C56 | Ang tenor na 124 araw ay lampas sa <u>4 na buwan</u>. | `src/lib/loan-math.ts:196` | reason under the coverage badge (example: the number varies) |
 | C57 | Ang tenor na 121 araw ay maaaring pasok pa sa <u>4 na buwan</u>, depende sa kalendaryo. Maaaring sakop. | `src/lib/loan-math.ts:205` | reason under the coverage badge (example: the number varies) |
-| C58 | Effective interest rate (EIR) kada buwan | `src/lib/copy.ts:96` | row label (eir) |
-| C59 | Nominal na interes kada buwan | `src/lib/copy.ts:97` | row label (nominal) |
-| C60 | Kabuuang gastos kumpara sa inutang | `src/lib/copy.ts:98` | row label (totalCost) |
+| C58 | Effective interest rate (EIR) kada buwan | `src/lib/copy.ts:100` | row label (eir) |
+| C59 | Nominal na interes kada buwan | `src/lib/copy.ts:101` | row label (nominal) |
+| C60 | Kabuuang gastos kumpara sa inutang | `src/lib/copy.ts:102` | row label (totalCost) |
 | C61 | Nasa loob ng ceiling | `src/lib/copy.ts:90` | row badge: WITHIN |
 | C62 | Malapit sa ceiling | `src/lib/copy.ts:91` | row badge: GRAY |
 | C63 | Lampas sa ceiling | `src/lib/copy.ts:92` | row badge: OVER |
 | C64 | Hindi tiyak kung sakop | `src/lib/copy.ts:74` | row badge when the number is over but coverage is uncertain |
-| C65 | Numero mo: {the borrower's figure} · Ceiling: {cap, linked} | `src/components/result.tsx:110` | every row; the cap text is below |
+| C65 | Numero mo: {the borrower's figure} · Ceiling: {cap, linked} | `src/lib/copy.ts:96` | every row; the cap text is below (words from ROW_NUMBER_LABEL and ROW_CEILING_LABEL) |
 | C66 | <u>12% kada buwan</u> | `src/lib/limits.ts:10` | cap in the eir row (links to the circular) |
 | C67 | <u>6% kada buwan</u> | `src/lib/limits.ts:9` | cap in the nominal row (links to the circular) |
 | C68 | <u>100% ng inutang</u> | `src/lib/limits.ts:11` | cap in the totalCost row (links to the circular) |
 | C69 | Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular. | `src/lib/copy.ts:67` | under the EIR row when the EIR is GRAY |
 | C70 | Maaaring lumampas ang numero mo, pero hindi tiyak kung sakop ang loan na ito. | `src/lib/copy.ts:70` | under a row that is over while coverage is uncertain |
-| C71 | Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender. | `src/lib/copy.ts:108` | always, bottom of the card |
+| C71 | Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender. | `src/lib/copy.ts:112` | always, bottom of the card |
 
 ### 1.6 Paano kinuwenta (expander)
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C72 | Paano kinuwenta | `src/lib/copy.ts:132` | expander title |
-| C73 | Natanggap mo (net proceeds) | `src/lib/copy.ts:137` | row label; value beside it |
-| C74 | Kabuuang babayaran (sa araw {Z}) | `src/lib/copy.ts:138` | row label; value beside it |
-| C75 | Kabuuang gastos (interest + fees + penalty) | `src/lib/copy.ts:140` | row label; value beside it |
-| C76 | Rate kada araw (EIR) | `src/lib/copy.ts:143` | row label; value beside it |
-| C77 | Kada buwan, simple (rate kada araw × 30) | `src/lib/copy.ts:144` | row label; value beside it |
-| C78 | Kada buwan, compounded ((1 + rate kada araw) ^ 30 − 1) | `src/lib/copy.ts:146` | row label; value beside it |
-| C79 | Nominal na interes kada buwan | `src/lib/copy.ts:149` | row label; value beside it |
-| C80 | {₱ total cost} · {% of the amount borrowed} ng inutang | `src/lib/copy.ts:141` | value of the total-cost row |
-| C81 | Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×30 o compounded — kaya ipinapakita namin ang pareho. | `src/lib/copy.ts:213` | below the rows |
+| C72 | Paano kinuwenta | `src/lib/copy.ts:136` | expander title |
+| C73 | Natanggap mo (net proceeds) | `src/lib/copy.ts:141` | row label; value beside it |
+| C74 | Kabuuang babayaran (sa araw {Z}) | `src/lib/copy.ts:142` | row label; value beside it |
+| C75 | Kabuuang gastos (interest + fees + penalty) | `src/lib/copy.ts:144` | row label; value beside it |
+| C76 | Rate kada araw (EIR) | `src/lib/copy.ts:147` | row label; value beside it |
+| C77 | Kada buwan, simple (rate kada araw × 30) | `src/lib/copy.ts:148` | row label; value beside it |
+| C78 | Kada buwan, compounded ((1 + rate kada araw) ^ 30 − 1) | `src/lib/copy.ts:150` | row label; value beside it |
+| C79 | Nominal na interes kada buwan | `src/lib/copy.ts:153` | row label; value beside it |
+| C80 | {₱ total cost} · {% of the amount borrowed} ng inutang | `src/lib/copy.ts:145` | value of the total-cost row |
+| C81 | Ang EIR ay ang rate kada araw na nagpapantay sa natanggap mo at sa lahat ng bayad mo, hindi kasama ang late penalty. Hindi sinasabi ng circular kung paano gagawing buwanan ang rate kada araw — ×30 o compounded — kaya ipinapakita namin ang pareho. | `src/lib/copy.ts:217` | below the rows |
 
 ### 1.7 Kalendaryo ng loan
 
@@ -181,11 +181,11 @@ Terms in bold; linked text underlined.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C99 | Batayan | `src/lib/copy.ts:166` | card title |
-| C100 | **<u>SEC MC No. 14, s. 2025</u>** — epektibo simula 1 Abril 2026. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa <u>₱10,000</u> at hindi hihigit sa <u>4 na buwan</u>. | `src/lib/copy.ts:175` | paragraph |
-| C101 | **Mga ceiling** — nominal <u>6% kada buwan</u>, EIR <u>12% kada buwan</u>, at kabuuang gastos na hindi lalampas sa <u>100% ng inutang</u>. | `src/lib/copy.ts:186` | paragraph |
-| C102 | **Hindi sinusuri ng tool na ito** ang ceiling sa late penalty (<u>5% kada buwan</u>), dahil kailangan nito ng bilang ng araw na late. | `src/lib/copy.ts:198` | paragraph |
-| C103 | **RA No. 3765 (Truth in Lending Act)** — ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×30 o compounded ang buwanang rate, kaya ipinapakita namin ang pareho. | `src/lib/copy.ts:206` | paragraph |
+| C99 | Batayan | `src/lib/copy.ts:170` | card title |
+| C100 | **<u>SEC MC No. 14, s. 2025</u>** — epektibo simula 1 Abril 2026. Para sa unsecured, general-purpose loans ng lending at financing companies na hindi lalampas sa <u>₱10,000</u> at hindi hihigit sa <u>4 na buwan</u>. | `src/lib/copy.ts:179` | paragraph |
+| C101 | **Mga ceiling** — nominal <u>6% kada buwan</u>, EIR <u>12% kada buwan</u>, at kabuuang gastos na hindi lalampas sa <u>100% ng inutang</u>. | `src/lib/copy.ts:190` | paragraph |
+| C102 | **Hindi sinusuri ng tool na ito** ang ceiling sa late penalty (<u>5% kada buwan</u>), dahil kailangan nito ng bilang ng araw na late. | `src/lib/copy.ts:202` | paragraph |
+| C103 | **RA No. 3765 (Truth in Lending Act)** — ang batayan ng pagkuwenta ng EIR ayon sa circular. Hindi tinukoy ng circular kung ×30 o compounded ang buwanang rate, kaya ipinapakita namin ang pareho. | `src/lib/copy.ts:210` | paragraph |
 
 ### 1.10 Email form
 
@@ -193,14 +193,14 @@ Only when EMAIL_CAPTURE_URL is set; always below the whole result.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C104 | Gusto mo ng libreng checklist at abiso kapag may bagong rules? | `src/lib/copy.ts:117` | card title |
-| C105 | Opsyonal. Hindi mo ito kailangan para makita ang resulta mo, at hindi kasama rito ang anumang numerong inilagay mo. | `src/lib/copy.ts:118` | card description |
-| C106 | Email | `src/lib/copy.ts:120` | field label |
-| C107 | Pumapayag akong padalhan ng email para sa checklist at mga abiso. Nabasa ko ang <u>Patakaran sa Privacy</u>. | `src/lib/copy.ts:121` | consent checkbox label; the link opens /privacy (text from privacy-copy.ts PRIVACY_LINK_LABEL) |
-| C108 | Ipadala | `src/lib/copy.ts:124` | button |
-| C109 | Ipinapadala… | `src/lib/copy.ts:125` | button, while sending |
-| C110 | Salamat! Padadalhan ka namin ng checklist. | `src/lib/copy.ts:126` | replaces the form after success |
-| C111 | Hindi naipadala. Subukan ulit mamaya. | `src/lib/copy.ts:127` | beside the button after a failure |
+| C104 | Gusto mo ng libreng checklist at abiso kapag may bagong rules? | `src/lib/copy.ts:121` | card title |
+| C105 | Opsyonal. Hindi mo ito kailangan para makita ang resulta mo, at hindi kasama rito ang anumang numerong inilagay mo. | `src/lib/copy.ts:122` | card description |
+| C106 | Email | `src/lib/copy.ts:124` | field label |
+| C107 | Pumapayag akong padalhan ng email para sa checklist at mga abiso. Nabasa ko ang <u>Patakaran sa Privacy</u>. | `src/lib/copy.ts:125` | consent checkbox label; the link opens /privacy (text from privacy-copy.ts PRIVACY_LINK_LABEL) |
+| C108 | Ipadala | `src/lib/copy.ts:128` | button |
+| C109 | Ipinapadala… | `src/lib/copy.ts:129` | button, while sending |
+| C110 | Salamat! Padadalhan ka namin ng checklist. | `src/lib/copy.ts:130` | replaces the form after success |
+| C111 | Hindi naipadala. Subukan ulit mamaya. | `src/lib/copy.ts:131` | beside the button after a failure |
 
 ### 1.11 Guide link
 
@@ -208,8 +208,8 @@ Only when GUIDE_URL is set.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| C112 | Gusto mo ng mas malalim na gabay? | `src/lib/copy.ts:129` | card text |
-| C113 | Kunin ang ₱99 na gabay | `src/lib/copy.ts:130` | link |
+| C112 | Gusto mo ng mas malalim na gabay? | `src/lib/copy.ts:133` | card text |
+| C113 | Kunin ang ₱99 na gabay | `src/lib/copy.ts:134` | link |
 
 ### 1.12 Footer
 

@@ -230,7 +230,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   for (const [key, value] of Object.entries(copy.CEILING_LABEL)) add(value, C, `  ${key}: "`, `row label (${key})`);
   for (const [key, value] of Object.entries(copy.STATE_TEXT)) add(value, C, `  ${key}: "`, `row badge: ${key}`);
   add(copy.UNSURE_COVERAGE_BADGE, C, "export const UNSURE_COVERAGE_BADGE", "row badge when the number is over but coverage is uncertain");
-  add("Numero mo: {the borrower's figure} · Ceiling: {cap, linked}", "src/components/result.tsx", "Numero mo:", "every row; the cap text is below");
+  add(`${copy.ROW_NUMBER_LABEL} {the borrower's figure} · ${copy.ROW_CEILING_LABEL} {cap, linked}`, C, "export const ROW_NUMBER_LABEL", "every row; the cap text is below (words from ROW_NUMBER_LABEL and ROW_CEILING_LABEL)");
   const capLoc: Record<string, string> = { eir: "EIR_CAP_TEXT =", nominal: "NOMINAL_CAP_TEXT =", totalCost: "TOTAL_COST_CAP_TEXT =" };
   for (const [key, segments] of Object.entries(copy.CEILING_CAP_TEXT)) {
     add(render(segments), "src/lib/limits.ts", capLoc[key], `cap in the ${key} row (links to the circular)`);
@@ -395,9 +395,9 @@ illegal, scam, fraud or loan shark; where the law is unclear, say so (GRAY), nev
 legal advice.
 
 This review is what Napoleon signs on (SIGNOFF.json, \`reviewedBy\`). What each signature covers:
-\`verdict-wording\` is sections 1.3–1.5 except C65; \`privacy-page\` is section 2 except P03 (the
-DRAFT banner goes when the page is signed); \`cap-values\` is the numbers inside the underlined
-caps, checked against the circular itself rather than in this review.
+\`verdict-wording\` is sections 1.3–1.5; \`privacy-page\` is section 2 except P03 (the DRAFT banner
+goes when the page is signed); \`cap-values\` is the numbers inside the underlined caps, checked
+against the circular itself rather than in this review.
 
 `;
   for (const s of screens) {

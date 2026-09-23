@@ -111,8 +111,10 @@ No integrations are defined yet.
 
 ## Current phase
 
-Phase 0 done. Now: Phase 4, step group C in HANDOVER.md (bring the calculator up to v2, then
-deploy). Every step group stops for review.
+Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B
+and C are complete (2026-09-23). Next steps are Napoleon's: independent content review (N32), the
+privacy blanks and lawyer review (N17), the email provider (N13) and hosting (N9); then step group
+D. Every step group stops for review.
 
 ## Lessons
 

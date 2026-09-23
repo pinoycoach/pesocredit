@@ -92,6 +92,10 @@ export const STATE_TEXT: Record<Verdict, string> = {
   OVER: "Lampas sa ceiling",
 };
 
+/** Each comparison row: "Numero mo: {the borrower's figure} · Ceiling: {cap, linked}". */
+export const ROW_NUMBER_LABEL = "Numero mo:";
+export const ROW_CEILING_LABEL = "Ceiling:";
+
 export const CEILING_LABEL: Record<CheckId, string> = {
   eir: "Effective interest rate (EIR) kada buwan",
   nominal: "Nominal na interes kada buwan",

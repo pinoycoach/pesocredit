@@ -14,6 +14,8 @@ import {
   HOW_TITLE,
   howComputedRows,
   OLD_LOAN_NOTICE,
+  ROW_CEILING_LABEL,
+  ROW_NUMBER_LABEL,
   STATE_TEXT,
   UNSURE_COVERAGE_BADGE,
   UNSURE_COVERAGE_TEXT,
@@ -107,11 +109,11 @@ export function CeilingComparison({ analysis }: { analysis: Computed }) {
                     ) : null}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Numero mo:{" "}
+                    {ROW_NUMBER_LABEL}{" "}
                     <span className="font-display text-base tabular-nums text-foreground">
                       {formatPct(check.actual)}
                     </span>{" "}
-                    · Ceiling: <CapSegments segments={CEILING_CAP_TEXT[id]} />
+                    · {ROW_CEILING_LABEL} <CapSegments segments={CEILING_CAP_TEXT[id]} />
                   </p>
                   {note ? <p className="text-sm text-pretty">{note}</p> : null}
                 </li>
