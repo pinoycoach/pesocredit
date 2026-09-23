@@ -13,9 +13,10 @@ import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSy
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const OUTPUT = ".vercel/output";
-const CLIENT = join(OUTPUT, "static");
-const SERVER = join(OUTPUT, "functions");
+// Host-specific (CLAUDE.md "Host-specific files"): Nitro's netlify preset writes the client
+// files to dist/ and the app's server function to .netlify/functions-internal/.
+const CLIENT = "dist";
+const SERVER = join(".netlify", "functions-internal");
 
 const secret = `ci-dummy-secret-${randomUUID()}`;
 const captureHost = `capture-${randomUUID().slice(0, 8)}.invalid`;
@@ -50,14 +51,14 @@ if (scan(planted, [secret]).length !== 1) fail("the scanner did not find a plant
 rmSync(planted, { recursive: true, force: true });
 
 // A fresh build with the dummy secret set.
-rmSync(OUTPUT, { recursive: true, force: true });
+for (const dir of [CLIENT, SERVER]) rmSync(dir, { recursive: true, force: true });
 const build = spawnSync("npm run build", {
   shell: true,
   stdio: "inherit",
   env: { ...process.env, EMAIL_CAPTURE_URL: captureUrl },
 });
 if (build.status !== 0) fail(`npm run build exited with ${build.status}`);
-if (!existsSync(CLIENT) || !existsSync(SERVER)) fail(`no build output in ${OUTPUT}`);
+if (!existsSync(CLIENT) || !existsSync(SERVER)) fail(`no build output in ${CLIENT} and ${SERVER}`);
 
 const clientFiles = filesIn(CLIENT);
 if (!clientFiles.some((f) => f.endsWith(".js"))) fail(`no client JavaScript in ${CLIENT}`);

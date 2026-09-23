@@ -56,7 +56,7 @@ worth reconsidering if circumstances named here change).
 
 - N21 — Principle 1 "Never name a lender" and the banned-phrase test apply project-wide — REVISIT — kept as-is for launch (2026-09-23); scope both to the calculator before any lender-naming content is written, which can only happen after N8 is RESOLVED
 - N33 — Point 9: guard proofs ("N deliberate breakages were all caught") were done by hand and live only in commit messages — REVISIT — hand-done guard proofs become one re-runnable build-then-test script; after launch
-- N9 — Hosting and environment (point 8) — REVISIT — Netlify for now, to save on cost (2026-09-23). Builder: Napoleon's Windows machine; deploy target: Netlify (Linux). Reconsider, and migrate to Vercel, if Netlify's cost, its limits, or the rate-limiting setup for /api/subscribe become a problem. Keep that migration cheap: the subscribe logic stays host-agnostic (src/lib/subscribe.ts), and everything Netlify-specific (build preset, function wrapper, rate-limit config) lives in as few files as possible, listed in CLAUDE.md
+- N9 — Hosting and environment (point 8) — REVISIT — Netlify for now, to save on cost (2026-09-23). Builder: Napoleon's Windows machine; deploy target: Netlify (Linux). Reconsider, and migrate to Vercel, if Netlify's cost, its limits, or the rate-limiting setup for /api/subscribe become a problem. Keep that migration cheap: the subscribe logic stays host-agnostic (src/lib/subscribe.ts), and everything Netlify-specific (build preset, function wrapper, rate-limit config) lives in as few files as possible, listed in CLAUDE.md. Build switched to Nitro's netlify preset (Phase 4 step E1): client files in dist/, the whole app one function at path "/*"
 
 ---
 

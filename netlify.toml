@@ -1,0 +1,9 @@
+# Netlify build settings (DECISIONS N9: Netlify for now; see CLAUDE.md "Host-specific files").
+# `npm run build` runs Nitro's netlify preset (vite.config.ts): client files go to dist/, and the
+# whole app becomes one function in .netlify/functions-internal/server (path "/*").
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
