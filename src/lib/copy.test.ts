@@ -1,12 +1,26 @@
+/**
+ * Pins the wording of each language (DECISIONS N34): English, on screen, as approved in
+ * docs/COPY-EN-PROPOSAL.md; and the Filipino, kept for the Tagalog version.
+ */
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it } from "node:test";
-/** The Filipino copy, kept for the Tagalog version (DECISIONS N34): its wording is pinned here. */
+import { copy } from "./copy.ts";
+import { en } from "./copy/en.ts";
 import { fil } from "./copy/fil.ts";
-import { analyzeLoan, type CannotComputeReason, type LoanInput } from "./loan-math.ts";
+import type { Copy } from "./copy/types.ts";
+import {
+  analyzeLoan,
+  type CannotComputeReason,
+  type CoverageReason,
+  type LoanInput,
+} from "./loan-math.ts";
 import { OTHER_FEES_EXAMPLES, RULES_AS_OF, SOURCE } from "./rules.ts";
 import { plainText, type Segments } from "./segments.ts";
+import { srcRoot } from "./test-utils/source-strings.ts";
 
-const base = (over: Partial<LoanInput> = {}): LoanInput => ({
+const base =(over: Partial<LoanInput> = {}): LoanInput => ({
   principal: 5_000,
   upfrontFee: 0,
   payment: 6_500,
@@ -29,7 +43,196 @@ function numbersFor(input: LoanInput) {
   return a.numbers;
 }
 
-describe("copy", () => {
+const G6 = base({ principal: 10_000, payment: 2_560, paymentCount: 4 });
+const G7 = base({ principal: 3_000, payment: 3_150, penalty: 2_900, frequency: "monthly", firstDueDays: 30 });
+
+const capsIn = (segments: Segments) =>
+  segments.filter((s) => typeof s !== "string").map((s) => plainText([s]));
+
+const CANNOT_COMPUTE: CannotComputeReason[] = [
+  "invalid_input",
+  "invalid_date",
+  "fee_not_less_than_principal",
+  "payments_below_principal",
+  "no_solution",
+];
+
+/** Each reason a loan may fall outside the ceilings, with sample numbers. */
+const REASONS: CoverageReason[] = [
+  { kind: "lender" },
+  { kind: "secured" },
+  { kind: "purpose" },
+  { kind: "principal", principal: 10_001 },
+  { kind: "tenorOver", tenorDays: 124 },
+  { kind: "tenorMaybe", tenorDays: 121 },
+];
+
+/** Every cap-bearing text in a language, in a fixed order. */
+const capsOf = (c: Copy) => [
+  ...c.legalFoot.flatMap((p) => capsIn(p.segments)),
+  ...capsIn(c.penaltyHint),
+  ...capsIn(c.ceilingCapText.eir),
+  ...capsIn(c.ceilingCapText.nominal),
+  ...capsIn(c.ceilingCapText.totalCost),
+  ...REASONS.flatMap((r) => capsIn(c.coverageReason(r))),
+];
+
+describe("the language on screen", () => {
+  it("is English (N34), and the page says so", () => {
+    assert.equal(copy, en);
+    assert.equal(copy.htmlLang, "en");
+  });
+});
+
+describe("en: headline", () => {
+  it("states the approved headline: the true monthly cost, the day, the total to pay (G2)", () => {
+    assert.equal(
+      en.headline(numbersFor(base())),
+      "Your true cost: 114.58% a month. By day 7, you pay ₱6,500.00 in total.",
+    );
+  });
+
+  it("uses the last payment day and the total of every payment, penalty included (G6, G7)", () => {
+    assert.equal(
+      en.headline(numbersFor(G6)),
+      "Your true cost: 4.08% a month. By day 28, you pay ₱10,240.00 in total.",
+    );
+    assert.equal(
+      en.headline(numbersFor(G7)),
+      "Your true cost: 4.88% a month. By day 30, you pay ₱6,050.00 in total.",
+    );
+  });
+
+  it("leads with the simple monthly figure, not the compounded one (G3)", () => {
+    const g3 = numbersFor(base({ upfrontFee: 65, payment: 5_070 }));
+    assert.match(en.headline(g3), /^Your true cost: 11\.59% a month\./);
+    assert.ok(!en.headline(g3).includes("12.26"));
+  });
+});
+
+describe("en: the comparison with the published limit", () => {
+  it("labels GRAY \"Close to the limit\", a state of its own, never over (principle 2)", () => {
+    assert.deepEqual(en.stateText, {
+      WITHIN: "Within the limit",
+      GRAY: "Close to the limit",
+      OVER: "Above the limit",
+    });
+  });
+
+  it("explains GRAY with the approved sentence (C69)", () => {
+    assert.equal(
+      en.grayEirText,
+      "Close to the limit. Worked out one way, your loan is under it. Worked out the other way, it is just over. The circular does not say which way to use.",
+    );
+  });
+
+  it("says what the comparison does not tell (N1; N36, no false hope)", () => {
+    assert.equal(
+      en.comparisonNote,
+      "This compares your numbers with a published limit. It does not tell you what you owe or what happens next.",
+    );
+  });
+
+  it("shows that note on the page: under the rows, whenever they are shown, above the disclaimer", () => {
+    const card = readFileSync(join(srcRoot(), "components/result.tsx"), "utf8");
+    const rows = card.indexOf("ROW_ORDER.map(");
+    const note = card.indexOf("{copy.comparisonNote}");
+    const disclaimer = card.indexOf("{copy.disclaimer}");
+    assert.ok(rows > 0 && rows < note && note < disclaimer, "rows, then the note, then the disclaimer");
+    assert.match(card, /\{coverage\.state !== "NOT_COVERED" && copy\.comparisonNote \? \(/, "shown with the rows");
+  });
+
+  it("disclaims legal advice and any specific lender (C71)", () => {
+    assert.equal(
+      en.disclaimer,
+      "An illustration only. The lender's disclosure statement gives the official EIR. This is not legal advice and does not refer to any specific lender.",
+    );
+  });
+
+  it("shows the basis line", () => {
+    const basis = `${en.basisLead} ${SOURCE.id} · ${en.basisAsOf}`;
+    assert.equal(basis, `Based on ${SOURCE.id} · as of ${RULES_AS_OF}`);
+    assert.equal(basis, "Based on SEC MC No. 14, s. 2025 · as of 2026-09-19");
+  });
+
+  it("shows the exact notice for loans dated before the circular takes effect", () => {
+    assert.equal(en.oldLoanNotice, "This tool is for loans from 1 April 2026.");
+  });
+
+  it("builds the cap text from rules.ts", () => {
+    assert.deepEqual(
+      {
+        eir: plainText(en.ceilingCapText.eir),
+        nominal: plainText(en.ceilingCapText.nominal),
+        totalCost: plainText(en.ceilingCapText.totalCost),
+      },
+      { eir: "12% a month", nominal: "6% a month", totalCost: "100% of the amount borrowed" },
+    );
+  });
+
+  it("words the coverage reasons, marking the limits they mention", () => {
+    assert.equal(plainText(en.coverageReason(REASONS[3])), "A principal of ₱10,001 is more than the ₱10,000 the limit covers.");
+    assert.equal(plainText(en.coverageReason(REASONS[4])), "A term of 124 days is longer than 4 months.");
+    assert.deepEqual(capsIn(en.coverageReason(REASONS[3])), ["₱10,000"]);
+    assert.deepEqual(capsIn(en.coverageReason(REASONS[4])), ["4 months"]);
+  });
+});
+
+describe("en: the rest of the page", () => {
+  it("formats dates as day, month in words, year", () => {
+    assert.equal(en.formatDate("2026-04-01"), "1 April 2026");
+    assert.equal(en.formatDate("2026-12-25"), "25 December 2026");
+    assert.equal(en.formatDate("2027-01-09"), "9 January 2027");
+  });
+
+  it("says one payment, or several", () => {
+    assert.equal(en.calendarSubtitle(7, 1), "7-day term · 1 payment");
+    assert.equal(en.calendarSubtitle(28, 4), "28-day term · 4 payments");
+  });
+
+  it("has a message for every reason a loan cannot be computed", () => {
+    assert.deepEqual(Object.keys(en.cannotCompute).sort(), [...CANNOT_COMPUTE].sort());
+    for (const reason of CANNOT_COMPUTE) assert.ok(en.cannotCompute[reason].length > 10, reason);
+  });
+
+  it("says, exactly, that the numbers are neither saved nor sent", () => {
+    assert.equal(en.noStorageNote, "We don't save or send the numbers you enter.");
+  });
+
+  it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
+    for (const fee of OTHER_FEES_EXAMPLES) assert.ok(en.feeHint.includes(fee), fee);
+  });
+
+  it("shows both monthly figures and the daily rate (G3)", () => {
+    const rows = new Map(en.howComputedRows(numbersFor(base({ upfrontFee: 65, payment: 5_070 }))));
+    const values = [...rows.values()];
+    assert.ok(values.includes("0.3863%"), "daily rate");
+    assert.ok(values.includes("11.59%"), "simple");
+    assert.ok(values.includes("12.26%"), "compounded");
+    assert.ok([...rows.keys()].some((k) => k.startsWith("Per month, simple")));
+    assert.ok([...rows.keys()].some((k) => k.startsWith("Per month, compounded")));
+  });
+
+  it("marks all four limits and both coverage limits in Sources, the circular itself as the first link", () => {
+    assert.deepEqual(
+      en.legalFoot.flatMap((p) => capsIn(p.segments)),
+      ["₱10,000", "4 months", "6% a month", "12% a month", "100% of the amount borrowed", "5% a month"],
+    );
+    assert.equal(en.legalFoot[0].term, SOURCE.id);
+    assert.equal(en.legalFoot[0].termIsSource, true);
+    assert.ok(en.legalFoot.slice(1).every((p) => !p.termIsSource));
+  });
+});
+
+describe("both languages", () => {
+  it("link the same caps and limits, with the same figures (only the words differ)", () => {
+    const figures = (caps: string[]) => caps.map((c) => c.match(/₱?[\d,.]+%?/)?.[0] ?? `no figure in "${c}"`);
+    assert.deepEqual(figures(capsOf(en)), figures(capsOf(fil)));
+    assert.ok(capsOf(en).length >= 12, `only ${capsOf(en).length} caps compared`);
+  });
+});
+
+describe("fil: copy", () => {
   it("shows the exact notice for loans dated before the circular takes effect", () => {
     assert.equal(fil.oldLoanNotice, "Ang tool na ito ay para sa loans simula 1 Abril 2026.");
   });
@@ -41,19 +244,16 @@ describe("copy", () => {
   });
 
   it("has a message for every reason a loan cannot be computed", () => {
-    const reasons: CannotComputeReason[] = [
-      "invalid_input",
-      "invalid_date",
-      "fee_not_less_than_principal",
-      "payments_below_principal",
-      "no_solution",
-    ];
-    assert.deepEqual(Object.keys(fil.cannotCompute).sort(), [...reasons].sort());
-    for (const reason of reasons) assert.ok(fil.cannotCompute[reason].length > 10, reason);
+    assert.deepEqual(Object.keys(fil.cannotCompute).sort(), [...CANNOT_COMPUTE].sort());
+    for (const reason of CANNOT_COMPUTE) assert.ok(fil.cannotCompute[reason].length > 10, reason);
+  });
+
+  it("has no wording approved yet for the note under the comparison (N1)", () => {
+    assert.equal(fil.comparisonNote, null);
   });
 });
 
-describe("headline", () => {
+describe("fil: headline", () => {
   it("states the true monthly cost, the day, and the total to pay (G2)", () => {
     assert.equal(
       fil.headline(numbersFor(base())),
@@ -62,20 +262,12 @@ describe("headline", () => {
   });
 
   it("uses the last payment day and the total of every payment, penalty included (G6, G7)", () => {
-    const g6 = base({ principal: 10_000, payment: 2_560, paymentCount: 4 });
     assert.equal(
-      fil.headline(numbersFor(g6)),
+      fil.headline(numbersFor(G6)),
       "Ang totoong gastos mo: 4.08% kada buwan. Sa araw 28, ₱10,240.00 ang kabuuang babayaran mo.",
     );
-    const g7 = base({
-      principal: 3_000,
-      payment: 3_150,
-      penalty: 2_900,
-      frequency: "monthly",
-      firstDueDays: 30,
-    });
     assert.equal(
-      fil.headline(numbersFor(g7)),
+      fil.headline(numbersFor(G7)),
       "Ang totoong gastos mo: 4.88% kada buwan. Sa araw 30, ₱6,050.00 ang kabuuang babayaran mo.",
     );
   });
@@ -87,7 +279,7 @@ describe("headline", () => {
   });
 });
 
-describe("Paano kinuwenta rows", () => {
+describe("fil: Paano kinuwenta rows", () => {
   it("shows both monthly figures and the daily rate (G3)", () => {
     const rows = new Map(fil.howComputedRows(numbersFor(base({ upfrontFee: 65, payment: 5_070 }))));
     const values = [...rows.values()];
@@ -99,10 +291,7 @@ describe("Paano kinuwenta rows", () => {
   });
 });
 
-describe("every cap and limit on screen is a cap segment (so it links to the source)", () => {
-  const capsIn = (segments: Segments) =>
-    segments.filter((s) => typeof s !== "string").map((s) => plainText([s]));
-
+describe("fil: every cap and limit on screen is a cap segment (so it links to the source)", () => {
   it("the Batayan text marks all four ceilings and both coverage limits", () => {
     const caps = fil.legalFoot.flatMap((paragraph) => capsIn(paragraph.segments));
     assert.deepEqual(caps, [
@@ -140,7 +329,7 @@ describe("every cap and limit on screen is a cap segment (so it links to the sou
   });
 });
 
-describe("the privacy promise under the calculator", () => {
+describe("fil: the privacy promise under the calculator", () => {
   it("says, exactly, that the numbers are neither saved nor sent", () => {
     assert.equal(
       fil.noStorageNote,
@@ -149,14 +338,14 @@ describe("the privacy promise under the calculator", () => {
   });
 });
 
-describe("fee field", () => {
+describe("fil: fee field", () => {
   it("names every fee listed in rules.ts so a borrower can recognize theirs", () => {
     assert.ok(OTHER_FEES_EXAMPLES.length > 0);
     for (const fee of OTHER_FEES_EXAMPLES) assert.ok(fil.feeHint.includes(fee), fee);
   });
 });
 
-describe("ceiling wording", () => {
+describe("fil: ceiling wording", () => {
   it("builds the cap text from rules.ts", () => {
     assert.deepEqual(
       {

@@ -91,6 +91,7 @@ function verdictWording() {
       grayEirText: copy.grayEirText,
       unsureCoverageText: copy.unsureCoverageText,
       unsureCoverageBadge: copy.unsureCoverageBadge,
+      comparisonNote: copy.comparisonNote,
       comparisonTitle: copy.comparisonTitle,
       basis: `${copy.basisLead} ${rules.SOURCE.id} · ${copy.basisAsOf}`,
       coverageText: copy.coverageText,

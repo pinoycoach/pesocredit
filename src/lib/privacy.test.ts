@@ -40,11 +40,11 @@ function privacyPageSigned(): boolean {
 describe("privacy page (DRAFT)", () => {
   it("covers what is collected, why, how to unsubscribe, and how to make contact", () => {
     for (const [name, pattern] of [
-      ["what is collected", /^Ano ang kinokolekta/i],
-      ["what is not collected", /hindi namin kinokolekta/i],
-      ["why", /^Bakit/i],
+      ["what is collected", /^What we collect/i],
+      ["what is not collected", /don't collect/i],
+      ["why", /^Why/i],
       ["how to unsubscribe", /unsubscribe/i],
-      ["contact", /^Makipag-ugnayan/i],
+      ["contact", /^Contact/i],
     ] as const) {
       assert.ok(section(pattern), `missing section: ${name}`);
     }
@@ -72,7 +72,7 @@ describe("privacy page (DRAFT)", () => {
 
   it("a draft says DRAFT for a lawyer, in the banner and the title, and is hidden from search", () => {
     assert.match(DRAFT_BANNER, /DRAFT/);
-    assert.match(DRAFT_BANNER, /abogado/i);
+    assert.match(DRAFT_BANNER, /lawyer/i);
     assert.equal(showDraftBanner("draft"), true);
     const meta = privacyHeadMeta("draft");
     assert.ok(meta.some((m) => m.title?.includes("(DRAFT)")));
@@ -90,14 +90,14 @@ describe("privacy page (DRAFT)", () => {
   });
 
   it("says the calculator's numbers are neither saved nor sent, in the same words as the calculator", () => {
-    assert.ok(textOf(section(/hindi namin kinokolekta/i)).includes(copy.noStorageNote));
+    assert.ok(textOf(section(/don't collect/i)).includes(copy.noStorageNote));
   });
 
   it("discloses exactly what the server forwards: no more, no less", async () => {
     // What the copy says is collected, keyed by the field in the email the server sends.
     const disclosed: Record<string, string> = {
       Email: "email address",
-      "Consented at": "oras ng pagpayag",
+      "Consented at": "the time you agreed",
     };
     let sent: Record<string, string> = {};
     const capture = (async (_url: string | URL | Request, init?: RequestInit) => {
@@ -126,7 +126,7 @@ describe("privacy page (DRAFT)", () => {
     const fields = sent.text.trim().split("\n").map((line) => line.split(": ")[0]);
     assert.deepEqual(fields.sort(), Object.keys(disclosed).sort(),
       "a field is sent that the privacy copy does not disclose (or the reverse)");
-    const collected = textOf(section(/^Ano ang kinokolekta/i));
+    const collected = textOf(section(/^What we collect/i));
     for (const phrase of Object.values(disclosed)) {
       assert.ok(collected.includes(phrase), `the page does not mention: ${phrase}`);
     }
@@ -150,10 +150,18 @@ describe("privacy page (DRAFT)", () => {
   });
 
   it("the designated field fills every place the page gives an address", () => {
-    const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
-    const addressBlanks = remainingPlaceholders().filter((b) => /email address/i.test(b));
-    assert.equal(addressBlanks.length, CONTACT_EMAIL === "" ? 2 : 0);
-    if (CONTACT_EMAIL !== "") assert.equal(text.split(CONTACT_EMAIL).length - 1, 2);
+    // Filling in an address shows which blanks are address blanks: exactly the two it replaces.
+    const sample = "requests@example.com";
+    const textWith = (address: string) =>
+      copy.privacySections(address).flatMap((s) => s.paragraphs).join(" ");
+    const blanks = (text: string) => splitPlaceholders(text).filter((p) => p.blank).length;
+    assert.equal(textWith(sample).split(sample).length - 1, 2, "the address goes in two places");
+    assert.equal(blanks(textWith("")) - blanks(textWith(sample)), 2, "each is a blank until then");
+    // The live page: the address in both places once supplied, and neither blank left.
+    const live = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
+    const expected = CONTACT_EMAIL === "" ? blanks(textWith("")) : blanks(textWith("")) - 2;
+    assert.equal(remainingPlaceholders().length, expected);
+    if (CONTACT_EMAIL !== "") assert.equal(live.split(CONTACT_EMAIL).length - 1, 2);
   });
 
   it("states no web address of its own", () => {
@@ -178,13 +186,13 @@ describe("privacy page (DRAFT)", () => {
 });
 
 describe("placeholders", () => {
-  it("are written as [ILAGAY DITO: ...] and can be listed and split out", () => {
-    const paragraph = `Sumulat sa ${placeholder("email ng contact")} o sa ${placeholder("address")}.`;
+  it("are written as [FILL IN: ...] and can be listed and split out", () => {
+    const paragraph = `Write to ${placeholder("contact email")} or to ${placeholder("address")}.`;
     assert.deepEqual(splitPlaceholders(paragraph), [
-      { text: "Sumulat sa ", blank: false },
-      { text: "[ILAGAY DITO: email ng contact]", blank: true },
-      { text: " o sa ", blank: false },
-      { text: "[ILAGAY DITO: address]", blank: true },
+      { text: "Write to ", blank: false },
+      { text: "[FILL IN: contact email]", blank: true },
+      { text: " or to ", blank: false },
+      { text: "[FILL IN: address]", blank: true },
       { text: ".", blank: false },
     ]);
   });
@@ -193,7 +201,7 @@ describe("placeholders", () => {
     for (const paragraph of PRIVACY_SECTIONS.flatMap((s) => s.paragraphs)) {
       assert.equal(splitPlaceholders(paragraph).map((p) => p.text).join(""), paragraph);
     }
-    assert.deepEqual(splitPlaceholders("walang blank"), [{ text: "walang blank", blank: false }]);
-    assert.deepEqual(splitPlaceholders("[ILAGAY DITO: bukas"), [{ text: "[ILAGAY DITO: bukas", blank: false }]);
+    assert.deepEqual(splitPlaceholders("no blank here"), [{ text: "no blank here", blank: false }]);
+    assert.deepEqual(splitPlaceholders("[FILL IN: unclosed"), [{ text: "[FILL IN: unclosed", blank: false }]);
   });
 });

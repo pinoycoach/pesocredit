@@ -172,6 +172,8 @@ export const fil: Copy = {
     "Malapit sa ceiling — depende kung paano kinukuwenta ang buwanang rate. Hindi malinaw sa circular.",
   unsureCoverageText:
     "Maaaring lumampas ang numero mo, pero hindi tiyak kung sakop ang loan na ito.",
+  // Added in English first (F1, N1); no Filipino wording is approved yet.
+  comparisonNote: null,
   disclaimer:
     "Illustration lang. Ang institusyon ang magbibigay ng opisyal na EIR sa disclosure statement. Hindi ito legal advice at hindi tumutukoy sa anumang lender.",
 

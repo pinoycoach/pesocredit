@@ -81,6 +81,11 @@ export type Copy = {
   ceilingCapText: Record<CheckId, Segments>;
   grayEirText: string;
   unsureCoverageText: string;
+  /**
+   * Under the comparison rows: what the comparison does and does not tell (N36, no false
+   * hope). Null where no wording is approved yet; then nothing is shown.
+   */
+  comparisonNote: string | null;
   disclaimer: string;
 
   // How it was calculated.

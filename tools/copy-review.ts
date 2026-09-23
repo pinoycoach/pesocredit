@@ -41,6 +41,12 @@ type Screen = { title: string; intro: string; prefix: string; sections: Section[
 
 /** What reviewers are told about each language, by its <html lang> code. */
 const LANGUAGES: Record<string, { name: string; reviewNote: string; errorNote: string }> = {
+  en: {
+    name: "English",
+    reviewNote:
+      "The site is in English, written first for people already struggling with online-lending-app\ndebt (DECISIONS N36): calm, plain, short sentences; no shame or blame; no false hope; no advice;\nno accusation. The brand, “Tunay na Interes”, stays Filipino, and the fee names are the\ncircular's own words. Read it as a borrower would.",
+    errorNote: "",
+  },
   fil: {
     name: "Filipino",
     reviewNote:
@@ -206,14 +212,14 @@ const FRIENDLY: Record<string, string> = {
   "{formatPeso(n.totalPayments)}": "{₱Y}",
   "{DAYS_PER_MONTH}": String(DAYS_PER_MONTH),
   "{formatPeso(n.totalCost)}": "{₱ total cost}",
-  "{formatPct(n.totalCostRatio)}": "{% of the amount borrowed}",
+  "{formatPct(n.totalCostRatio)}": "{%}",
 };
 
 /** A template as written, with each varying part given its readable name. */
 function friendly(written: string): string {
   let text = written.trim();
   for (const [code, name] of Object.entries(FRIENDLY)) text = text.replaceAll(code, name);
-  const named = /\{(X%|Z|₱Y|₱ total cost|% of the amount borrowed)\}/g;
+  const named = /\{(X%|Z|₱Y|₱ total cost|%)\}/g;
   if (/\{[^}]+\}/.test(text.replace(named, ""))) throw new Error(`unmapped variable in ${text}`);
   return text;
 }
@@ -327,9 +333,13 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     section = { title, note, entries: [] };
     screen.sections.push(section);
   };
-  const add = (text: string, where: string, when = "") => {
-    const n = all.filter((x) => x.id.startsWith(screen.prefix)).length + 1;
-    const entry = { id: `${screen.prefix}${String(n).padStart(2, "0")}`, text, where, when };
+  // IDs never change once reviewers can cite them: entries are numbered in order, and a line
+  // added later is given the next free number of its screen, wherever it sits.
+  const numbered: Record<string, number> = {};
+  const add = (text: string, where: string, when = "", addedLater?: string) => {
+    const n = (numbered[screen.prefix] = (numbered[screen.prefix] ?? 0) + (addedLater ? 0 : 1));
+    const id = addedLater ?? `${screen.prefix}${String(n).padStart(2, "0")}`;
+    const entry = { id, text, where, when };
     section.entries.push(entry);
     all.push(entry);
   };
@@ -391,7 +401,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   add(friendly(L.written("headline", "=>")), at("headline", "=>"), `template; e.g. G2: "${copy.headline(G2.numbers)}"`);
   add(copy.headlineMethodNote, at("headlineMethodNote"), "under the headline");
 
-  newSection("1.5 Comparison with the published ceiling");
+  newSection("1.5 Comparison with the published limit");
   add(copy.oldLoanNotice, at("oldLoanNotice"), "instead of this whole card, when the contract is dated before the circular applies");
   add(copy.comparisonTitle, at("comparisonTitle"), "card title");
   const basis = "src/components/source-link.tsx";
@@ -429,6 +439,9 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   }
   add(copy.grayEirText, at("grayEirText"), "under the EIR row when the EIR is GRAY");
   add(copy.unsureCoverageText, at("unsureCoverageText"), "under a row that is over while coverage is uncertain");
+  if (copy.comparisonNote !== null) {
+    add(copy.comparisonNote, at("comparisonNote"), "directly under the rows, whenever they are shown (added in step F3)", "C115");
+  }
   add(copy.disclaimer, at("disclaimer"), "always, bottom of the card");
 
   newSection(`1.6 ${copy.howTitle} (expander)`);
@@ -448,7 +461,11 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
 
   newSection(`1.7 ${copy.calendarTitle}`);
   add(copy.calendarTitle, at("calendarTitle"), "card title");
-  add(copy.calendarSubtitle(varies("days"), varies("number of payments")), at("calendarSubtitle"), "card subtitle");
+  // A language may word one payment differently ("1 payment"); then the review shows it too.
+  const subtitle = copy.calendarSubtitle(varies("days"), varies("number of payments"));
+  const onePayment = copy.calendarSubtitle(varies("days"), 1);
+  const singular = onePayment === subtitle.replace("{number of payments}", "1") ? "" : `; with one payment: "${onePayment}"`;
+  add(subtitle, at("calendarSubtitle"), `card subtitle${singular}`);
   add(copy.timelineDay0, at("timelineDay0"), "loans over 16 days: list, first row");
   add(copy.timelineReceived("{₱ received}"), at("timelineReceived"), "list, first row");
   add(copy.timelineDay(varies("day")), at("timelineDay"), "list, one row per payment");
@@ -530,6 +547,10 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     "{consent time}",
   );
 
+  const ids = all.map((e) => e.id);
+  const reused = ids.find((id, i) => ids.indexOf(id) !== i);
+  if (reused !== undefined) throw new Error(`COPY-REVIEW.md ID ${reused} is given twice`);
+
   // Completeness: every on-screen literal in the app source must be inside some entry.
   const covered = squash(
     [
@@ -558,7 +579,8 @@ Every string a visitor can see, verbatim, grouped by screen, for independent con
 - \`{…}\` marks a part that varies (a number, a date, the borrower's own figure). Where it helps,
   an example follows in the "Shown when" column.
 - <u>Underlined</u> text is a link to the SEC circular (${SOURCE.id}). **Bold** is bold on screen.
-- IDs (C01, P01, …) are for review notes: "C14: …".
+- IDs (C01, P01, …) are for review notes: "C14: …". They never change: a line added later takes
+  the next free number of its screen, so a section's IDs can be out of order.
 
 ## For reviewers
 

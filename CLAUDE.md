@@ -40,12 +40,13 @@ Two points matter more here than they did on fengshui.mom, because peso.credit i
 
 A free calculator, in English first (N34; the Filipino copy is kept, unused, for a later
 Tagalog version). A borrower enters the numbers from their own loan;
-the app shows the true cost: **"Ang totoong gastos mo: X% kada buwan. Sa araw Z, ₱Y ang kabuuang babayaran mo."**
-The comparison to the published SEC ceiling appears underneath, as a fact with its source.
+the app shows the true cost: **"Your true cost: X% a month. By day Z, you pay ₱Y in total."**
+The comparison to the published SEC limit (the circular calls it a ceiling) appears underneath,
+as a fact with its source.
 
 ## Non-negotiable principles
 1. **Inform, never accuse.** Never name a lender. Never say "ilegal", "scam", "illegal", "fraud", "loan shark". State the number next to the published rule.
-2. **Accuracy over confidence.** Where the law is ambiguous, show GRAY ("malapit sa ceiling"), never OVER. See `src/lib/rules.ts`.
+2. **Accuracy over confidence.** Where the law is ambiguous, show GRAY ("Close to the limit"), never OVER. See `src/lib/rules.ts`.
 3. **Nothing the borrower types leaves their phone.** All loan math runs client-side. No loan numbers are stored or sent, ever.
 4. **Email capture is optional, separate, and never gates a result.** Email is never sent together with loan numbers.
 5. **Not legal advice.** Describe rules and where to file; never tell someone what they should do or promise an outcome.
@@ -64,10 +65,11 @@ The comparison to the published SEC ceiling appears underneath, as a fact with i
   (one documented exception, the independent oracle: see `RULES.md`).
 - `src/lib/loan-math.ts` — the math. Must import all caps from `rules.ts`. It holds no words:
   results are data, and the copy turns them into sentences.
-- `src/lib/copy/` — every word on screen, one typed `Copy` object per language (`types.ts`, then
-  `fil.ts`, …). `src/lib/copy.ts` is the one line that picks the live language (N34). No
-  component writes a word itself: `npm test` fails if one does, or if words live anywhere but
-  here (the circular's own terms stay in `rules.ts`).
+- `src/lib/copy/` — every word on screen, one typed `Copy` object per language (`types.ts`):
+  `en.ts` is on screen, and `fil.ts` is kept for the Tagalog version. `src/lib/copy.ts` is the
+  one line that picks the live language (N34). No component writes a word itself: `npm test`
+  fails if one does, or if words live anywhere but here (the circular's own terms stay in
+  `rules.ts`).
 - `tools/render-snapshot.mjs` — renders every on-screen part to static HTML. Two runs compared
   with `cmp` prove a refactor changed nothing a visitor sees.
 - `GOLDEN-CASES.md` — hand-verified cases. Tests must reproduce them exactly.
@@ -140,11 +142,11 @@ narrowest scope possible; broader keys are separate and used rarely, ideally by 
 ## Current phase
 
 Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy): step groups A, B,
-C and E (Netlify + Resend) are complete. In step group F (English first, N34), F1 (the English
-copy, approved) and F2 (every word moved into `src/lib/copy/`) are done (2026-09-23); F3 switches
-the site to English, then stops for review. Still Napoleon's: independent content review (N32) and
-the privacy blanks with the lawyer (N17); then step group D, the live proof of the /api/subscribe
-limit (N18). Every step group stops for review.
+C, E (Netlify + Resend) and F (English first, N34: F1 the approved English, F2 every word moved
+into `src/lib/copy/`, F3 English on screen) are complete (2026-09-23); stopped for review. Still
+Napoleon's: independent content review of the English (N32), the privacy blanks with the lawyer
+(N17) and the mobile re-check on the English UI (N31); then step group D, the live proof of the
+/api/subscribe limit (N18). Every step group stops for review.
 
 ## Lessons
 
@@ -158,3 +160,6 @@ here during the final retro phase — point 17.)
   restore an untracked file (injected test signatures stayed in the not-yet-tracked SIGNOFF.json),
   and it silently discards uncommitted work in a tracked one (step C4's edits to privacy-copy.ts
   were wiped). Byte-compare each file against its backup before moving on.
+- A breakage proof passes only if the run exits non-zero, not just because a ✖ appears. Node 24
+  prints ✖ for a describe() body that throws, yet counts no failure and exits 0, so a guard
+  computed there can stop running unseen (N39, found in step F3). Compute guards inside `it`.

@@ -1,9 +1,9 @@
 # English copy proposal (step F1): peso.credit
 
 **Status: APPROVED by Napoleon, 2026-09-23, with edits (C31, C69, C71, C101, T01; the brand
-stays "Tunay na Interes").** Step F3 puts it in `src/lib/copy/en.ts`, and COPY-REVIEW.md is
-regenerated in English for the independent review (N32). The Filipino stays in the repo,
-unused, as the future Tagalog version (N34).
+stays "Tunay na Interes").** Step F3 put it on screen in `src/lib/copy/en.ts`, and COPY-REVIEW.md
+is regenerated in English for the independent review (N32), with these same IDs; the new line N1
+is C115 there. The Filipino stays in the repo, unused, as the future Tagalog version (N34).
 
 Written for people already struggling with online-lending-app debt (N36): calm, plain,
 short sentences; no shame or blame; no false hope; no advice; no accusation. The standing

@@ -242,6 +242,6 @@ describe("placement: below the result, never before it, never required", () => {
 
 describe("wording", () => {
   it("asks exactly the specified question", () => {
-    assert.equal(copy.emailHeading, "Gusto mo ng libreng checklist at abiso kapag may bagong rules?");
+    assert.equal(copy.emailHeading, "Want a free checklist, and a note when the rules change?");
   });
 });

@@ -2,16 +2,19 @@
  * CLAUDE.md principle 1: never accuse. Fails if any on-screen string contains a banned
  * word or a lender name. Two independent checks:
  *  1. static: every string, template piece and JSX text in the source (rules.ts included);
- *  2. runtime: every string the calculator and copy.ts actually produce, across many loans.
+ *  2. runtime: every string the calculator and each language file actually produce, across
+ *     many loans (the language kept for later too: it must never accuse either).
  * The static scan cannot see a word assembled by concatenation ("sc" + "am"); the runtime
  * scan covers computed output.
  */
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
 import { findBanned, LENDER_NAMES } from "./banned.ts";
 import { copy, type Copy } from "./copy.ts";
+import { en } from "./copy/en.ts";
+import { fil } from "./copy/fil.ts";
 import { analyzeLoan, type CoverageReason, type LoanInput } from "./loan-math.ts";
 import * as rules from "./rules.ts";
 import { plainText } from "./segments.ts";
@@ -42,6 +45,9 @@ function seeded(seed: number) {
   };
 }
 
+/** Every language file, on screen or kept for later. */
+const LANGUAGES: Record<string, Copy> = { en, fil };
+
 /** The name of every template (a function) in the copy. */
 type TemplateKey = {
   [K in keyof Copy]: Copy[K] extends (...args: never[]) => unknown ? K : never;
@@ -52,7 +58,7 @@ type TemplateKey = {
  * new one fails typecheck until it is added here. headline, howComputedRows and
  * coverageReason are also run on every loan below.
  */
-function templateSamples(): Record<TemplateKey, unknown> {
+function templateSamples(c: Copy): Record<TemplateKey, unknown> {
   const analysis = analyzeLoan(base());
   if (analysis.status !== "ok") throw new Error("the base loan must compute");
   const reasons: CoverageReason[] = [
@@ -64,16 +70,16 @@ function templateSamples(): Record<TemplateKey, unknown> {
     { kind: "tenorMaybe", tenorDays: 121 },
   ];
   return {
-    formatDate: copy.formatDate("2026-04-01"),
-    coverageReason: reasons.map((reason) => plainText(copy.coverageReason(reason))),
-    headline: copy.headline(analysis.numbers),
-    howComputedRows: copy.howComputedRows(analysis.numbers),
-    calendarSubtitle: [copy.calendarSubtitle(7, 1), copy.calendarSubtitle(28, 4)],
-    timelineReceived: copy.timelineReceived("₱5,000.00"),
-    timelineDay: copy.timelineDay(7),
-    timelinePayment: copy.timelinePayment(1, "₱6,500.00"),
-    timelineLegendFollowUp: copy.timelineLegendFollowUp(4),
-    privacySections: [copy.privacySections(""), copy.privacySections("contact@example.com")],
+    formatDate: c.formatDate("2026-04-01"),
+    coverageReason: reasons.map((reason) => plainText(c.coverageReason(reason))),
+    headline: c.headline(analysis.numbers),
+    howComputedRows: c.howComputedRows(analysis.numbers),
+    calendarSubtitle: [c.calendarSubtitle(7, 1), c.calendarSubtitle(28, 4)],
+    timelineReceived: c.timelineReceived("₱5,000.00"),
+    timelineDay: c.timelineDay(7),
+    timelinePayment: c.timelinePayment(1, "₱6,500.00"),
+    timelineLegendFollowUp: c.timelineLegendFollowUp(4),
+    privacySections: [c.privacySections(""), c.privacySections("contact@example.com")],
   };
 }
 
@@ -104,6 +110,7 @@ describe("banned phrases: source", () => {
     for (const expected of [
       "lib/loan-math.ts",
       "lib/copy.ts",
+      "lib/copy/en.ts",
       "lib/copy/fil.ts",
       "lib/rules.ts",
       "components/calculator.tsx",
@@ -125,6 +132,14 @@ describe("banned phrases: source", () => {
 });
 
 describe("banned phrases: what the calculator produces", () => {
+  it("checks every language file", () => {
+    const files = readdirSync(join(srcRoot(), "lib/copy"))
+      .filter((f) => f.endsWith(".ts") && f !== "types.ts")
+      .map((f) => f.replace(/\.ts$/, ""));
+    assert.deepEqual(Object.keys(LANGUAGES).sort(), files.sort(), "add the new language to LANGUAGES");
+    assert.equal(copy, LANGUAGES[copy.htmlLang], "the language on screen is among them");
+  });
+
   it("no string it can show contains a banned word or a lender name", (t) => {
     const inputs: LoanInput[] = [
       base(),
@@ -161,19 +176,20 @@ describe("banned phrases: what the calculator produces", () => {
     }
 
     const shown: string[] = [
-      ...stringsIn(copy),
-      ...stringsIn(templateSamples()),
+      ...Object.values(LANGUAGES).flatMap((c) => [...stringsIn(c), ...stringsIn(templateSamples(c))]),
       ...stringsIn(Object.values(rules)),
     ];
     for (const input of inputs) {
       const analysis = analyzeLoan(input);
       shown.push(...stringsIn(analysis));
-      if (analysis.status !== "cannot_compute") {
-        shown.push(copy.headline(analysis.numbers));
-        shown.push(...stringsIn(copy.howComputedRows(analysis.numbers)));
-      }
-      if (analysis.status === "ok") {
-        shown.push(...analysis.coverage.reasons.map((r) => plainText(copy.coverageReason(r))));
+      for (const c of Object.values(LANGUAGES)) {
+        if (analysis.status !== "cannot_compute") {
+          shown.push(c.headline(analysis.numbers));
+          shown.push(...stringsIn(c.howComputedRows(analysis.numbers)));
+        }
+        if (analysis.status === "ok") {
+          shown.push(...analysis.coverage.reasons.map((r) => plainText(c.coverageReason(r))));
+        }
       }
     }
 
@@ -215,6 +231,8 @@ describe("the matcher itself", () => {
       copy.grayEirText,
       copy.disclaimer,
       copy.oldLoanNotice,
+      "It names no lender and gives no advice on how to pay.",
+      "Above the limit",
       "Hindi nagnangalan ng lender, hindi nagpapayo kung paano magbayad.",
       "Lampas sa ceiling",
       "the loan and the shark tank",

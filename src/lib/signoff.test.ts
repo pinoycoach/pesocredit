@@ -183,7 +183,7 @@ describe("what each signature covers", () => {
 
   it("privacy-page: every section, and not the DRAFT banner", () => {
     const content = canonical(contentOf("privacy-page"));
-    assert.ok(content.includes("Makipag-ugnayan"));
+    assert.ok(content.includes("\"Contact\""), "the Contact section");
     assert.ok(!content.includes("DRAFT"));
   });
 });

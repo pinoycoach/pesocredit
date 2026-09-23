@@ -15,26 +15,31 @@ import {
 } from "../../tools/copy-review.ts";
 
 describe("COPY-REVIEW.md", () => {
-  const built = buildCopyReview();
+  // Built inside the tests, never while the suite is set up: when a describe() body throws,
+  // Node 24 lists the error but counts no failure and exits 0, so a generator error (a field
+  // it cannot find, an ID given twice) would pass unseen.
+  let cached: ReturnType<typeof buildCopyReview> | undefined;
+  const built = () => (cached ??= buildCopyReview());
 
   it("covers every on-screen string in the app source", () => {
+    const { leftovers } = built();
     assert.deepEqual(
-      built.leftovers,
+      leftovers,
       [],
-      `add these to tools/copy-review.ts, then run npm run copy-review:\n${built.leftovers.join("\n")}`,
+      `add these to tools/copy-review.ts, then run npm run copy-review:\n${leftovers.join("\n")}`,
     );
   });
 
   it("is up to date with the source (npm run copy-review regenerates it)", () => {
     const onDisk = readFileSync(COPY_REVIEW_PATH, "utf8").replace(/\r\n/g, "\n");
     assert.ok(
-      onDisk === built.markdown,
+      onDisk === built().markdown,
       "COPY-REVIEW.md is out of date: run npm run copy-review and commit the result",
     );
   });
 
   it("lists something, not an empty document", () => {
-    assert.ok(built.entries > 100, `only ${built.entries} entries`);
+    assert.ok(built().entries > 100, `only ${built().entries} entries`);
   });
 });
 
