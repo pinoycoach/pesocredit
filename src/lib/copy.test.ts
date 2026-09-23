@@ -222,6 +222,10 @@ describe("en: the rest of the page", () => {
     assert.equal(en.formatDate("2027-01-09"), "9 January 2027");
   });
 
+  it("ends the follow-up legend with a full stop, like the legend before it (C94)", () => {
+    assert.equal(en.timelineLegendFollowUp(4), " Follow-up = day 4 (your optional note).");
+  });
+
   it("says one payment, or several", () => {
     assert.equal(en.calendarSubtitle(7, 1), "7-day term · 1 payment");
     assert.equal(en.calendarSubtitle(28, 4), "28-day term · 4 payments");

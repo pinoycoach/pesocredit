@@ -215,7 +215,7 @@ export const en: Copy = {
   timelineCellFollowUp: "Follow-up",
   timelineLegend: "Day 0 = the day you got the money. Due = a payment day, as you entered it.",
   timelineLegendFollowUp: (day) =>
-    ` Follow-up = day ${day} (your optional note)`,
+    ` Follow-up = day ${day} (your optional note).`,
   scheduleTitle: "Schedule",
   scheduleDay: "Day",
   schedulePayment: "Payment",

@@ -171,7 +171,7 @@ Shown in place of the whole result.
 | C91 | Due | `src/lib/copy/en.ts:214` | grid cell, a due day |
 | C92 | Follow-up | `src/lib/copy/en.ts:215` | grid cell, the follow-up day |
 | C93 | Day 0 = the day you got the money. Due = a payment day, as you entered it. | `src/lib/copy/en.ts:216` | legend under the grid |
-| C94 | Follow-up = day {day} (your optional note) | `src/lib/copy/en.ts:217` | legend, when a follow-up day is set |
+| C94 | Follow-up = day {day} (your optional note). | `src/lib/copy/en.ts:217` | legend, when a follow-up day is set |
 
 ### 1.8 Schedule
 
