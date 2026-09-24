@@ -43,6 +43,13 @@ source link).
 
 Before trusting a test, break the thing it should catch on purpose, confirm it fails, then restore.
 
+*Amended after peso.credit:* the same goes for measurements and scripts, not only tests. Before
+trusting a check's pass, run it on the known-bad state and confirm it fails. On peso.credit, the
+first layout measurement tested each quick-fill line against its button instead of the button
+against its grid cell, and it passed on the broken layout too; only re-running it with the old
+classes showed it was measuring the wrong thing (docs/RETRO.md, row 18). A breakage proof passes
+only if the run exits non-zero, not because an error appears on screen (row 8).
+
 ## 7. Every phase report tells three things
 
 What was verified (and how), what deviated from the plan and why, and what's still open. Nothing is
@@ -175,6 +182,11 @@ because they lived only in conversation history rather than a file either side c
 `DECISIONS.md` with one line per open item, and its resolution the moment it resolves, removes an
 entire category of "did I actually tell it that" risk. Template in `templates/DECISIONS.md`.
 
+*Amended after peso.credit:* decision IDs and statuses are assigned only in the repo's
+`DECISIONS.md`, never in chat. On peso.credit, the planning conversation assigned N35 while the
+repo had already assigned its own N35, and the two collided (docs/RETRO.md, row 3). The
+conversation proposes a decision; the file gives it its number and its status.
+
 ## 17. End every build with a retro, before calling it done — not after someone asks
 
 **The rule:** add a final phase to `HANDOVER.md`: after launch, list what actually broke during
@@ -189,7 +201,50 @@ rather than repeating the discovery.
 
 ---
 
+# The Build Standard, v3
+
+What peso.credit's build (Tunay na Interes v1, launched 2026-09-24) found that points 1–17 did not
+cover. The full retro, with every incident, is `docs/RETRO.md`; each point below cites its row.
+
+## 18. A review covers exactly what it saw
+
+**The rule:** record the exact commit (or file) sent to each review. Before anything reviewed is
+signed, list every change made since that commit, however small, and send those back for review,
+with the approved lines around them so reviewers can see the context.
+
+**Why:** on peso.credit, eight on-screen texts changed after the first independent review, some by
+a single full stop, and none had been re-reviewed; a generated delta file found them, but it could
+not say for certain which version the reviewers had seen, because nothing recorded it (docs/RETRO.md,
+row 11). And a review file that showed only the changed lines drew two "missing" findings about
+things the unchanged lines already said (row 16).
+
+## 19. A claim about a vendor is a fact like a regulatory number
+
+**The rule:** anything the product says about a third party (a host, an email provider, a payment
+processor) is sourced like a legal number: quote the vendor's own current document, with its date,
+before the claim goes on screen. If no document supports it, soften it until one does, or leave it
+out.
+
+**Why:** peso.credit's privacy page first said Netlify "records technical details of each visit …
+to deliver and protect the site", which sounded generic. Netlify's Data Processing Agreement
+supports only that it processes visitors' IP addresses as needed to perform its service; nothing
+said it records each visit, or does so to protect the site (docs/RETRO.md, row 15).
+
+## 20. Static checks see only what the server sends
+
+**The rule:** a check that fetches pages and reads their HTML and CSS cannot see what is added at
+runtime, by JavaScript or by the host itself. The first deploy
+of anything with a privacy claim also gets a real-browser pass: the Network tab and the stored
+data, on the live address.
+
+**Why:** peso.credit's no-tracking tool passed 6/6 on the preview and on production, while a
+Netlify banner, with a request of its own, showed on both; only the browser's developer tools saw
+it (docs/RETRO.md, row 21; DECISIONS N46).
+
+---
+
 *Points 1–7 are the original standard, unchanged. Points 8–17 are what fengshui.mom's actual build
-taught, kept in the same evidence-cited form: a rule, and the real incident that made it a rule.
-When peso.credit (or the next build) finds something these seventeen don't cover, add it the same
-way — a plain rule, one paragraph of why, cited against something that actually happened.*
+taught, and points 18–20, with the amendments to points 6 and 16, are what peso.credit's taught,
+kept in the same evidence-cited form: a rule, and the real incident that made it a rule. When the
+next build finds something these twenty don't cover, add it the same way — a plain rule, one
+paragraph of why, cited against something that actually happened.*

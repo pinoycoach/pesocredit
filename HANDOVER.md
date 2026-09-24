@@ -126,7 +126,7 @@ money handling (N5). Not planned until Napoleon supplies their shape.
   are signed, cap-values (6767484), verdict-wording (a46bb31) and the v1 privacy page (8dcd45b),
   and `launch-check` passes.
 
-## Final phase — Retro (point 17) — mandatory
+## Final phase — Retro (point 17) — mandatory ✅ done (2026-09-24, docs/RETRO.md)
 
 After launch, before calling the build done:
 
@@ -135,3 +135,7 @@ After launch, before calling the build done:
 - What would have caught it sooner
 - Fold the answers into CLAUDE.md → Lessons, and into docs/BUILD-STANDARD.md as new numbered
   points if they're general.
+
+Done on 2026-09-24, the day v1 launched: 23 incidents in docs/RETRO.md; BUILD-STANDARD points
+18–20 added and points 6 and 16 amended; five Lessons added to CLAUDE.md; the environment table
+completed. Open after the retro, not blocking "done": N46, the Netlify banner, a known bug.
