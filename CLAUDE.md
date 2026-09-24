@@ -98,7 +98,8 @@ logic (`src/lib/subscribe.ts`) stays host-agnostic.
   the new host.
 - `src/lib/public-config.ts` — under a dev server the form shows only when `NETLIFY_DEV` is set,
   because `/api/subscribe` exists only under `netlify dev`. (Not host-specific: on any host the
-  form also waits until the privacy page is final, `PRIVACY_STATUS`; N32, C107.)
+  form also needs the full privacy page, final, `PRIVACY_VERSION` and `PRIVACY_STATUS`: never
+  under v1, and `/api/subscribe` answers 404 then too; N32, C107, N45.)
 - `tools/prove-rate-limit.mjs` — the live proof that `/api/subscribe` is rate limited; it also
   checks Netlify's default function address `/.netlify/functions/subscribe`.
 
@@ -151,10 +152,13 @@ C, E (Netlify + Resend) and F (English first, N34: F1 the approved English, F2 e
 into `src/lib/copy/`, F3 English on screen) are complete, and the independent review of the
 English (N32) is applied, and every value in `rules.ts` is checked against the circular (N42)
 (2026-09-23); stopped for review. cap-values and verdict-wording are signed in SIGNOFF.json
-(Napoleon, 2026-09-24: 6767484 and a46bb31). Still Napoleon's: signing the privacy page
-(`launch-check` fails until it is signed), the privacy blanks with the lawyer (N17) and the
-mobile re-check on the English UI (N31); then step group D, the live proof of the /api/subscribe
-limit (N18). Every step group stops for review.
+(Napoleon, 2026-09-24: 6767484 and a46bb31). Change of plan (2026-09-24, N45): v1 launches as the
+calculator alone, with a short privacy page and no email form; the v1 page and the form gate are
+built (90be1d3, 3f92e85). Still Napoleon's: the test email to privacy@peso.credit, then signing
+the v1 privacy page (N45: `launch-check` fails until it is signed), and the mobile re-check (N31);
+then step group D, the v1 launch. The full privacy page with counsel (N17), the live proof of the
+/api/subscribe limit (N18) and the checklist (N37) wait for the email form. Every step group
+stops for review.
 
 ## Lessons
 

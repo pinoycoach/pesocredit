@@ -1,12 +1,14 @@
 # Privacy Policy: draft for the lawyer
 
-The English privacy page of peso.credit (peso.credit/privacy), exactly as it shows today, from top
-to bottom. The text is copied from the site's source, not retyped.
+The full English privacy page of peso.credit (peso.credit/privacy), from top to bottom, as it will
+show once the email form goes live. It is not on the site yet. The text is copied from the site's
+source, not retyped.
 
-- **Blanks** are in bold, numbered in page order: **[BLANK 1] [FILL IN: …]**. There are 7.
+- **Blanks** are in bold, numbered in page order: **[BLANK 1] [FILL IN: …]**. There are 5.
   On the page they are highlighted. Each one needs a text, or a decision, before the page is final.
 - **IDs** (P01 to P23) are for notes, for example "P16: …". They are not shown on the page.
 - The page is marked DRAFT (P03) until it is final. The banner then goes.
+- The contact address, privacy@peso.credit, is already filled in (P19, P23).
 
 ---
 
@@ -14,7 +16,7 @@ to bottom. The text is copied from the site's source, not retyped.
 
 # Privacy Policy `P02`
 
-> `P03` **DRAFT, for a lawyer to review. This is not final and is not yet our official policy.**
+> `P03` **DRAFT. This is not final and is not yet our official policy.**
 
 ## What we collect `P04`
 
@@ -46,15 +48,15 @@ to bottom. The text is copied from the site's source, not retyped.
 
 `P18` Use the unsubscribe link in every email you receive. **[BLANK 3] [FILL IN: confirm that emails sent through Resend include an unsubscribe link]**
 
-`P19` You can also write to **[BLANK 4] [FILL IN: email address for requests]** to ask us to delete your email address.
+`P19` You can also write to privacy@peso.credit to ask us to delete your email address.
 
 ## Your rights `P20`
 
-`P21` **[BLANK 5] [FILL IN: for the lawyer: the user's rights under the law, and how to use them]**
+`P21` **[BLANK 4] [FILL IN: for the lawyer: the user's rights under the law, and how to use them]**
 
 ## Contact `P22`
 
-`P23` **[BLANK 6] [FILL IN: name of the site operator]** · **[BLANK 7] [FILL IN: contact email address]**
+`P23` **[BLANK 5] [FILL IN: name of the site operator]** · privacy@peso.credit
 
 ---
 

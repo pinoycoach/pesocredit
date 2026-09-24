@@ -65,24 +65,41 @@ Stop and wait.
 
 STEP GROUP C — Fixes I approve from B, one commit each.
 
-STEP GROUP D — Deploy prep (I do the dashboard steps; you write the
-checklist from what I show you on screen, point 12)
+STEP GROUP D — v1 launch: the calculator alone, no email form (N45).
+I do the dashboard steps; you write the checklist from what I show you
+on screen (point 12)
 - Netlify site, peso.credit domain + DNS (N9)
+- Do not set the Resend settings (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO,
+  SUBSCRIBE_FROM) or GUIDE_URL in Netlify. Under the v1 privacy page the
+  form stays off even if they are set (N45), but they stay unset.
+- privacy@peso.credit receives mail: a test email has arrived in
+  Napoleon's inbox before the v1 privacy page is signed (N45)
+- English copy written and independently reviewed (N34, N32, N44)
+- v1 privacy page signed, PRIVACY_STATUS "final" in the same commit (N45)
+- Mobile layout re-checked on the English UI, the v1 privacy page
+  included (N31)
+- Production deploy requires `npm run launch-check` to pass (SIGNOFF.json)
+- On the live site: no email form on the calculator, and a POST to
+  /api/subscribe answers 404
+v1 deploys once N45 is RESOLVED and launch-check passes. N17, N18 and
+N37 do not block it: they block the email form.
+
+LATER — The email form (not before N17, N18 and N37 are RESOLVED)
+- Full privacy page with counsel (Pat): blanks filled, the notes in
+  docs/privacy-draft-for-lawyer.md answered, PRIVACY_VERSION "full",
+  signed again (N17)
 - Rate limiting on /api/subscribe: a limit of its own, proven on the
   live site by sending requests until it answers 429 (N18, point 12):
   node tools/prove-rate-limit.mjs https://<site> on a deploy preview,
-  then on production; record the output in N18
+  then on production; record the output in N18. The endpoint answers
+  404 until the full page is final, so the proof runs after that.
 - Resend: peso.credit sending domain verified, DNS records copied from
   the live Resend screen (point 12); a Sending-access key restricted to
   that domain, set only in Netlify's environment; the Full-access key
   stays with Napoleon, never in the code or on Netlify (N13, point 15)
+- The free checklist the form promises exists, or the promise is
+  removed (N37)
 - Do not set GUIDE_URL in Netlify until N14 and N15 are RESOLVED.
-- English copy written and independently reviewed (N34, N32)
-- Privacy page in English, placeholders filled, Resend flow disclosed,
-  lawyer-reviewed (N17)
-- Mobile layout re-checked on the English UI (N31)
-- Production deploy requires `npm run launch-check` to pass (SIGNOFF.json)
-Nothing deploys until N17 and N18 are RESOLVED in DECISIONS.md.
 ```
 
 ## Later phases — (undefined)
@@ -100,8 +117,8 @@ money handling (N5). Not planned until Napoleon supplies their shape.
 - Any constraint that passed before a feature touched its surface is re-verified (point 11).
 - `npm run launch-check` passes: the privacy page, the verdict wording and the cap values are
   signed in SIGNOFF.json, and none has changed since (point 10). Status 2026-09-24: cap-values
-  (6767484) and verdict-wording (a46bb31) are signed; the privacy page is not, so `launch-check`
-  still fails.
+  (6767484) and verdict-wording (a46bb31) are signed; the privacy page, now the v1 page (N45), is
+  not, so `launch-check` still fails.
 
 ## Final phase — Retro (point 17) — mandatory
 
