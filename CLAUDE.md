@@ -176,3 +176,7 @@ here during the final retro phase — point 17.)
   prints ✖ for a describe() body that throws, yet counts no failure and exits 0, so a guard
   computed there can stop running unseen (N39, found in step F3). Compute guards inside `it`;
   `loan-math.test.ts` now enforces it.
+- "Propose, then build after my OK" means stop after the proposal, even when a later message
+  answers one of its questions. Supplying a missing value (the v1 contact address) is not
+  approval to build; the v1 privacy work (2026-09-24) was built before Napoleon approved it.
+  Ask "build now?" if unsure.
