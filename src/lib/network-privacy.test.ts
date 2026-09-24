@@ -5,6 +5,8 @@
  * explicit ALLOWED list below, with the reason. A change that needs one adds the exact
  * file and the reason here, where a reviewer sees it. Everything on the list is server
  * side; the browser code uses none of them until the email form's own request (below).
+ * Nor may any code put data into the page's address (urlUses, with no exceptions): the v1
+ * privacy page promises the numbers are gone when the page closes (P25, DECISIONS N45).
  */
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
@@ -106,6 +108,62 @@ export function apiUses(file: string, source: string): { api: string; line: numb
   return uses;
 }
 
+/**
+ * Ways to put data into the page's address, where it would outlive the page (browser history,
+ * bookmarks, a shared link, server logs). The v1 privacy page promises the numbers are gone
+ * when the page closes (P25, DECISIONS N45), so none of these is allowed anywhere.
+ */
+const URL_IDENTIFIERS = [
+  "history",
+  "location",
+  "pushState",
+  "replaceState",
+  "URLSearchParams",
+  "searchParams",
+  // TanStack Router: search parameters and navigation
+  "useSearch",
+  "validateSearch",
+  "useNavigate",
+  "useLocation",
+  "navigate",
+];
+
+/** Link props that put data in an address: an attribute built from a template or `+`. */
+const ADDRESS_ATTRIBUTES = ["href", "src", "action", "formAction"];
+
+/** Every way one file touches the page's address, by name. */
+export function urlUses(file: string, source: string): { api: string; line: number }[] {
+  const kind = file.endsWith("x") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  const sf = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, kind);
+  const uses: { api: string; line: number }[] = [];
+  const at = (node: ts.Node) => sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1;
+
+  walk(sf, (node) => {
+    // history.pushState, window.location, location.href = …, URLSearchParams, useSearch, …
+    if (ts.isIdentifier(node) && URL_IDENTIFIERS.includes(node.text)) {
+      uses.push({ api: node.text, line: at(node) });
+    }
+    // window.open(url): opens an address, and can carry data in it
+    if (ts.isPropertyAccessExpression(node) && node.name.text === "open" && ts.isIdentifier(node.expression) && node.expression.text === "window") {
+      uses.push({ api: "window.open", line: at(node) });
+    }
+    if (ts.isJsxAttribute(node) && ts.isIdentifier(node.name)) {
+      const name = node.name.text;
+      // <Link search={…} hash={…}>: the router writes these into the address
+      if (name === "search" || name === "hash") uses.push({ api: `${name}={…}`, line: at(node) });
+      // href={`/x?p=${principal}`}: an address built from data
+      const value = node.initializer;
+      if (ADDRESS_ATTRIBUTES.includes(name) && value && ts.isJsxExpression(value) && value.expression) {
+        const e = value.expression;
+        if (ts.isTemplateExpression(e) || (ts.isBinaryExpression(e) && e.operatorToken.kind === ts.SyntaxKind.PlusToken)) {
+          uses.push({ api: `${name} built from data`, line: at(node) });
+        }
+      }
+    }
+  });
+  return uses;
+}
+
 /** Strings that are web addresses: an app that contacts nobody has none of its own. */
 export function webAddresses(file: string, source: string): { text: string; line: number }[] {
   return literalsIn(file, source)
@@ -167,6 +225,13 @@ describe("nothing leaves the phone: the app cannot send or keep data", () => {
     assert.deepEqual(found, [], found.join("\n"));
   });
 
+  it("nothing reaches the page's address: no history, location, query parameters or address built from data (P25, N45)", () => {
+    const problems = files().flatMap((file) =>
+      urlUses(file, read(file)).map((use) => `${file}:${use.line} uses ${use.api}`),
+    );
+    assert.deepEqual(problems, [], problems.join("\n"));
+  });
+
   it("the allowed addresses are really written in their files", () => {
     for (const [file, { addresses }] of Object.entries(ALLOWED_ADDRESSES)) {
       const written = webAddresses(file, read(file)).map((a) => a.text);
@@ -194,6 +259,31 @@ describe("the scanner itself", () => {
     assert.deepEqual(sample("const k = process.env.KEY"), ["process.env"]);
     assert.deepEqual(sample("const k = import.meta.env.VITE_KEY"), ["import.meta.env"]);
     assert.deepEqual(sample('new Image().src = "/x?d=1"'), ["new Image"]);
+  });
+
+  it("catches each way of putting data in the page's address", () => {
+    const url = (code: string) => urlUses("sample.tsx", code).map((u) => u.api);
+    assert.deepEqual(url('history.replaceState(null, "", "?p=1")'), ["history", "replaceState"]);
+    assert.deepEqual(url('window.history.pushState({}, "", "/x")'), ["history", "pushState"]);
+    assert.deepEqual(url('window.location.href = "/x?p=" + p'), ["location"]);
+    assert.deepEqual(url('location.assign("/x")'), ["location"]);
+    assert.deepEqual(url('document.location.hash = "p=1"'), ["location"]);
+    assert.deepEqual(url('const q = new URLSearchParams({ p: "1" })'), ["URLSearchParams"]);
+    assert.deepEqual(url('u.searchParams.set("p", "1")'), ["searchParams"]);
+    assert.deepEqual(url("const s = Route.useSearch()"), ["useSearch"]);
+    assert.deepEqual(url("const go = useNavigate()"), ["useNavigate"]);
+    assert.deepEqual(url('router.navigate({ to: "/" })'), ["navigate"]);
+    assert.deepEqual(url('window.open("/x?p=1")'), ["window.open"]);
+    assert.deepEqual(url('const a = <Link to="/" search={{ p }} />'), ["search={…}"]);
+    assert.deepEqual(url("const a = <a href={`/x?p=${p}`}>x</a>"), ["href built from data"]);
+    assert.deepEqual(url('const a = <a href={"/x?p=" + p}>x</a>'), ["href built from data"]);
+  });
+
+  it("lets ordinary links and code through", () => {
+    const url = (code: string) => urlUses("sample.tsx", code).map((u) => u.api);
+    assert.deepEqual(url('const a = <a href="/privacy" target="_blank">x</a>'), []);
+    assert.deepEqual(url("const a = <a href={SOURCE.url}>x</a>"), []);
+    assert.deepEqual(url("const o = new URL(request.url).origin; const found = 1; modal.open()"), []);
   });
 
   it("catches a web address in a string", () => {
