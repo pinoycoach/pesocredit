@@ -29,7 +29,7 @@ export const placeholder = (what: string) => `${PLACEHOLDER_OPEN} ${what}]`;
 export type PrivacyStatus = "draft" | "final";
 
 /** Switched to "final" in the same commit as Napoleon's signature for privacy-page. */
-export const PRIVACY_STATUS: PrivacyStatus = "draft";
+export const PRIVACY_STATUS: PrivacyStatus = "final";
 
 /**
  * Which privacy page is live. "full" describes the email form and needs counsel's review (N17);
