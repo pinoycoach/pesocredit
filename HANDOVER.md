@@ -99,8 +99,9 @@ money handling (N5). Not planned until Napoleon supplies their shape.
 - GUIDE_URL stays unset until the ₱99 guide and its payment link exist (N38).
 - Any constraint that passed before a feature touched its surface is re-verified (point 11).
 - `npm run launch-check` passes: the privacy page, the verdict wording and the cap values are
-  signed in SIGNOFF.json, and none has changed since (point 10). Status 2026-09-24: cap-values is
-  signed (6767484); the privacy page and the verdict wording are not, so `launch-check` still fails.
+  signed in SIGNOFF.json, and none has changed since (point 10). Status 2026-09-24: cap-values
+  (6767484) and verdict-wording (a46bb31) are signed; the privacy page is not, so `launch-check`
+  still fails.
 
 ## Final phase — Retro (point 17) — mandatory
 
