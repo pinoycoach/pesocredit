@@ -117,13 +117,15 @@ export function Calculator({ publicConfig }: { publicConfig: PublicConfig }) {
                   type="button"
                   data-preset={p.id}
                   variant={preset === p.id ? "default" : "outline"}
-                  className="h-auto min-h-11 flex-col items-start gap-0.5 py-2 text-left"
+                  // Wrap inside the card at every width: the base button is nowrap, and a grid
+                  // item cannot shrink below its content without min-w-0 (N31).
+                  className="h-auto min-h-11 w-full min-w-0 flex-col items-start gap-0.5 whitespace-normal py-2 text-left"
                   onClick={() => applyPreset(p.id)}
                 >
-                  <span>{copy.presets[p.id].label}</span>
+                  <span className="max-w-full [overflow-wrap:anywhere]">{copy.presets[p.id].label}</span>
                   <span
                     className={cn(
-                      "text-[11px] font-normal",
+                      "max-w-full text-[11px] font-normal [overflow-wrap:anywhere]",
                       preset === p.id ? "text-primary-foreground/80" : "text-muted-foreground",
                     )}
                   >

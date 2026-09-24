@@ -95,8 +95,10 @@ LATER — The email form (not before N17, N18 and N37 are RESOLVED)
 - Rate limiting on /api/subscribe: a limit of its own, proven on the
   live site by sending requests until it answers 429 (N18, point 12):
   node tools/prove-rate-limit.mjs https://<site> on a deploy preview,
-  then on production; record the output in N18. The endpoint answers
-  404 until the full page is final, so the proof runs after that.
+  then on production; record the output in N18. The proof works before
+  the form goes live: the endpoint answers 404 until the full page is
+  final, and the limit counts those 404s. Done on the preview
+  (2026-09-24, 4/4); production is due once the domain points at the site.
 - Resend: peso.credit sending domain verified, DNS records copied from
   the live Resend screen (point 12); a Sending-access key restricted to
   that domain, set only in Netlify's environment; the Full-access key
