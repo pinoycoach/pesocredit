@@ -13,7 +13,11 @@
  * by hand, with a separate Full-access key that never enters this code.
  *
  * Nothing about a request (the email, the body, the address) is logged.
+ *
+ * The endpoint exists only when the email form may: under the full privacy page, once final
+ * (privacy-copy.ts emailFormAllowed; N45). Hiding the form is not enough, since anyone can post.
  */
+import { emailFormAllowed, type PrivacyState } from "./privacy-copy.ts";
 
 export const MAX_BODY_BYTES = 2_048;
 export const FORWARD_TIMEOUT_MS = 8_000;
@@ -42,6 +46,8 @@ export type SubscribeDeps = {
   fetchImpl?: typeof fetch;
   /** For tests. Defaults to the current time. */
   now?: () => Date;
+  /** For tests. Defaults to the live privacy page (PRIVACY_VERSION, PRIVACY_STATUS). */
+  privacy?: PrivacyState;
 };
 
 /** "Name <address>" or a bare address, with a valid address and no line breaks. */
@@ -134,7 +140,7 @@ function isSameOrigin(request: Request): boolean {
 
 export async function handleSubscribe(request: Request, deps: SubscribeDeps): Promise<Response> {
   const settings = readResendSettings(deps.env);
-  if (!settings) return reply(404, { ok: false, error: "unavailable" });
+  if (!settings || !emailFormAllowed(deps.privacy)) return reply(404, { ok: false, error: "unavailable" });
   if (request.method !== "POST") return reply(405, { ok: false, error: "method" });
   if (!isSameOrigin(request)) return reply(403, { ok: false, error: "forbidden" });
   if (!(request.headers.get("content-type") ?? "").toLowerCase().includes("application/json")) {

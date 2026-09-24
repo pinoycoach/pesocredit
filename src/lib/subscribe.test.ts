@@ -11,6 +11,7 @@ import {
   RESEND_EMAILS_URL,
   type SubscribeEnv,
 } from "./subscribe.ts";
+import { emailFormAllowed, type PrivacyState } from "./privacy-copy.ts";
 
 const ENV: SubscribeEnv = {
   RESEND_API_KEY: "re_test_secret-123",
@@ -18,6 +19,8 @@ const ENV: SubscribeEnv = {
   SUBSCRIBE_FROM: "peso.credit <subscribe@peso.credit>",
 };
 const NOW = new Date("2026-09-19T08:30:00.000Z");
+/** The full privacy page, final: the only state in which the endpoint exists (N45). */
+const FORM_ON = { version: "full", status: "final" } as const;
 
 type Call = { url: string; init: RequestInit };
 
@@ -44,9 +47,9 @@ function post(body: unknown, headers: Record<string, string> = {}, raw?: string)
 
 const good = { email: "ana@example.com", consent: true };
 
-async function run(request: Request, env: SubscribeEnv = ENV) {
+async function run(request: Request, env: SubscribeEnv = ENV, privacy: PrivacyState = FORM_ON) {
   const f = fakeFetch();
-  const response = await handleSubscribe(request, { env, fetchImpl: f.impl, now: () => NOW });
+  const response = await handleSubscribe(request, { env, fetchImpl: f.impl, now: () => NOW, privacy });
   return { response, calls: f.calls, text: await response.clone().text() };
 }
 
@@ -224,6 +227,26 @@ describe("POST /api/subscribe", () => {
     assert.equal((await run(noHeaders)).response.status, 403, "neither Origin nor Sec-Fetch-Site");
   });
 
+  it("does not exist under the v1 privacy page, or before the full one is final, even with Resend set (N45)", async () => {
+    for (const privacy of [
+      { version: "v1", status: "final" },
+      { version: "v1", status: "draft" },
+      { version: "full", status: "draft" },
+    ] as const) {
+      const { response, calls } = await run(post(good), ENV, privacy);
+      assert.equal(response.status, 404, JSON.stringify(privacy));
+      assert.equal(calls.length, 0, "nothing is forwarded");
+    }
+    const { response } = await run(post(good), ENV, FORM_ON);
+    assert.equal(response.status, 200, "and exists under the full page, once final");
+  });
+
+  it("follows the live privacy page when none is given", async () => {
+    const f = fakeFetch();
+    const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: f.impl, now: () => NOW });
+    assert.equal(response.status, emailFormAllowed() ? 200 : 404);
+  });
+
   it("does not exist when the Resend settings are missing or not usable", async () => {
     for (const env of [{}, { ...ENV, RESEND_API_KEY: "" }, { ...ENV, SUBSCRIBE_NOTIFY_TO: "nope" }, { ...ENV, SUBSCRIBE_FROM: undefined }]) {
       const { response, calls } = await run(post(good), env);
@@ -235,14 +258,14 @@ describe("POST /api/subscribe", () => {
   it("answers 502, with no detail, when Resend fails", async () => {
     for (const respond of [() => new Response("boom", { status: 500 }), () => new Response("no", { status: 403 })]) {
       const f = fakeFetch(respond);
-      const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: f.impl, now: () => NOW });
+      const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: f.impl, now: () => NOW, privacy: FORM_ON });
       assert.equal(response.status, 502);
       assert.deepEqual(await response.json(), { ok: false, error: "unavailable" });
     }
     const throwing = (async () => {
       throw new Error("connect ECONNREFUSED api.resend.com");
     }) as typeof fetch;
-    const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: throwing });
+    const response = await handleSubscribe(post(good), { env: ENV, fetchImpl: throwing, privacy: FORM_ON });
     assert.equal(response.status, 502);
     assert.ok(!(await response.text()).includes("ECONNREFUSED"));
   });

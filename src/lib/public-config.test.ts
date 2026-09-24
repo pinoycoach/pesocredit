@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { PRIVACY_STATUS } from "./privacy-copy.ts";
+import { emailFormAllowed } from "./privacy-copy.ts";
 import { normalizeGuideUrl, readPublicConfig } from "./public-config.ts";
 
 /** Usable Resend settings (DECISIONS N13). */
@@ -10,8 +10,8 @@ const RESEND = {
   SUBSCRIBE_FROM: "peso.credit <subscribe@peso.credit>",
 };
 
-/** A final privacy page, so the tests below can see the form (C107). */
-const FINAL = { privacyStatus: "final" } as const;
+/** The full privacy page, final, so the tests below can see the form (C107, N45). */
+const FINAL = { privacy: { version: "full", status: "final" } } as const;
 
 describe("public config", () => {
   it("hides both the form and the guide when nothing is set", () => {
@@ -32,9 +32,10 @@ describe("public config", () => {
   });
 
   it("hides the form while the privacy page is a draft, even with every setting usable (C107)", () => {
-    assert.equal(readPublicConfig(RESEND, { privacyStatus: "draft" }).emailCaptureEnabled, false);
+    const draft = { version: "full", status: "draft" } as const;
+    assert.equal(readPublicConfig(RESEND, { privacy: draft }).emailCaptureEnabled, false);
     assert.equal(
-      readPublicConfig({ ...RESEND, NETLIFY_DEV: "true" }, { devServer: true, privacyStatus: "draft" })
+      readPublicConfig({ ...RESEND, NETLIFY_DEV: "true" }, { devServer: true, privacy: draft })
         .emailCaptureEnabled,
       false,
       "under netlify dev too",
@@ -42,8 +43,20 @@ describe("public config", () => {
     assert.equal(readPublicConfig(RESEND, FINAL).emailCaptureEnabled, true, "and shows it once the page is final");
   });
 
-  it("follows the privacy page's real status (PRIVACY_STATUS) when none is given", () => {
-    assert.equal(readPublicConfig(RESEND).emailCaptureEnabled, PRIVACY_STATUS === "final");
+  it("hides the form under the v1 privacy page, even final and with every setting usable (N45)", () => {
+    for (const status of ["draft", "final"] as const) {
+      const v1 = { privacy: { version: "v1", status } } as const;
+      assert.equal(readPublicConfig(RESEND, v1).emailCaptureEnabled, false, `v1, ${status}`);
+      assert.equal(
+        readPublicConfig({ ...RESEND, NETLIFY_DEV: "true" }, { devServer: true, ...v1 }).emailCaptureEnabled,
+        false,
+        `v1, ${status}, under netlify dev`,
+      );
+    }
+  });
+
+  it("follows the live privacy page (PRIVACY_VERSION, PRIVACY_STATUS) when none is given", () => {
+    assert.equal(readPublicConfig(RESEND).emailCaptureEnabled, emailFormAllowed());
   });
 
   it("never reveals the key or the owner's inbox to the page", () => {

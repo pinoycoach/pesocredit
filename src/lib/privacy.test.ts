@@ -117,6 +117,7 @@ describe("privacy page (DRAFT)", () => {
           SUBSCRIBE_FROM: "subscribe@peso.credit",
         },
         fetchImpl: capture,
+        privacy: { version: "full", status: "final" },
       },
     );
     assert.equal(response.status, 200);

@@ -104,7 +104,7 @@ describe("the browser and the server agree on the message", () => {
           headers: { ...(init?.headers as Record<string, string>), origin: "http://app.test" },
           body: init?.body as string,
         }),
-        { env, fetchImpl: capture },
+        { env, fetchImpl: capture, privacy: { version: "full", status: "final" } },
       )) as typeof fetch;
 
     assert.equal(await submitEmail("ana@example.com", wire), "ok");

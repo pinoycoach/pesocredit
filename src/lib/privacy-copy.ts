@@ -28,6 +28,26 @@ export type PrivacyStatus = "draft" | "final";
 export const PRIVACY_STATUS: PrivacyStatus = "draft";
 
 /**
+ * Which privacy page is live. "full" describes the email form and needs counsel's review (N17);
+ * "v1" is for the calculator alone, with no email form (N45).
+ */
+export type PrivacyVersion = "v1" | "full";
+export const PRIVACY_VERSION: PrivacyVersion = "full";
+
+export type PrivacyState = { version: PrivacyVersion; status: PrivacyStatus };
+
+/**
+ * Whether the email form may exist at all: only under the full page, once it is final. The v1
+ * page describes no form, so under it the form stays off even with every Resend setting usable.
+ * Both the page (public-config.ts) and the server (subscribe.ts) ask this.
+ */
+export function emailFormAllowed(
+  { version, status }: PrivacyState = { version: PRIVACY_VERSION, status: PRIVACY_STATUS },
+): boolean {
+  return version === "full" && status === "final";
+}
+
+/**
  * The one designated place for the page's email address, used wherever the page gives
  * one. Empty until supplied: the page shows its placeholders instead.
  */

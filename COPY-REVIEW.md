@@ -328,6 +328,6 @@ For completeness: text in the source that a visitor never sees.
 | Text | Where | Why it is not shown |
 |---|---|---|
 | restructuring, repackaging, splitting of loan amounts, recharacterization of fees, shifting of loan tenor, simulated collateral, sham guaranty arrangements, imposition of disguised charges | `src/lib/rules.ts:80` | Kept from the circular for later explainer content; nothing renders it. |
-| Error codes in /api/subscribe responses ("invalid", "forbidden", …) | `src/lib/subscribe.ts:120` | The form shows only the messages in 1.10. |
-| Subject: New peso.credit subscriber. Body: Email: {subscriber's address} / Consented at: {consent time} | `src/lib/subscribe.ts:69` | The email each new subscription sends to the owner's inbox through Resend (DECISIONS N13); only the owner reads it. |
+| Error codes in /api/subscribe responses ("invalid", "forbidden", …) | `src/lib/subscribe.ts:126` | The form shows only the messages in 1.10. |
+| Subject: New peso.credit subscriber. Body: Email: {subscriber's address} / Consented at: {consent time} | `src/lib/subscribe.ts:75` | The email each new subscription sends to the owner's inbox through Resend (DECISIONS N13); only the owner reads it. |
 | Every word of the Filipino copy | `src/lib/copy/fil.ts` | Kept, unused, for a later Filipino version (DECISIONS N34); `src/lib/copy.ts` shows one language. |
