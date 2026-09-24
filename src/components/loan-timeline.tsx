@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { copy } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import type { LoanInput, LoanNumbers } from "@/lib/loan-math";
@@ -46,9 +47,13 @@ export function LoanTimeline({
 
   return (
     <div className="grid gap-3">
+      {/* Up to 8 days a row; 4 below 414px wide, where a cell is too narrow for its label
+          ("Received", "Follow-up") and a smaller type size would be unreadable (N31). */}
       <div
-        className="grid gap-1"
-        style={{ gridTemplateColumns: `repeat(${Math.min(days + 1, 8)}, minmax(0, 1fr))` }}
+        className="grid grid-cols-[repeat(var(--cols-narrow),minmax(0,1fr))] gap-1 min-[414px]:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
+        style={
+          { "--cols": Math.min(days + 1, 8), "--cols-narrow": Math.min(days + 1, 4) } as CSSProperties
+        }
       >
         {cells.map((c) => (
           <div
