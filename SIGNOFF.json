@@ -1,7 +1,7 @@
 {
   "items": [
     { "id": "privacy-page", "signature": null },
-    { "id": "verdict-wording", "signature": null },
+    { "id": "verdict-wording", "signature": { "signer": "Napoleon", "date": "2026-09-24", "hash": "sha256:b08e2a43c980ad573fdffd528fd4430d83afef34211ea72966febdf635b185ee", "reviewedBy": "Independent review by Gemini, Grok and DeepSeek in two rounds (N32, N44); final text read by Napoleon" } },
     { "id": "cap-values", "signature": { "signer": "Napoleon", "date": "2026-09-24", "hash": "sha256:1246b904744cdd7f2b0e4129ae0347606a10ed56b4cb20a1fcf93f35078707a0", "reviewedBy": "Checked by Napoleon against docs/sources/SEC-MC-14-s2025.pdf (Sec. 1, 2(h), 3, 3(2), 5, 9)" } }
   ]
 }
