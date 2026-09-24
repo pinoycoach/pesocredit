@@ -15,9 +15,11 @@ import { copy, headlineText } from "./copy.ts";
 import { analyzeLoan, type LoanInput } from "./loan-math.ts";
 import {
   BACK_TO_CALCULATOR,
+  PRIVACY_LAST_UPDATED,
   PRIVACY_LINK_LABEL,
   PRIVACY_SECTIONS,
   PRIVACY_TITLE,
+  PRIVACY_VERSION,
 } from "./privacy-copy.ts";
 import * as rules from "./rules.ts";
 import { COVERAGE_INPUTS, GOLDEN_INPUTS } from "./test-utils/loan-fixtures.ts";
@@ -54,11 +56,17 @@ function capValues() {
   );
 }
 
-/** The privacy page as a reader sees it. The DRAFT banner is not signed: signing removes it. */
+/**
+ * The live privacy page as a reader sees it, and which version it is (N45): switching from v1
+ * to the full page changes the hash, so it has to be signed again. The DRAFT banner is not
+ * signed: signing removes it.
+ */
 function privacyPage() {
   return {
     lang: copy.htmlLang,
+    version: PRIVACY_VERSION,
     title: PRIVACY_TITLE,
+    lastUpdated: PRIVACY_LAST_UPDATED,
     backToCalculator: BACK_TO_CALCULATOR,
     linkLabel: PRIVACY_LINK_LABEL,
     sections: PRIVACY_SECTIONS,

@@ -7,8 +7,12 @@ import {
   CONTACT_EMAIL,
   DRAFT_BANNER,
   placeholder,
+  PRIVACY_FULL_SECTIONS,
+  PRIVACY_LAST_UPDATED,
   PRIVACY_SECTIONS,
   PRIVACY_STATUS,
+  PRIVACY_V1_UPDATED,
+  PRIVACY_VERSION,
   privacyHeadMeta,
   type PrivacyStatus,
   remainingPlaceholders,
@@ -22,7 +26,12 @@ import { literalsIn, srcRoot } from "./test-utils/source-strings.ts";
 const root = srcRoot();
 const read = (file: string) => readFileSync(join(root, file), "utf8");
 const section = (pattern: RegExp) => PRIVACY_SECTIONS.find((s) => pattern.test(s.heading));
+const fullSection = (pattern: RegExp) => PRIVACY_FULL_SECTIONS.find((s) => pattern.test(s.heading));
 const textOf = (s: { paragraphs: string[] } | undefined) => (s?.paragraphs ?? []).join(" ");
+const allText = (sections: { paragraphs: string[] }[]) => sections.flatMap((s) => s.paragraphs).join(" ");
+/** Both versions: the live one and the one kept for later. */
+const BOTH = [PRIVACY_SECTIONS, PRIVACY_FULL_SECTIONS];
+const v1 = copy.privacyV1;
 const EMAIL = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/;
 
 /** The status the page must have: final only once it is signed and has no blanks left. */
@@ -37,8 +46,8 @@ function privacyPageSigned(): boolean {
   return record.items.find((item) => item.id === "privacy-page")?.signature != null;
 }
 
-describe("privacy page (DRAFT)", () => {
-  it("covers what is collected, why, how to unsubscribe, and how to make contact", () => {
+describe("privacy page", () => {
+  it("the full page (N17) covers what is collected, why, how to unsubscribe, and how to make contact", () => {
     for (const [name, pattern] of [
       ["what is collected", /^What we collect/i],
       ["what is not collected", /don't collect/i],
@@ -46,7 +55,7 @@ describe("privacy page (DRAFT)", () => {
       ["how to unsubscribe", /unsubscribe/i],
       ["contact", /^Contact/i],
     ] as const) {
-      assert.ok(section(pattern), `missing section: ${name}`);
+      assert.ok(fullSection(pattern), `missing section: ${name}`);
     }
   });
 
@@ -70,9 +79,9 @@ describe("privacy page (DRAFT)", () => {
     assert.doesNotMatch(page, /noindex|\(DRAFT\)/, "no head tag is typed out on the page itself");
   });
 
-  it("a draft says DRAFT for a lawyer, in the banner and the title, and is hidden from search", () => {
+  it("a draft says DRAFT and not final, in the banner and the title, and is hidden from search", () => {
     assert.match(DRAFT_BANNER, /DRAFT/);
-    assert.match(DRAFT_BANNER, /lawyer/i);
+    assert.match(DRAFT_BANNER, /not final/i);
     assert.equal(showDraftBanner("draft"), true);
     const meta = privacyHeadMeta("draft");
     assert.ok(meta.some((m) => m.title?.includes("(DRAFT)")));
@@ -90,7 +99,8 @@ describe("privacy page (DRAFT)", () => {
   });
 
   it("says the calculator's numbers are neither saved nor sent, in the same words as the calculator", () => {
-    assert.ok(textOf(section(/don't collect/i)).includes(copy.noStorageNote));
+    assert.ok(textOf(section(/don't collect/i)).includes(copy.noStorageNote), "the live page");
+    assert.ok(textOf(fullSection(/don't collect/i)).includes(copy.noStorageNote), "the full page");
   });
 
   it("discloses exactly what the server forwards: no more, no less", async () => {
@@ -127,7 +137,7 @@ describe("privacy page (DRAFT)", () => {
     const fields = sent.text.trim().split("\n").map((line) => line.split(": ")[0]);
     assert.deepEqual(fields.sort(), Object.keys(disclosed).sort(),
       "a field is sent that the privacy copy does not disclose (or the reverse)");
-    const collected = textOf(section(/^What we collect/i));
+    const collected = textOf(fullSection(/^What we collect/i));
     for (const phrase of Object.values(disclosed)) {
       assert.ok(collected.includes(phrase), `the page does not mention: ${phrase}`);
     }
@@ -135,7 +145,7 @@ describe("privacy page (DRAFT)", () => {
 
   it("an email address appears only through CONTACT_EMAIL, its one designated field", () => {
     if (CONTACT_EMAIL !== "") assert.ok(isValidEmail(CONTACT_EMAIL), "CONTACT_EMAIL is not an address");
-    const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
+    const text = BOTH.map(allText).join(" ");
     const shown = [...new Set(text.match(new RegExp(EMAIL.source, "g")) ?? [])];
     assert.deepEqual(shown, CONTACT_EMAIL === "" ? [] : [CONTACT_EMAIL], "an address outside CONTACT_EMAIL");
     // Nowhere else in the source either: only the CONTACT_EMAIL declaration may hold one.
@@ -150,24 +160,27 @@ describe("privacy page (DRAFT)", () => {
     assert.ok(literals.length <= 1 && literals.every((l) => l.text === CONTACT_EMAIL), JSON.stringify(literals));
   });
 
-  it("the designated field fills every place the page gives an address", () => {
-    // Filling in an address shows which blanks are address blanks: exactly the two it replaces.
+  it("the designated field fills every place each version gives an address", () => {
+    // Filling in an address shows which blanks are address blanks: exactly the ones it replaces.
     const sample = "requests@example.com";
-    const textWith = (address: string) =>
-      copy.privacySections(address).flatMap((s) => s.paragraphs).join(" ");
     const blanks = (text: string) => splitPlaceholders(text).filter((p) => p.blank).length;
-    assert.equal(textWith(sample).split(sample).length - 1, 2, "the address goes in two places");
-    assert.equal(blanks(textWith("")) - blanks(textWith(sample)), 2, "each is a blank until then");
-    // The live page: the address in both places once supplied, and neither blank left.
-    const live = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
-    const expected = CONTACT_EMAIL === "" ? blanks(textWith("")) : blanks(textWith("")) - 2;
+    const versions = {
+      full: { textWith: (a: string) => allText(copy.privacySections(a)), places: 2 },
+      v1: { textWith: (a: string) => allText(v1?.sections(a) ?? []), places: 1 },
+    };
+    for (const [name, { textWith, places }] of Object.entries(versions)) {
+      assert.equal(textWith(sample).split(sample).length - 1, places, `${name}: the address goes in ${places} place(s)`);
+      assert.equal(blanks(textWith("")) - blanks(textWith(sample)), places, `${name}: each is a blank until then`);
+    }
+    // The live page: the address in every place once supplied, and none of those blanks left.
+    const live = versions[PRIVACY_VERSION];
+    const expected = blanks(live.textWith("")) - (CONTACT_EMAIL === "" ? 0 : live.places);
     assert.equal(remainingPlaceholders().length, expected);
-    if (CONTACT_EMAIL !== "") assert.equal(live.split(CONTACT_EMAIL).length - 1, 2);
+    if (CONTACT_EMAIL !== "") assert.equal(allText(PRIVACY_SECTIONS).split(CONTACT_EMAIL).length - 1, live.places);
   });
 
   it("states no web address of its own", () => {
-    const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join(" ");
-    assert.doesNotMatch(text, /https?:\/\//);
+    for (const sections of BOTH) assert.doesNotMatch(allText(sections), /https?:\/\//);
   });
 
   it("is linked from the calculator page, opening in a new tab so typed numbers are kept", () => {
@@ -186,6 +199,56 @@ describe("privacy page (DRAFT)", () => {
   });
 });
 
+describe("the v1 privacy page (N45): the calculator alone, no email form", () => {
+  it("is the live version", () => {
+    assert.equal(PRIVACY_VERSION, "v1");
+    assert.ok(v1, "the live language has v1 wording");
+    assert.deepEqual(PRIVACY_SECTIONS, v1.sections(CONTACT_EMAIL));
+  });
+
+  it("has no blanks: the contact address is supplied", () => {
+    assert.equal(CONTACT_EMAIL, "privacy@peso.credit");
+    assert.deepEqual(remainingPlaceholders(), []);
+    assert.equal(textOf(section(/^Contact/)), `Questions about this page: ${CONTACT_EMAIL}.`);
+  });
+
+  it("describes no email form: nothing collected, kept, sent on, or unsubscribed from", () => {
+    const text = allText(PRIVACY_SECTIONS).toLowerCase();
+    for (const word of ["email form", "checklist", "resend", "unsubscribe", "mailing list", "consent", "agree"]) {
+      assert.ok(!text.includes(word), `mentions "${word}"`);
+    }
+    assert.deepEqual(PRIVACY_SECTIONS.map((s) => s.heading), ["What we don't collect", "Who hosts this site", "Contact"]);
+  });
+
+  it("uses the full page's own words wherever it says the same thing", () => {
+    const fullParagraphs = PRIVACY_FULL_SECTIONS.flatMap((s) => s.paragraphs);
+    const notCollected = section(/don't collect/i)?.paragraphs ?? [];
+    assert.ok(fullParagraphs.includes(notCollected[1]), "no accounts, analytics, tracking or cookies (P08)");
+    assert.ok(fullParagraphs.includes(notCollected[2]), "the SEC link (P09)");
+    assert.equal(notCollected[0], `${copy.noStorageNote} The calculation happens on your device.`);
+    const fullHeadings = PRIVACY_FULL_SECTIONS.map((s) => s.heading);
+    assert.ok(fullHeadings.includes("What we don't collect") && fullHeadings.includes("Contact"));
+  });
+
+  it("names the host and what any host records, with no figures", () => {
+    const hosting = textOf(section(/hosts/));
+    assert.equal(
+      hosting,
+      "This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site.",
+    );
+    assert.doesNotMatch(hosting, /\d/);
+  });
+
+  it("shows when it was last updated, under the title, on the real page", () => {
+    assert.equal(PRIVACY_V1_UPDATED, "2026-09-24");
+    assert.equal(PRIVACY_LAST_UPDATED, "Last updated: 24 September 2026");
+    const page = read("routes/privacy.tsx");
+    const title = page.indexOf("{PRIVACY_TITLE}");
+    const updated = page.indexOf("{PRIVACY_LAST_UPDATED}");
+    assert.ok(title > 0 && title < updated, "under the title");
+  });
+});
+
 describe("placeholders", () => {
   it("are written as [FILL IN: ...] and can be listed and split out", () => {
     const paragraph = `Write to ${placeholder("contact email")} or to ${placeholder("address")}.`;
@@ -199,7 +262,7 @@ describe("placeholders", () => {
   });
 
   it("split text back to the same text, and pass plain paragraphs through", () => {
-    for (const paragraph of PRIVACY_SECTIONS.flatMap((s) => s.paragraphs)) {
+    for (const paragraph of BOTH.flatMap((sections) => sections.flatMap((s) => s.paragraphs))) {
       assert.equal(splitPlaceholders(paragraph).map((p) => p.text).join(""), paragraph);
     }
     assert.deepEqual(splitPlaceholders("no blank here"), [{ text: "no blank here", blank: false }]);

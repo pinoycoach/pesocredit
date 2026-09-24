@@ -52,6 +52,13 @@ const NO_STORAGE_NOTE = "We don't save or send the numbers you enter.";
 const PLACEHOLDER_OPEN = "[FILL IN:";
 const blank = (what: string) => `${PLACEHOLDER_OPEN} ${what}]`;
 const PRIVACY_TITLE = "Privacy Policy";
+// Shared by the full privacy page and the v1 page (N45), word for word.
+const PRIVACY_NOT_COLLECTED_HEADING = "What we don't collect";
+const PRIVACY_NO_TRACKING =
+  "We have no accounts, and no analytics or tracking on this site. The site itself sets no cookies, and our fonts come from our own site, not from other websites.";
+const PRIVACY_SEC_LINK =
+  "If you tap the link to the SEC (sec.gov.ph), you leave this site, and the SEC's website handles your visit.";
+const PRIVACY_CONTACT_HEADING = "Contact";
 
 function coverageReason(reason: CoverageReason): Segments {
   switch (reason.kind) {
@@ -279,8 +286,7 @@ export const en: Copy = {
 
   placeholderOpen: PLACEHOLDER_OPEN,
   privacyTitle: PRIVACY_TITLE,
-  privacyDraftBanner:
-    "DRAFT, for a lawyer to review. This is not final and is not yet our official policy.",
+  privacyDraftBanner: "DRAFT. This is not final and is not yet our official policy.",
   backToCalculator: "Back to the calculator",
   privacyLinkLabel: "Privacy Policy",
   privacySections: (contactEmail) => [
@@ -291,11 +297,11 @@ export const en: Copy = {
       ],
     },
     {
-      heading: "What we don't collect",
+      heading: PRIVACY_NOT_COLLECTED_HEADING,
       paragraphs: [
         `${NO_STORAGE_NOTE} The calculation happens on your device, and those numbers are never included in the email form.`,
-        "We have no accounts, and no analytics or tracking on this site. The site itself sets no cookies, and our fonts come from our own site, not from other websites.",
-        "If you tap the link to the SEC (sec.gov.ph), you leave this site, and the SEC's website handles your visit.",
+        PRIVACY_NO_TRACKING,
+        PRIVACY_SEC_LINK,
       ],
     },
     {
@@ -327,12 +333,35 @@ export const en: Copy = {
       paragraphs: [blank("for the lawyer: the user's rights under the law, and how to use them")],
     },
     {
-      heading: "Contact",
+      heading: PRIVACY_CONTACT_HEADING,
       paragraphs: [
         `${blank("name of the site operator")} · ${contactEmail || blank("contact email address")}`,
       ],
     },
   ],
+  privacyV1: {
+    lastUpdated: (isoDate) => `Last updated: ${formatDate(isoDate)}`,
+    sections: (contactEmail) => [
+      {
+        heading: PRIVACY_NOT_COLLECTED_HEADING,
+        paragraphs: [
+          `${NO_STORAGE_NOTE} The calculation happens on your device.`,
+          PRIVACY_NO_TRACKING,
+          PRIVACY_SEC_LINK,
+        ],
+      },
+      {
+        heading: "Who hosts this site",
+        paragraphs: [
+          "This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site.",
+        ],
+      },
+      {
+        heading: PRIVACY_CONTACT_HEADING,
+        paragraphs: [`Questions about this page: ${contactEmail || blank("contact email address")}.`],
+      },
+    ],
+  },
   privacyHeadTitleDraft: `${PRIVACY_TITLE} (DRAFT) · Tunay na Interes`,
   privacyHeadTitleFinal: `${PRIVACY_TITLE} · Tunay na Interes`,
 

@@ -10,7 +10,12 @@ import { join } from "node:path";
 import { describe, it } from "node:test";
 import ts from "typescript";
 import { analyzeLoan } from "./loan-math.ts";
-import { remainingPlaceholders } from "./privacy-copy.ts";
+import {
+  PRIVACY_LAST_UPDATED,
+  PRIVACY_SECTIONS,
+  PRIVACY_VERSION,
+  remainingPlaceholders,
+} from "./privacy-copy.ts";
 import * as rules from "./rules.ts";
 import {
   canonical,
@@ -181,10 +186,19 @@ describe("what each signature covers", () => {
     assert.equal(reasons.length, 5, "bank, secured, purpose, principal, tenor");
   });
 
-  it("privacy-page: every section, and not the DRAFT banner", () => {
-    const content = canonical(contentOf("privacy-page"));
-    assert.ok(content.includes("\"Contact\""), "the Contact section");
-    assert.ok(!content.includes("DRAFT"));
+  it("privacy-page: the live version, every section, the last-updated line, and not the DRAFT banner", () => {
+    const content = contentOf("privacy-page") as { version: string; lastUpdated: string | null; sections: unknown[] };
+    assert.equal(content.version, PRIVACY_VERSION, "which version is signed (N45)");
+    assert.deepEqual(content.sections, PRIVACY_SECTIONS, "the live page's sections");
+    assert.equal(content.lastUpdated, PRIVACY_LAST_UPDATED);
+    assert.ok(canonical(content).includes("\"Contact\""), "the Contact section");
+    assert.ok(!canonical(content).includes("DRAFT"));
+  });
+
+  it("privacy-page: switching version changes the hash, so a signed v1 does not carry over (N45)", () => {
+    const content = contentOf("privacy-page") as Record<string, unknown>;
+    const other = { ...content, version: content.version === "v1" ? "full" : "v1" };
+    assert.notEqual(hashContent(other), current["privacy-page"]);
   });
 });
 

@@ -281,6 +281,7 @@ export const fil: Copy = {
     "DRAFT — para sa pagsusuri ng abogado. Hindi pa ito pinal at hindi pa dapat ituring na opisyal na patakaran.",
   backToCalculator: "Balik sa calculator",
   privacyLinkLabel: "Patakaran sa Privacy",
+  privacyV1: null,
   privacySections: (contactEmail) => [
     {
       heading: "Ano ang kinokolekta namin",

@@ -269,6 +269,8 @@ export function wordLiterals(): Literal[] {
       if (l.kind !== "string") return false;
       const t = squash(l.text);
       if (!/\p{L}/u.test(t) || NOT_COPY.test(t) || ATTRIBUTES.has(t) || /^[@.#/]/.test(t)) return false;
+      // A lone email address is not words: CONTACT_EMAIL, which privacy.test.ts keeps the only one.
+      if (/^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/.test(t)) return false;
       const words = t.split(" ");
       return words.filter((w) => TAILWIND.test(w)).length < words.length / 2;
     }),
@@ -506,7 +508,7 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     add(`**${term}** ${render(item.segments)}`, at("legalFoot", i, "term"), "paragraph");
   });
 
-  newSection("1.10 Email form", "Only once the privacy page is final (PRIVACY_STATUS) and the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result.");
+  newSection("1.10 Email form", "Only under the full privacy page, once final (PRIVACY_VERSION, PRIVACY_STATUS; N45), and only when the Resend settings are set (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO, SUBSCRIBE_FROM); always below the whole result. Off while the v1 page is live.");
   add(copy.emailHeading, at("emailHeading"), "card title");
   add(copy.emailNote, at("emailNote"), "card description");
   add(copy.emailLabel, at("emailLabel"), "field label");
@@ -524,16 +526,69 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
   add(copy.privacyLinkLabel, at("privacyLinkLabel"), "link to /privacy, new tab");
 
   // -------------------------------------------------------------------------
-  newScreen("2. Privacy page (peso.credit/privacy)", "P", `Marked DRAFT for lawyer review (N17). \`${copy.placeholderOpen} …]\` blanks are shown highlighted on the page, exactly as below.`);
+  // The privacy page has two versions (PRIVACY_VERSION). The full page (N17) was reviewed as
+  // P01–P23 and keeps those IDs. The v1 page (N45) reuses an ID wherever its text is the same,
+  // and its new lines take the next free numbers, in page order. The live version is listed
+  // first; the other follows, not on screen, without the lines it shares with the live one.
+  type PageLine = { text: string; where: string; when: string };
+  type PagePart = { title: string; lines: PageLine[] };
+  const pageTop: PageLine[] = [
+    { text: copy.backToCalculator, where: at("backToCalculator"), when: "link back to /" },
+    { text: copy.privacyTitle, where: at("privacyTitle"), when: "page title" },
+    { text: copy.privacyDraftBanner, where: at("privacyDraftBanner"), when: "banner, only while PRIVACY_STATUS is draft" },
+  ];
+  const partsOf = (sections: privacy.PrivacySection[], path: Step[]): PagePart[] =>
+    sections.map((s, i) => ({
+      title: s.heading,
+      lines: [
+        { text: s.heading, where: at(...path, i, "heading"), when: "section heading" },
+        ...s.paragraphs.map((p, j) => ({ text: p, where: at(...path, i, "paragraphs", j), when: "paragraph" })),
+      ],
+    }));
+  const fullParts = partsOf(privacy.PRIVACY_FULL_SECTIONS, ["privacySections", "=>"]);
+  const v1Copy = copy.privacyV1;
+  const v1Top: PageLine[] = v1Copy
+    ? [{ text: v1Copy.lastUpdated(privacy.PRIVACY_V1_UPDATED), where: at("privacyV1", "lastUpdated"), when: "under the title (v1 only)" }]
+    : [];
+  const v1Parts = v1Copy ? partsOf(v1Copy.sections(privacy.CONTACT_EMAIL), ["privacyV1", "sections", "=>"]) : [];
+  const pageId = new Map<string, string>();
+  let pageNumber = 0;
+  const number = (lines: PageLine[]) => {
+    for (const l of lines) if (!pageId.has(l.text)) pageId.set(l.text, `P${String(++pageNumber).padStart(2, "0")}`);
+  };
+  number([...pageTop, ...fullParts.flatMap((p) => p.lines)]);
+  if (pageNumber !== 3 + fullParts.flatMap((p) => p.lines).length) throw new Error("the full privacy page repeats a line");
+  number([...v1Top, ...v1Parts.flatMap((p) => p.lines)]);
+
+  const liveV1 = privacy.PRIVACY_VERSION === "v1";
+  const [liveTop, liveParts, keptTop, keptParts] = liveV1
+    ? [[...pageTop, ...v1Top], v1Parts, pageTop, fullParts]
+    : [pageTop, fullParts, [...pageTop, ...v1Top], v1Parts];
+  const [liveName, keptName] = liveV1
+    ? ["v1 page, for the calculator alone, with no email form (N45)", "full page, which describes the email form and waits for counsel (N17)"]
+    : ["full page, which describes the email form (N17)", "v1 page, for the calculator alone (N45)"];
+  newScreen(
+    "2. Privacy page (peso.credit/privacy)",
+    "P",
+    `On screen (PRIVACY_VERSION): the ${liveName}. Kept in the source, not on screen, and listed last: the ${keptName}. \`${copy.placeholderOpen} …]\` blanks are shown highlighted on the page, exactly as below.`,
+  );
   newSection("2.1 Top of page");
-  add(copy.backToCalculator, at("backToCalculator"), "link back to /");
-  add(copy.privacyTitle, at("privacyTitle"), "page title");
-  add(copy.privacyDraftBanner, at("privacyDraftBanner"), "banner, only while PRIVACY_STATUS is draft");
-  privacy.PRIVACY_SECTIONS.forEach((s, i) => {
-    newSection(`2.${screen.sections.length + 1} ${s.heading}`);
-    add(s.heading, at("privacySections", "=>", i, "heading"), "section heading");
-    s.paragraphs.forEach((para, j) => add(para, at("privacySections", "=>", i, "paragraphs", j), "paragraph"));
-  });
+  for (const l of liveTop) add(l.text, l.where, l.when, pageId.get(l.text));
+  for (const part of liveParts) {
+    newSection(`2.${screen.sections.length + 1} ${part.title}`);
+    for (const l of part.lines) add(l.text, l.where, l.when, pageId.get(l.text));
+  }
+  const onScreen = new Set([...liveTop, ...liveParts.flatMap((p) => p.lines)].map((l) => l.text));
+  newSection(
+    `2.${screen.sections.length + 1} Kept for later, not on screen: the other version`,
+    `The ${keptName}, top to bottom. Lines it shares with the page above are not repeated.`,
+  );
+  for (const l of keptTop) if (!onScreen.has(l.text)) add(l.text, l.where, `${l.when} (not on screen)`, pageId.get(l.text));
+  for (const part of keptParts) {
+    for (const l of part.lines) {
+      if (!onScreen.has(l.text)) add(l.text, l.where, `${l.when}, in “${part.title}” (not on screen)`, pageId.get(l.text));
+    }
+  }
 
   // -------------------------------------------------------------------------
   newScreen("3. Browser tab and search results", "T", "Text that appears outside the page body.");
@@ -571,6 +626,9 @@ export function buildCopyReview(): { markdown: string; leftovers: string[]; entr
     [
       ...all.map((e) => e.text.replace(/<\/?u>|\*\*/g, "")),
       ...CIRCUMVENTION_EXAMPLES,
+      // The address blanks, shown only if CONTACT_EMAIL were emptied (privacy.test.ts).
+      ...copy.privacySections("").flatMap((s) => s.paragraphs),
+      ...(copy.privacyV1?.sections("") ?? []).flatMap((s) => s.paragraphs),
       ownerEmail.subject,
       ownerEmail.text,
     ].join(" \n "),
@@ -611,8 +669,8 @@ illegal, scam, fraud or loan shark; when the law is unclear (the methods disagre
 shows "close to the limit", never "over"; not legal advice.
 
 This review is what Napoleon signs on (SIGNOFF.json, \`reviewedBy\`). What each signature covers:
-\`verdict-wording\` is sections 1.3–1.5; \`privacy-page\` is section 2 except P03 (the DRAFT banner
-goes when the page is signed); \`cap-values\` is the numbers inside the underlined caps, checked
+\`verdict-wording\` is sections 1.3–1.5; \`privacy-page\` is the page on screen in section 2, except
+P03 (the DRAFT banner goes when the page is signed) and the version kept for later; \`cap-values\` is the numbers inside the underlined caps, checked
 against the circular itself rather than in this review.
 
 `;

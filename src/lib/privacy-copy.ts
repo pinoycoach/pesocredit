@@ -1,6 +1,10 @@
 /**
  * The privacy page: its status, its one contact address, and its words in the live language
- * (copy.ts; the words themselves are in src/lib/copy/<language>.ts). DRAFT for a lawyer.
+ * (copy.ts; the words themselves are in src/lib/copy/<language>.ts).
+ *
+ * Two versions (PRIVACY_VERSION). "v1" is live: the calculator alone, no email form, no blanks
+ * (N45). "full" describes the email form and keeps its blanks for counsel (N17); it is kept in
+ * the source, unused, until the form goes live, and only under it may the form exist.
  *
  * It states only what this app verifiably does (see network-privacy.test.ts and
  * subscribe.test.ts) and leaves a visible placeholder for everything the owner must supply
@@ -32,7 +36,7 @@ export const PRIVACY_STATUS: PrivacyStatus = "draft";
  * "v1" is for the calculator alone, with no email form (N45).
  */
 export type PrivacyVersion = "v1" | "full";
-export const PRIVACY_VERSION: PrivacyVersion = "full";
+export const PRIVACY_VERSION: PrivacyVersion = "v1";
 
 export type PrivacyState = { version: PrivacyVersion; status: PrivacyStatus };
 
@@ -51,13 +55,27 @@ export function emailFormAllowed(
  * The one designated place for the page's email address, used wherever the page gives
  * one. Empty until supplied: the page shows its placeholders instead.
  */
-export const CONTACT_EMAIL = "";
+export const CONTACT_EMAIL: string = "privacy@peso.credit";
 
 export const PRIVACY_TITLE = copy.privacyTitle;
 export const DRAFT_BANNER = copy.privacyDraftBanner;
 export const BACK_TO_CALCULATOR = copy.backToCalculator;
 export const PRIVACY_LINK_LABEL = copy.privacyLinkLabel;
-export const PRIVACY_SECTIONS: PrivacySection[] = copy.privacySections(CONTACT_EMAIL);
+
+/** The day the v1 page was last changed, shown under its title. Change it with the page. */
+export const PRIVACY_V1_UPDATED = "2026-09-24";
+
+/** The full page (N17): kept for when the email form goes live, not shown under v1. */
+export const PRIVACY_FULL_SECTIONS: PrivacySection[] = copy.privacySections(CONTACT_EMAIL);
+
+// The v1 page in the live language. privacy.test.ts fails if it is missing while v1 is live.
+const V1 = PRIVACY_VERSION === "v1" ? copy.privacyV1 : null;
+
+/** The live page's sections: v1 or full, as PRIVACY_VERSION says. */
+export const PRIVACY_SECTIONS: PrivacySection[] = V1 ? V1.sections(CONTACT_EMAIL) : PRIVACY_FULL_SECTIONS;
+
+/** The line under the title on the v1 page ("Last updated: …"); the full page has none yet. */
+export const PRIVACY_LAST_UPDATED: string | null = V1 ? V1.lastUpdated(PRIVACY_V1_UPDATED) : null;
 
 /** The page's head tags: a draft is hidden from search and says DRAFT in its title. */
 export function privacyHeadMeta(status: PrivacyStatus) {
@@ -70,7 +88,7 @@ export const showDraftBanner = (status: PrivacyStatus) => status === "draft";
 
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-/** Every blank still to fill, from all sections. */
+/** Every blank still to fill on the live page. */
 export function remainingPlaceholders(): string[] {
   const text = PRIVACY_SECTIONS.flatMap((s) => s.paragraphs).join("\n");
   const blank = new RegExp(`${escapeRegExp(PLACEHOLDER_OPEN)} ([^\\]]*)\\]`, "g");

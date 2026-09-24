@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import {
   BACK_TO_CALCULATOR,
   DRAFT_BANNER,
+  PRIVACY_LAST_UPDATED,
   PRIVACY_SECTIONS,
   PRIVACY_STATUS,
   PRIVACY_TITLE,
@@ -27,6 +28,9 @@ function Privacy() {
 
         <header className="grid gap-3">
           <h1 className="font-display text-4xl tracking-tight text-foreground">{PRIVACY_TITLE}</h1>
+          {PRIVACY_LAST_UPDATED && (
+            <p className="text-sm text-muted-foreground">{PRIVACY_LAST_UPDATED}</p>
+          )}
           {showDraftBanner(PRIVACY_STATUS) && (
             <p
               role="note"

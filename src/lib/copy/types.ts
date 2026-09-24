@@ -148,8 +148,20 @@ export type Copy = {
   privacyDraftBanner: string;
   backToCalculator: string;
   privacyLinkLabel: string;
-  /** The sections, with the page's one contact address (empty until supplied). */
+  /**
+   * The full page's sections, with the page's one contact address (empty until supplied). It
+   * describes the email form and waits for counsel's review (N17); kept, unused, under v1.
+   */
   privacySections: (contactEmail: string) => PrivacySection[];
+  /**
+   * The v1 page, for the calculator alone: no email form, and no blanks (N45). Null where no
+   * wording is approved yet.
+   */
+  privacyV1: {
+    /** The line under the title, e.g. "Last updated: 24 September 2026". */
+    lastUpdated: (isoDate: string) => string;
+    sections: (contactEmail: string) => PrivacySection[];
+  } | null;
   privacyHeadTitleDraft: string;
   privacyHeadTitleFinal: string;
 
