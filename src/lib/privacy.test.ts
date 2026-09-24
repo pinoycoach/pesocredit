@@ -98,9 +98,10 @@ describe("privacy page", () => {
     assert.ok(!meta.some((m) => m.name === "robots"), "no robots tag: indexable");
   });
 
-  it("says the calculator's numbers are neither saved nor sent, in the same words as the calculator", () => {
-    assert.ok(textOf(section(/don't collect/i)).includes(copy.noStorageNote), "the live page");
+  it("says the calculator's numbers are neither kept nor sent", () => {
+    // The full page in the calculator's own words (C38); v1 in its reviewed words (N45, P25).
     assert.ok(textOf(fullSection(/don't collect/i)).includes(copy.noStorageNote), "the full page");
+    assert.match(textOf(section(/don't collect/i)), /^We don't (save|store) or send the numbers you enter\./, "the live page");
   });
 
   it("discloses exactly what the server forwards: no more, no less", async () => {
@@ -209,7 +210,10 @@ describe("the v1 privacy page (N45): the calculator alone, no email form", () =>
   it("has no blanks: the contact address is supplied", () => {
     assert.equal(CONTACT_EMAIL, "privacy@peso.credit");
     assert.deepEqual(remainingPlaceholders(), []);
-    assert.equal(textOf(section(/^Contact/)), `Questions about this page: ${CONTACT_EMAIL}.`);
+    assert.equal(
+      textOf(section(/^Contact/)),
+      `Privacy questions or requests: ${CONTACT_EMAIL}. If you write to us, we use your email only to reply.`,
+    );
   });
 
   it("describes no email form: nothing collected, kept, sent on, or unsubscribed from", () => {
@@ -225,7 +229,7 @@ describe("the v1 privacy page (N45): the calculator alone, no email form", () =>
     const notCollected = section(/don't collect/i)?.paragraphs ?? [];
     assert.ok(fullParagraphs.includes(notCollected[1]), "no accounts, analytics, tracking or cookies (P08)");
     assert.ok(fullParagraphs.includes(notCollected[2]), "the SEC link (P09)");
-    assert.equal(notCollected[0], `${copy.noStorageNote} The calculation happens on your device.`);
+    assert.equal(notCollected[0], "We don't store or send the numbers you enter. The calculation happens on your device, and the numbers are gone when you close the page.");
     const fullHeadings = PRIVACY_FULL_SECTIONS.map((s) => s.heading);
     assert.ok(fullHeadings.includes("What we don't collect") && fullHeadings.includes("Contact"));
   });
@@ -234,7 +238,7 @@ describe("the v1 privacy page (N45): the calculator alone, no email form", () =>
     const hosting = textOf(section(/hosts/));
     assert.equal(
       hosting,
-      "This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.",
+      "This site is hosted by Netlify, a company based in the United States. To deliver the site, Netlify processes technical details of each visit, such as your IP address. We don't use these details to identify you.",
     );
     assert.doesNotMatch(hosting, /\d/);
   });

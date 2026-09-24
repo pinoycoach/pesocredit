@@ -345,7 +345,7 @@ export const en: Copy = {
       {
         heading: PRIVACY_NOT_COLLECTED_HEADING,
         paragraphs: [
-          `${NO_STORAGE_NOTE} The calculation happens on your device.`,
+          "We don't store or send the numbers you enter. The calculation happens on your device, and the numbers are gone when you close the page.",
           PRIVACY_NO_TRACKING,
           PRIVACY_SEC_LINK,
         ],
@@ -353,12 +353,14 @@ export const en: Copy = {
       {
         heading: "Who hosts this site",
         paragraphs: [
-          "This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.",
+          "This site is hosted by Netlify, a company based in the United States. To deliver the site, Netlify processes technical details of each visit, such as your IP address. We don't use these details to identify you.",
         ],
       },
       {
         heading: PRIVACY_CONTACT_HEADING,
-        paragraphs: [`Questions about this page: ${contactEmail || blank("contact email address")}.`],
+        paragraphs: [
+          `Privacy questions or requests: ${contactEmail || blank("contact email address")}. If you write to us, we use your email only to reply.`,
+        ],
       },
     ],
   },

@@ -243,7 +243,7 @@ On screen (PRIVACY_VERSION): the v1 page, for the calculator alone, with no emai
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | P06 | What we don't collect | `src/lib/copy/en.ts:56` | section heading |
-| P25 | We don't save or send the numbers you enter. The calculation happens on your device. | `src/lib/copy/en.ts:348` | paragraph |
+| P25 | We don't store or send the numbers you enter. The calculation happens on your device, and the numbers are gone when you close the page. | `src/lib/copy/en.ts:348` | paragraph |
 | P08 | We have no accounts, and no analytics or tracking on this site. The site itself sets no cookies, and our fonts come from our own site, not from other websites. | `src/lib/copy/en.ts:58` | paragraph |
 | P09 | If you tap the link to the SEC (sec.gov.ph), you leave this site, and the SEC's website handles your visit. | `src/lib/copy/en.ts:60` | paragraph |
 
@@ -252,14 +252,14 @@ On screen (PRIVACY_VERSION): the v1 page, for the calculator alone, with no emai
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | P26 | Who hosts this site | `src/lib/copy/en.ts:354` | section heading |
-| P27 | This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address. | `src/lib/copy/en.ts:356` | paragraph |
+| P27 | This site is hosted by Netlify, a company based in the United States. To deliver the site, Netlify processes technical details of each visit, such as your IP address. We don't use these details to identify you. | `src/lib/copy/en.ts:356` | paragraph |
 
 ### 2.4 Contact
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | P22 | Contact | `src/lib/copy/en.ts:61` | section heading |
-| P28 | Questions about this page: privacy@peso.credit. | `src/lib/copy/en.ts:361` | paragraph |
+| P28 | Privacy questions or requests: privacy@peso.credit. If you write to us, we use your email only to reply. | `src/lib/copy/en.ts:362` | paragraph |
 
 ### 2.5 Kept for later, not on screen: the other version
 
@@ -294,8 +294,8 @@ Text that appears outside the page body.
 |---|---|---|---|
 | T01 | Tunay na Interes · Check your loan against the SEC limits | `src/lib/copy/en.ts:92` | tab title, calculator page |
 | T02 | Free. Enter the loan amount, each payment and the number of payments. See the EIR next to the published limits in the Philippines. | `src/lib/copy/en.ts:94` | search-result description |
-| T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:365` | tab title, privacy page while draft |
-| T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:366` | tab title, privacy page once final |
+| T03 | Privacy Policy (DRAFT) · Tunay na Interes | `src/lib/copy/en.ts:367` | tab title, privacy page while draft |
+| T04 | Privacy Policy · Tunay na Interes | `src/lib/copy/en.ts:368` | tab title, privacy page once final |
 
 ## 4. Error page
 
@@ -305,8 +305,8 @@ Shown only if the app fails.
 
 | ID | Text | Where | Shown when |
 |---|---|---|---|
-| E01 | Something went wrong | `src/lib/copy/en.ts:368` | heading |
-| E02 | An unexpected error occurred. Try reloading the page. | `src/lib/copy/en.ts:369` | message when the error has no text of its own; otherwise the error's own message is shown |
+| E01 | Something went wrong | `src/lib/copy/en.ts:370` | heading |
+| E02 | An unexpected error occurred. Try reloading the page. | `src/lib/copy/en.ts:371` | message when the error has no text of its own; otherwise the error's own message is shown |
 
 ## Not on screen
 
