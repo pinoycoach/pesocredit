@@ -150,11 +150,11 @@ Phase 0 done. Phase 4 (HANDOVER.md: bring the calculator up to v2, then deploy):
 C, E (Netlify + Resend) and F (English first, N34: F1 the approved English, F2 every word moved
 into `src/lib/copy/`, F3 English on screen) are complete, and the independent review of the
 English (N32) is applied, and every value in `rules.ts` is checked against the circular (N42)
-(2026-09-23); stopped for review. cap-values is signed in SIGNOFF.json (Napoleon, 2026-09-24,
-6767484). Still Napoleon's: signing the privacy page and the verdict wording (`launch-check` fails
-until both are signed), the privacy blanks with the lawyer (N17) and the mobile re-check on the
-English UI (N31); then
-step group D, the live proof of the /api/subscribe limit (N18). Every step group stops for review.
+(2026-09-23); stopped for review. cap-values and verdict-wording are signed in SIGNOFF.json
+(Napoleon, 2026-09-24: 6767484 and a46bb31). Still Napoleon's: signing the privacy page
+(`launch-check` fails until it is signed), the privacy blanks with the lawyer (N17) and the
+mobile re-check on the English UI (N31); then step group D, the live proof of the /api/subscribe
+limit (N18). Every step group stops for review.
 
 ## Lessons
 
