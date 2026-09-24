@@ -56,7 +56,7 @@ short sentences; no shame or blame; no false hope; no advice; no accusation.
 
 - **Where:** The paragraph under “Who hosts this site”.
 - **Text:**
-  > This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site.
+  > This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.
 
 ### P28
 
@@ -64,19 +64,14 @@ short sentences; no shame or blame; no false hope; no advice; no accusation.
 - **Text:**
   > Questions about this page: privacy@peso.credit.
 
-## One open question: P27
+## About P27
 
-P27 was checked against Netlify's own documents. They support that Netlify processes visitors'
-IP addresses as needed to host a site. They do not say that Netlify records every visit, that it
-does so to protect the site, or that all web hosts do the same. So this softer wording has been
-proposed instead, and is not yet decided:
-
-  > This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.
-
-Comments on either wording are welcome.
+P27 is the approved wording. It follows Netlify's own documents: Netlify's Data Processing
+Agreement lists visitors' IP addresses among the data it processes to provide the hosting service.
+An earlier draft said Netlify "records" each visit "to deliver and protect the site"; the documents
+do not support that, so it was replaced. Comments on the current wording are welcome.
 
 ---
 
-The six texts are copied from `COPY-REVIEW.md`, which is generated from the site's source, and the
-proposed P27 wording from DECISIONS.md N45; nothing is retyped. IDs are the ones used in
-`COPY-REVIEW.md`.
+The six texts are copied from `COPY-REVIEW.md`, which is generated from the site's source; nothing
+is retyped. IDs are the ones used there.

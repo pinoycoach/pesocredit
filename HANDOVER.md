@@ -72,8 +72,12 @@ on screen (point 12)
 - Do not set the Resend settings (RESEND_API_KEY, SUBSCRIBE_NOTIFY_TO,
   SUBSCRIBE_FROM) or GUIDE_URL in Netlify. Under the v1 privacy page the
   form stays off even if they are set (N45), but they stay unset.
-- privacy@peso.credit receives mail: a test email has arrived in
-  Napoleon's inbox before the v1 privacy page is signed (N45)
+- privacy@peso.credit receives mail: a test email arrived in Napoleon's
+  Gmail on 2026-09-24 (N45). It forwards through Porkbun, so DNS stays at
+  Porkbun: moving it (Netlify DNS, say) drops the forwarding records
+  unless they are copied first. Forwarded mail can land in spam: it did
+  once, and a Gmail "never send to spam" filter fixed it. Re-test after
+  any DNS change, and look in spam.
 - English copy written and independently reviewed (N34, N32, N44)
 - v1 privacy page signed, PRIVACY_STATUS "final" in the same commit (N45)
 - Mobile layout re-checked on the English UI, the v1 privacy page

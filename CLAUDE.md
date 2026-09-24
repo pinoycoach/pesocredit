@@ -154,8 +154,10 @@ English (N32) is applied, and every value in `rules.ts` is checked against the c
 (2026-09-23); stopped for review. cap-values and verdict-wording are signed in SIGNOFF.json
 (Napoleon, 2026-09-24: 6767484 and a46bb31). Change of plan (2026-09-24, N45): v1 launches as the
 calculator alone, with a short privacy page and no email form; the v1 page and the form gate are
-built (90be1d3, 3f92e85). Still Napoleon's: the test email to privacy@peso.credit, then signing
-the v1 privacy page (N45: `launch-check` fails until it is signed), and the mobile re-check (N31);
+built (90be1d3, 3f92e85); the test email to privacy@peso.credit has arrived and P27 is approved
+(N45). Still Napoleon's: the review of the new v1 lines, the no-tracking check on the live preview,
+then signing the v1 privacy page (`launch-check` fails until it is signed), and the mobile
+re-check (N31);
 then step group D, the v1 launch. The full privacy page with counsel (N17), the live proof of the
 /api/subscribe limit (N18) and the checklist (N37) wait for the email form. Every step group
 stops for review.

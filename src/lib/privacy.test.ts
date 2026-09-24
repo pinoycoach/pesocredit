@@ -230,11 +230,11 @@ describe("the v1 privacy page (N45): the calculator alone, no email form", () =>
     assert.ok(fullHeadings.includes("What we don't collect") && fullHeadings.includes("Contact"));
   });
 
-  it("names the host and what any host records, with no figures", () => {
+  it("names the host and what it processes, in the words Netlify's own documents support, with no figures", () => {
     const hosting = textOf(section(/hosts/));
     assert.equal(
       hosting,
-      "This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site.",
+      "This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.",
     );
     assert.doesNotMatch(hosting, /\d/);
   });

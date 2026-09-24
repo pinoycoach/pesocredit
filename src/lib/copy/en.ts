@@ -353,7 +353,7 @@ export const en: Copy = {
       {
         heading: "Who hosts this site",
         paragraphs: [
-          "This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site.",
+          "This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address.",
         ],
       },
       {

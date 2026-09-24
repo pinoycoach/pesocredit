@@ -252,7 +252,7 @@ On screen (PRIVACY_VERSION): the v1 page, for the calculator alone, with no emai
 | ID | Text | Where | Shown when |
 |---|---|---|---|
 | P26 | Who hosts this site | `src/lib/copy/en.ts:354` | section heading |
-| P27 | This site is hosted by Netlify. Like any web host, Netlify records technical details of each visit, such as your IP address, to deliver and protect the site. | `src/lib/copy/en.ts:356` | paragraph |
+| P27 | This site is hosted by Netlify. To deliver the site, Netlify processes technical details of each visit, such as your IP address. | `src/lib/copy/en.ts:356` | paragraph |
 
 ### 2.4 Contact
 
