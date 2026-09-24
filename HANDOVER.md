@@ -97,8 +97,8 @@ LATER — The email form (not before N17, N18 and N37 are RESOLVED)
   node tools/prove-rate-limit.mjs https://<site> on a deploy preview,
   then on production; record the output in N18. The proof works before
   the form goes live: the endpoint answers 404 until the full page is
-  final, and the limit counts those 404s. Done on the preview
-  (2026-09-24, 4/4); production is due once the domain points at the site.
+  final, and the limit counts those 404s. Done on the preview and on
+  production, https://peso.credit (2026-09-24, 4/4 each): N18 RESOLVED.
 - Resend: peso.credit sending domain verified, DNS records copied from
   the live Resend screen (point 12); a Sending-access key restricted to
   that domain, set only in Netlify's environment; the Full-access key
@@ -122,9 +122,9 @@ money handling (N5). Not planned until Napoleon supplies their shape.
 - GUIDE_URL stays unset until the ₱99 guide and its payment link exist (N38).
 - Any constraint that passed before a feature touched its surface is re-verified (point 11).
 - `npm run launch-check` passes: the privacy page, the verdict wording and the cap values are
-  signed in SIGNOFF.json, and none has changed since (point 10). Status 2026-09-24: cap-values
-  (6767484) and verdict-wording (a46bb31) are signed; the privacy page, now the v1 page (N45), is
-  not, so `launch-check` still fails.
+  signed in SIGNOFF.json, and none has changed since (point 10). Status 2026-09-24: all three
+  are signed, cap-values (6767484), verdict-wording (a46bb31) and the v1 privacy page (8dcd45b),
+  and `launch-check` passes.
 
 ## Final phase — Retro (point 17) — mandatory
 
